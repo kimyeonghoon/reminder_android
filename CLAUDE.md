@@ -229,3 +229,119 @@ fun ComponentName(
 **의존성 흐름**
 - UI → ViewModel → Repository → DAO → Database
 - 레이어를 건너뛰거나 순환 의존성을 만들지 않기
+
+## Git 워크플로우
+
+### 브랜치 전략 (GitHub Flow)
+
+**메인 브랜치**
+- `main` - 항상 배포 가능한 상태 유지, 태그로 버전 관리
+
+**작업 브랜치**
+- `feature/기능명` - 새로운 기능 개발
+- `fix/버그명` - 버그 수정
+- `refactor/내용` - 리팩토링
+- `docs/내용` - 문서 작업
+
+**작업 흐름**
+1. `main`에서 작업 브랜치 생성
+2. 작업 완료 후 Pull Request 생성
+3. 리뷰 및 테스트
+4. `main`에 병합
+5. 작업 브랜치 삭제
+
+### 커밋 메시지 규칙 (Conventional Commits)
+
+**형식**
+```
+type(scope): subject
+
+body (선택사항)
+```
+
+**타입**
+- `feat`: 새로운 기능 추가
+- `fix`: 버그 수정
+- `refactor`: 코드 리팩토링 (기능 변경 없음)
+- `style`: 코드 포맷팅, 세미콜론 누락 등
+- `docs`: 문서 수정
+- `test`: 테스트 코드 추가/수정
+- `chore`: 빌드 스크립트, 패키지 매니저 설정 등
+- `perf`: 성능 개선
+
+**Scope (선택사항)**
+- `ui`: UI 관련
+- `database`: 데이터베이스 관련
+- `viewmodel`: ViewModel 관련
+- `repository`: Repository 관련
+
+**예시**
+```
+feat(ui): Add date picker for reminder due date
+fix(database): Fix query returning null values
+refactor(viewmodel): Simplify state management logic
+docs: Update README with build instructions
+chore: Upgrade Gradle to 8.4
+```
+
+**규칙**
+- subject는 50자 이내로 간결하게
+- subject는 명령형으로 작성 ("Add" not "Added")
+- subject 끝에 마침표 생략
+- body는 72자마다 줄바꿈
+- body에는 "무엇을", "왜" 변경했는지 작성
+
+### 버전 관리 (Semantic Versioning)
+
+**버전 형식**: `MAJOR.MINOR.PATCH` (예: `1.2.3`)
+
+- **MAJOR**: 호환되지 않는 API 변경
+- **MINOR**: 하위 호환성을 유지하는 기능 추가
+- **PATCH**: 하위 호환성을 유지하는 버그 수정
+
+**versionCode vs versionName**
+- `versionCode`: 정수, 매 릴리즈마다 증가 (1, 2, 3, ...)
+- `versionName`: 문자열, Semantic Versioning ("1.0.0", "1.1.0", ...)
+
+### 릴리즈 프로세스
+
+1. 버전 번호 결정 (Semantic Versioning 기준)
+2. `app/build.gradle.kts`에서 `versionCode`와 `versionName` 업데이트
+3. `CHANGELOG.md` 업데이트
+4. 커밋 및 Push
+5. GitHub에서 Release 생성
+   - 태그: `v1.0.0` 형식
+   - Release notes: CHANGELOG 내용 복사
+   - APK 파일 첨부
+6. 태그 생성 및 Push
+
+### Pull Request 가이드
+
+**PR 제목**
+- 커밋 메시지 규칙과 동일 (`feat: Add notification feature`)
+
+**PR 설명에 포함할 내용**
+- 변경 사항 요약
+- 변경 이유
+- 테스트 방법
+- 스크린샷 (UI 변경 시)
+- 관련 이슈 번호
+
+**리뷰 규칙**
+- 최소 1명의 승인 필요 (팀 프로젝트 시)
+- 빌드 성공 확인
+- 충돌 해결 후 병합
+
+### Issue 관리
+
+**레이블**
+- `bug`: 버그 리포트
+- `enhancement`: 기능 개선 제안
+- `feature`: 새로운 기능 요청
+- `documentation`: 문서 관련
+- `good first issue`: 초보자 친화적인 이슈
+- `help wanted`: 도움 필요
+
+**Milestone**
+- 버전별로 milestone 생성 (v1.0.0, v1.1.0 등)
+- 해당 버전에 포함될 이슈들을 milestone에 할당
