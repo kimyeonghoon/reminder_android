@@ -17,6 +17,7 @@ import com.reminder.ui.theme.LowPriority
 import com.reminder.ui.theme.MediumPriority
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderCard(
     reminder: ReminderEntity,
