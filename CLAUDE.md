@@ -277,18 +277,18 @@ body (선택사항)
 
 **예시**
 ```
-feat(ui): Add date picker for reminder due date
-fix(database): Fix query returning null values
-refactor(viewmodel): Simplify state management logic
-docs: Update README with build instructions
-chore: Upgrade Gradle to 8.4
+feat(ui): 리마인더 날짜 선택기 추가
+fix(database): null 값 반환 오류 수정
+refactor(viewmodel): 상태 관리 로직 단순화
+docs: README에 빌드 방법 추가
+chore: Gradle 8.4로 업그레이드
 ```
 
 **규칙**
-- subject는 50자 이내로 간결하게
-- subject는 명령형으로 작성 ("Add" not "Added")
+- type과 scope는 영어로 유지
+- subject는 한글로 작성, 50자 이내로 간결하게
 - subject 끝에 마침표 생략
-- body는 72자마다 줄바꿈
+- body는 선택사항, 한글로 작성
 - body에는 "무엇을", "왜" 변경했는지 작성
 
 ### 버전 관리 (Semantic Versioning)
@@ -318,7 +318,7 @@ chore: Upgrade Gradle to 8.4
 ### Pull Request 가이드
 
 **PR 제목**
-- 커밋 메시지 규칙과 동일 (`feat: Add notification feature`)
+- 커밋 메시지 규칙과 동일 (`feat(ui): 알림 기능 추가`)
 
 **PR 설명에 포함할 내용**
 - 변경 사항 요약
