@@ -35,4 +35,11 @@ interface ReminderDao {
 
     @Query("DELETE FROM reminders WHERE isCompleted = 1")
     suspend fun deleteAllCompletedReminders()
+
+    // Sync methods
+    @Query("SELECT * FROM reminders")
+    suspend fun getAllRemindersList(): List<ReminderEntity>
+
+    @Query("SELECT * FROM reminders WHERE updatedAt > :timestamp")
+    suspend fun getRemindersModifiedAfter(timestamp: java.time.LocalDateTime): List<ReminderEntity>
 }
