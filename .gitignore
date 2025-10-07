@@ -1,27 +1,68 @@
-*.iml
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+
+# Gradle files
+.gradle/
 .gradle
-/local.properties
+/build
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# IntelliJ
+*.iml
+.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
+
+# External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 .cxx
-local.properties
-*.apk
-*.ap_
-*.dex
-*.class
-bin/
-gen/
-out/
-.idea/
+
+# Log Files
 *.log
+
+# OS Files
+.DS_Store
 *.swp
-.gradle/
-build/
+
+# Signing files
+*.jks
+*.keystore
+key.properties
+signing.properties
+keystore.properties
+
+# API Keys and sensitive data
+google-services.json
+**/secrets.xml
+**/secret.properties
+.env
+.env.local
+.env.*.local
+apikeys.properties
+
+# Firebase
+**/google-services.json
+firebase-debug.log
+
+# Captures folder
+/captures

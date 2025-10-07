@@ -1,0 +1,13 @@
+## This is an example file. Copy this to 'local.properties' and fill in your actual values.
+## local.properties is git-ignored and will not be committed.
+
+# Android SDK location
+# sdk.dir=/path/to/Android/Sdk
+sdk.dir=/home/YOUR_USERNAME/Android/Sdk
+
+# API Keys (if needed in the future)
+# MAPS_API_KEY=your_google_maps_api_key_here
+# WEATHER_API_KEY=your_weather_api_key_here
+
+# Build configuration
+# Use this for any sensitive build-time configuration

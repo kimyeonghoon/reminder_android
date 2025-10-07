@@ -345,3 +345,94 @@ chore: Gradle 8.4로 업그레이드
 **Milestone**
 - 버전별로 milestone 생성 (v1.0.0, v1.1.0 등)
 - 해당 버전에 포함될 이슈들을 milestone에 할당
+
+## 민감 정보 관리
+
+### 절대 커밋하지 말아야 할 것들
+
+**파일**
+- `*.keystore`, `*.jks` - 앱 서명 키
+- `key.properties` - 서명 설정
+- `google-services.json` - Firebase 설정 (프로덕션)
+- `local.properties` - SDK 경로 및 로컬 설정
+- `.env` 파일 - 환경 변수
+- `secrets.xml` - 민감한 리소스
+
+**코드 내 하드코딩 금지**
+- API 키 (Google Maps, Weather API 등)
+- 비밀번호, 토큰
+- 서버 URL (프로덕션)
+- OAuth 클라이언트 시크릿
+- 데이터베이스 연결 정보
+
+### 민감 정보 관리 방법
+
+**1. local.properties 사용 (권장)**
+```properties
+# local.properties
+MAPS_API_KEY=your_actual_api_key_here
+API_BASE_URL=https://api.example.com
+```
+
+```kotlin
+// build.gradle.kts에서 읽기
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
+
+android {
+    defaultConfig {
+        buildConfigField("String", "MAPS_API_KEY",
+            "\"${localProperties.getProperty("MAPS_API_KEY")}\"")
+    }
+}
+```
+
+**2. BuildConfig 활용**
+```kotlin
+// 코드에서 사용
+val apiKey = BuildConfig.MAPS_API_KEY
+```
+
+**3. 환경 변수 사용**
+```kotlin
+// build.gradle.kts
+buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
+```
+
+**4. strings.xml 분리 (비공개 리소스)**
+```xml
+<!-- app/src/main/res/values/secrets.xml (git-ignored) -->
+<resources>
+    <string name="api_key">your_api_key</string>
+</resources>
+```
+
+### 예시 파일 제공
+
+프로젝트에는 `.example` 파일을 포함:
+- `local.properties.example` - 로컬 설정 예시
+- `key.properties.example` - 서명 설정 예시 (미래)
+- `secrets.xml.example` - 리소스 예시 (미래)
+
+개발자는 `.example` 파일을 복사하여 실제 값으로 채워야 합니다.
+
+### Pre-commit Hook
+
+프로젝트에는 민감 정보 커밋을 방지하는 pre-commit hook이 설정되어 있습니다:
+- `.git/hooks/pre-commit`
+- 민감한 파일 및 패턴 자동 검사
+- 감지 시 커밋 차단
+
+### Claude Code 작업 시 주의사항
+
+**절대 하지 말 것:**
+- 실제 API 키를 코드에 하드코딩
+- `.example` 파일에 실제 값 입력
+- 민감한 파일을 git add
+- `--no-verify` 플래그로 hook 우회
+
+**항상 할 것:**
+- 민감 정보는 local.properties에 저장
+- 예시 파일에는 placeholder만 사용
+- 커밋 전 민감 정보 재확인
+- README에 설정 방법 문서화
