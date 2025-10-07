@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +28,8 @@ fun HomeScreen(
     viewModel: ReminderViewModel,
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
-    onStatisticsClick: () -> Unit = {}
+    onStatisticsClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     val activeReminders by viewModel.activeReminders.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -54,6 +56,9 @@ fun HomeScreen(
                     actions = {
                         IconButton(onClick = onStatisticsClick) {
                             Icon(Icons.Default.BarChart, "Statistics")
+                        }
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(Icons.Default.Settings, "Settings")
                         }
                         IconButton(onClick = { showSearchBar = true }) {
                             Icon(Icons.Default.Search, "Search")

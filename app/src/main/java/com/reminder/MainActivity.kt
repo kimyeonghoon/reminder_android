@@ -10,6 +10,7 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,12 +22,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.HomeScreen
+import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
+import com.reminder.viewmodel.SettingsViewModel
+import com.reminder.viewmodel.SettingsViewModelFactory
 import com.reminder.viewmodel.StatisticsViewModel
 import com.reminder.viewmodel.StatisticsViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -80,20 +85,46 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            ReminderTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ReminderApp()
-                }
-            }
+            ReminderApp()
         }
     }
 }
 
 @Composable
 fun ReminderApp() {
+    val navController = rememberNavController()
+    val app = (navController.context as MainActivity).application as ReminderApplication
+
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModelFactory(app.preferencesRepository)
+    )
+
+    val userPreferences by settingsViewModel.userPreferences.collectAsState()
+
+    // 테마 모드에 따라 다크 테마 여부 결정
+    val darkTheme = when (userPreferences.themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
+    ReminderTheme(
+        darkTheme = darkTheme,
+        dynamicColor = userPreferences.dynamicColor
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ReminderAppContent(settingsViewModel = settingsViewModel)
+        }
+    }
+}
+
+@Composable
+fun ReminderAppContent(
+    settingsViewModel: SettingsViewModel
+) {
     val navController = rememberNavController()
     val app = (navController.context as MainActivity).application as ReminderApplication
 
@@ -117,7 +148,8 @@ fun ReminderApp() {
                     selectedReminder = reminder
                     navController.navigate("add_edit")
                 },
-                onStatisticsClick = { navController.navigate("statistics") }
+                onStatisticsClick = { navController.navigate("statistics") },
+                onSettingsClick = { navController.navigate("settings") }
             )
         }
         composable("add_edit") {
@@ -130,6 +162,12 @@ fun ReminderApp() {
         composable("statistics") {
             StatisticsScreen(
                 viewModel = statisticsViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("settings") {
+            SettingsScreen(
+                viewModel = settingsViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -8,6 +8,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.reminder.auth.AuthManager
 import com.reminder.data.database.ReminderDatabase
+import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.remote.FirestoreDataSource
 import com.reminder.data.repository.ReminderRepository
 import com.reminder.notification.AlarmScheduler
@@ -30,6 +31,7 @@ class ReminderApplication : Application() {
     val repository by lazy { ReminderRepository(database.reminderDao()) }
     val alarmScheduler by lazy { AlarmScheduler(this) }
     val notificationHelper by lazy { NotificationHelper(this) }
+    val preferencesRepository by lazy { PreferencesRepository.create(this) }
 
     override fun onCreate() {
         super.onCreate()
