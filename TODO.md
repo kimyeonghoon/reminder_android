@@ -155,29 +155,36 @@ main (v1.0.0) - 안정 버전
 
 ---
 
-## 🎯 권장 작업 순서
+## 🎯 작업 순서 (반드시 이 순서대로!)
 
-1. **feature/datetime-picker** (v1.1.0)
-   - 가장 기본적이고 필수적인 기능
-   - dueDateTime 필드 활용 가능
+⚠️ **중요: 이 순서를 변경하지 말 것! ChatGPT 아닌 Claude가 작업!**
 
-2. **feature/notification** (v1.2.0)
-   - 날짜/시간 선택이 먼저 필요
-   - 리마인더 앱의 핵심 기능
+### 다음 작업 → **feature/datetime-picker** (v1.1.0)
+- 가장 기본적이고 필수적인 기능
+- dueDateTime 필드 활용 가능
+- **완료 후 자동으로 feature/notification으로 이동**
 
-3. **feature/filter-sort** (v1.4.0)
-   - 사용성 개선
-   - 데이터 많아지면 필수
+### 그 다음 → **feature/notification** (v1.2.0)
+- 날짜/시간 선택이 먼저 필요 (의존성)
+- 리마인더 앱의 핵심 기능
+- **완료 후 자동으로 feature/filter-sort로 이동**
 
-4. **feature/firebase-sync** (v1.3.0-alpha)
-   - 복잡한 기능, 테스트 단계
-   - 기본 기능 안정화 후 진행
+### 3번째 → **feature/filter-sort** (v1.4.0)
+- 사용성 개선
+- 데이터 많아지면 필수
 
-5. **feature/statistics** (v1.5.0)
-   - 부가 기능
+### 4번째 → **feature/firebase-sync** (v1.3.0-alpha)
+- 복잡한 기능, 테스트 단계
+- 기본 기능 안정화 후 진행
+- 3대 기기 동기화
 
-6. **feature/theme-settings** (v1.6.0)
-   - UI 개선
+### 5번째 → **feature/statistics** (v1.5.0)
+- 부가 기능
+- 통계/대시보드
+
+### 6번째 → **feature/theme-settings** (v1.6.0)
+- UI 개선
+- 다크/라이트 모드
 
 ---
 
