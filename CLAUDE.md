@@ -208,6 +208,148 @@ fun ComponentName(
 - 코드가 하는 일을 단순히 반복하는 경우
 - 주석 처리된 코드 (삭제할 것)
 
+### 테스트 주도 개발 (TDD)
+
+**TDD 사이클 (필수)**
+1. **Red** - 실패하는 테스트를 먼저 작성
+2. **Green** - 테스트를 통과하는 최소한의 코드 작성
+3. **Refactor** - 코드 품질 개선 (테스트는 여전히 통과)
+
+**중요: 항상 테스트를 먼저 작성한다!**
+
+**테스트 종류**
+
+**1. Unit Tests (유닛 테스트)**
+- 위치: `app/src/test/java/`
+- 대상: ViewModel, Repository, 비즈니스 로직
+- 프레임워크: JUnit4/5, Mockito, MockK
+- 실행: JVM에서 빠르게 실행
+
+```kotlin
+// 예시: ReminderViewModelTest.kt
+@Test
+fun `리마인더 추가 시 목록에 반영된다`() {
+    // Given
+    val title = "테스트 할일"
+
+    // When
+    viewModel.addReminder(title)
+
+    // Then
+    val reminders = viewModel.allReminders.value
+    assertTrue(reminders.any { it.title == title })
+}
+```
+
+**2. Integration Tests (통합 테스트)**
+- 위치: `app/src/androidTest/java/`
+- 대상: Room Database, Repository와 DAO 통합
+- 프레임워크: AndroidJUnit4, Room Testing
+- 실행: Android 디바이스/에뮬레이터 필요
+
+```kotlin
+// 예시: ReminderDaoTest.kt
+@Test
+fun insertAndGetReminder() = runTest {
+    // Given
+    val reminder = ReminderEntity(title = "테스트")
+
+    // When
+    dao.insertReminder(reminder)
+
+    // Then
+    val loaded = dao.getAllReminders().first()
+    assertEquals(1, loaded.size)
+    assertEquals("테스트", loaded[0].title)
+}
+```
+
+**3. UI Tests (Compose 테스트)**
+- 위치: `app/src/androidTest/java/`
+- 대상: Composable 함수, 화면 상호작용
+- 프레임워크: Compose Testing, Espresso
+- 실행: Android 디바이스/에뮬레이터 필요
+
+```kotlin
+// 예시: HomeScreenTest.kt
+@Test
+fun addButton_whenClicked_navigatesToAddScreen() {
+    composeTestRule.setContent {
+        HomeScreen(viewModel, onAddClick = { navigated = true })
+    }
+
+    composeTestRule.onNodeWithContentDescription("Add Reminder").performClick()
+
+    assertTrue(navigated)
+}
+```
+
+**테스트 작성 규칙**
+
+1. **테스트 이름**: 한글로 작성 가능, 명확하게
+   - `fun 리마인더_추가_시_목록에_반영된다()`
+   - 또는 백틱 사용: `` `리마인더 추가 시 목록에 반영된다` ``
+
+2. **AAA 패턴 사용**
+   - **Arrange** (Given): 테스트 준비
+   - **Act** (When): 실행
+   - **Assert** (Then): 검증
+
+3. **테스트는 독립적**
+   - 다른 테스트에 의존하지 않음
+   - 실행 순서에 무관하게 통과
+
+4. **테스트는 빠르게**
+   - Unit Test는 1초 이내
+   - 느린 테스트는 통합 테스트로 분리
+
+**테스트 커버리지 목표**
+- ViewModel: 80% 이상
+- Repository: 70% 이상
+- DAO: 주요 쿼리 100%
+- UI: 주요 사용자 시나리오
+
+**TDD 워크플로우 예시**
+
+```bash
+# 1. 실패하는 테스트 작성
+# ReminderViewModelTest.kt에 새 테스트 추가
+
+# 2. 테스트 실행 (실패 확인)
+./gradlew test
+
+# 3. 최소 코드 구현
+# ReminderViewModel.kt에 기능 추가
+
+# 4. 테스트 실행 (통과 확인)
+./gradlew test
+
+# 5. 리팩토링
+# 코드 개선, 테스트는 여전히 통과
+
+# 6. 커밋
+git commit -m "feat(viewmodel): 리마인더 추가 기능 구현"
+```
+
+**Mock 사용**
+- Repository를 테스트할 때는 DAO를 Mock
+- ViewModel을 테스트할 때는 Repository를 Mock
+- 실제 객체는 통합 테스트에서만 사용
+
+**테스트 도구**
+```kotlin
+// build.gradle.kts에 이미 포함됨
+testImplementation("junit:junit:4.13.2")
+testImplementation("org.mockito:mockito-core:5.7.0")
+testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+```
+
+**중요: Claude Code 작업 시**
+- 새 기능 구현 요청 시, 테스트부터 작성
+- "테스트 먼저, 구현 나중에" 원칙 엄수
+- 테스트 없는 코드는 불완전한 코드
+
 ### 아키텍처 규칙
 
 **ViewModel**
