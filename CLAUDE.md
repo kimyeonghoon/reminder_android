@@ -1,80 +1,80 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+이 파일은 Claude Code(claude.ai/code)가 이 저장소의 코드 작업 시 참고하는 가이드입니다.
 
-## Project Overview
+## 프로젝트 개요
 
-Reminder is a native Android TODO application built with Kotlin and Jetpack Compose. The app uses MVVM architecture with Room Database for local persistence.
+Reminder는 Kotlin과 Jetpack Compose로 구축된 네이티브 Android TODO 애플리케이션입니다. MVVM 아키텍처를 사용하며 로컬 데이터 저장을 위해 Room Database를 활용합니다.
 
-## Build and Run Commands
+## 빌드 및 실행 명령어
 
-### Build the project
+### 프로젝트 빌드
 ```bash
 ./gradlew build
 ```
 
-### Run tests
+### 테스트 실행
 ```bash
-# Run all unit tests
+# 모든 유닛 테스트 실행
 ./gradlew test
 
-# Run all instrumented tests (requires emulator or device)
+# 모든 계측 테스트 실행 (에뮬레이터 또는 실제 기기 필요)
 ./gradlew connectedAndroidTest
 ```
 
-### Install on device/emulator
+### 디바이스/에뮬레이터에 설치
 ```bash
 ./gradlew installDebug
 ```
 
-### Clean build
+### 클린 빌드
 ```bash
 ./gradlew clean
 ```
 
-## Architecture
+## 아키텍처
 
-### MVVM Pattern
-- **Model**: `data/entity/ReminderEntity.kt` - Room entity with Priority enum
-- **View**: `ui/screen/*` - Compose screens (HomeScreen, AddEditReminderScreen)
-- **ViewModel**: `viewmodel/ReminderViewModel.kt` - State management with Kotlin Flow
+### MVVM 패턴
+- **Model**: `data/entity/ReminderEntity.kt` - Priority enum을 포함한 Room 엔티티
+- **View**: `ui/screen/*` - Compose 화면들 (HomeScreen, AddEditReminderScreen)
+- **ViewModel**: `viewmodel/ReminderViewModel.kt` - Kotlin Flow를 사용한 상태 관리
 
-### Data Layer
-- **Room Database**: Singleton pattern in `ReminderDatabase.kt`
-- **DAO**: `ReminderDao.kt` provides Flow-based queries for reactive updates
-- **Repository**: `ReminderRepository.kt` abstracts data access
-- **Type Converters**: `Converters.kt` handles LocalDateTime and Priority enum conversion
+### 데이터 레이어
+- **Room Database**: `ReminderDatabase.kt`의 싱글톤 패턴
+- **DAO**: `ReminderDao.kt`는 반응형 업데이트를 위한 Flow 기반 쿼리 제공
+- **Repository**: `ReminderRepository.kt`는 데이터 접근을 추상화
+- **Type Converters**: `Converters.kt`는 LocalDateTime과 Priority enum 변환 처리
 
-### Dependency Injection
-Manual DI via `ReminderApplication.kt`:
-- Database and Repository are lazy-initialized at application level
-- ViewModel receives Repository through `ReminderViewModelFactory.kt`
+### 의존성 주입
+`ReminderApplication.kt`를 통한 수동 DI:
+- Database와 Repository는 애플리케이션 레벨에서 lazy 초기화됨
+- ViewModel은 `ReminderViewModelFactory.kt`를 통해 Repository를 받음
 
-### Navigation
-Navigation Compose with two routes:
-- `"home"` - Main list screen
-- `"add_edit"` - Create/edit reminder screen
+### 네비게이션
+두 개의 라우트를 가진 Navigation Compose:
+- `"home"` - 메인 리스트 화면
+- `"add_edit"` - 리마인더 생성/수정 화면
 
-State for editing is managed via `selectedReminder` in MainActivity's ReminderApp composable.
+편집을 위한 상태는 MainActivity의 ReminderApp composable에서 `selectedReminder`로 관리됩니다.
 
-### UI Components
-- **ReminderCard**: Reusable card with checkbox, priority indicator, and delete button
-- **Theme**: Material 3 with dynamic color support (Android 12+)
-- Priority colors: High (Red), Medium (Orange), Low (Green)
+### UI 컴포넌트
+- **ReminderCard**: 체크박스, 우선순위 표시, 삭제 버튼이 있는 재사용 가능한 카드
+- **Theme**: Material 3, Android 12+ 동적 컬러 지원
+- 우선순위 색상: 높음(빨강), 중간(주황), 낮음(초록)
 
-## Key Technical Details
+## 주요 기술 세부사항
 
 - **Min SDK**: 26 (Android 8.0)
 - **Target SDK**: 34 (Android 14)
-- **Kotlin Version**: 1.9.20
+- **Kotlin 버전**: 1.9.20
 - **Compose Compiler**: 1.5.4
-- **KSP**: Used for Room annotation processing
+- **KSP**: Room 어노테이션 프로세싱에 사용
 
-## Database Schema
+## 데이터베이스 스키마
 
-ReminderEntity fields:
-- `id` (Long, auto-generated)
-- `title` (String, required)
+ReminderEntity 필드:
+- `id` (Long, 자동 생성)
+- `title` (String, 필수)
 - `description` (String)
 - `dueDateTime` (LocalDateTime?, nullable)
 - `priority` (Priority enum: LOW, MEDIUM, HIGH)
@@ -82,150 +82,150 @@ ReminderEntity fields:
 - `isCompleted` (Boolean)
 - `createdAt`, `updatedAt` (LocalDateTime)
 
-## Development Notes
+## 개발 참고사항
 
-- Room queries return `Flow<List<ReminderEntity>>` for reactive UI updates
-- StateFlow is used in ViewModel for Compose state management
-- Search filtering is performed in-memory via ViewModel's `getFilteredReminders()`
-- Reminder completion toggle updates `isCompleted` and `updatedAt` fields atomically
+- Room 쿼리는 반응형 UI 업데이트를 위해 `Flow<List<ReminderEntity>>`를 반환
+- ViewModel에서 Compose 상태 관리를 위해 StateFlow 사용
+- 검색 필터링은 ViewModel의 `getFilteredReminders()`를 통해 메모리 내에서 수행
+- 리마인더 완료 토글은 `isCompleted`와 `updatedAt` 필드를 원자적으로 업데이트
 
-## Coding Conventions
+## 코딩 규약
 
-### Naming Conventions
+### 네이밍 규칙
 
-**Classes and Objects**
-- Classes: `PascalCase` (e.g., `ReminderEntity`, `ReminderViewModel`)
-- Interfaces: `PascalCase` with descriptive names (e.g., `ReminderDao`)
-- Objects: `PascalCase` (e.g., `ReminderDatabase.Companion`)
+**클래스와 오브젝트**
+- 클래스: `PascalCase` (예: `ReminderEntity`, `ReminderViewModel`)
+- 인터페이스: `PascalCase`, 설명적인 이름 (예: `ReminderDao`)
+- 오브젝트: `PascalCase` (예: `ReminderDatabase.Companion`)
 
-**Functions and Variables**
-- Functions: `camelCase` with verb prefix (e.g., `getReminderById`, `toggleReminderCompletion`)
-- Variables: `camelCase` (e.g., `selectedReminder`, `isCompleted`)
-- Constants: `UPPER_SNAKE_CASE` (e.g., `DATABASE_NAME`)
-- Private properties: prefix with underscore for backing properties (e.g., `_selectedReminder` for MutableStateFlow)
+**함수와 변수**
+- 함수: `camelCase`, 동사 접두사 사용 (예: `getReminderById`, `toggleReminderCompletion`)
+- 변수: `camelCase` (예: `selectedReminder`, `isCompleted`)
+- 상수: `UPPER_SNAKE_CASE` (예: `DATABASE_NAME`)
+- Private 프로퍼티: backing properties에는 언더스코어 접두사 (예: MutableStateFlow용 `_selectedReminder`)
 
-**Compose Functions**
-- Composable functions: `PascalCase` (e.g., `HomeScreen`, `ReminderCard`)
-- Composable parameters: `camelCase` with `on` prefix for callbacks (e.g., `onAddClick`, `onReminderClick`)
+**Compose 함수**
+- Composable 함수: `PascalCase` (예: `HomeScreen`, `ReminderCard`)
+- Composable 파라미터: `camelCase`, 콜백에는 `on` 접두사 (예: `onAddClick`, `onReminderClick`)
 
-**Files**
-- Match the primary class name (e.g., `ReminderEntity.kt`, `HomeScreen.kt`)
-- Group related small classes in one file when appropriate (e.g., Priority enum in `ReminderEntity.kt`)
+**파일명**
+- 주요 클래스 이름과 일치 (예: `ReminderEntity.kt`, `HomeScreen.kt`)
+- 관련된 작은 클래스들은 적절한 경우 한 파일에 그룹화 (예: `ReminderEntity.kt`의 Priority enum)
 
-### Code Organization
+### 코드 구조
 
-**Package Structure**
+**패키지 구조**
 ```
 com.reminder/
 ├── data/
-│   ├── entity/      # Data models and enums
-│   ├── dao/         # Room DAOs
-│   ├── database/    # Database and converters
-│   └── repository/  # Data repositories
+│   ├── entity/      # 데이터 모델과 enum
+│   ├── dao/         # Room DAO
+│   ├── database/    # 데이터베이스와 컨버터
+│   └── repository/  # 데이터 저장소
 ├── ui/
-│   ├── screen/      # Full screens
-│   ├── components/  # Reusable UI components
-│   └── theme/       # Theme-related files
-└── viewmodel/       # ViewModels and factories
+│   ├── screen/      # 전체 화면
+│   ├── components/  # 재사용 가능한 UI 컴포넌트
+│   └── theme/       # 테마 관련 파일
+└── viewmodel/       # ViewModel과 Factory
 ```
 
-**File Order**
-1. Package declaration
-2. Imports (Android → Third-party → Java/Kotlin → Internal)
-3. Class/Interface declaration
+**파일 내 순서**
+1. 패키지 선언
+2. Import (Android → Third-party → Java/Kotlin → Internal)
+3. 클래스/인터페이스 선언
 4. Companion object
-5. Properties (public → private)
-6. Init blocks
-7. Constructors
-8. Override functions
-9. Public functions
-10. Private functions
+5. 프로퍼티 (public → private)
+6. Init 블록
+7. 생성자
+8. Override 함수
+9. Public 함수
+10. Private 함수
 
-### Kotlin Style
+### Kotlin 스타일
 
-**Nullability**
-- Use nullable types (`?`) explicitly when needed
-- Prefer safe calls (`?.`) over `!!` (avoid `!!` unless absolutely certain)
-- Use `lateinit` for dependency injection, nullable types for optional data
+**Null 허용 여부**
+- 필요할 때 nullable 타입(`?`)을 명시적으로 사용
+- `!!`보다 안전 호출(`?.`) 선호 (절대 확실한 경우가 아니면 `!!` 지양)
+- 의존성 주입에는 `lateinit`, 선택적 데이터에는 nullable 타입 사용
 
-**Immutability**
-- Prefer `val` over `var`
-- Use `data class` copy for updates (e.g., `reminder.copy(isCompleted = true)`)
-- Use immutable collections when possible
+**불변성**
+- `var`보다 `val` 선호
+- 업데이트에는 `data class`의 copy 사용 (예: `reminder.copy(isCompleted = true)`)
+- 가능한 경우 불변 컬렉션 사용
 
-**Flow and Coroutines**
-- All database operations are suspend functions in DAO
-- Use `viewModelScope` for ViewModel coroutines
-- Expose Flow as StateFlow in ViewModel for Compose state management
-- Use `stateIn()` with `SharingStarted.WhileSubscribed(5000)` for Flow to StateFlow conversion
+**Flow와 Coroutines**
+- DAO의 모든 데이터베이스 작업은 suspend 함수
+- ViewModel 코루틴에는 `viewModelScope` 사용
+- Compose 상태 관리를 위해 ViewModel에서 Flow를 StateFlow로 노출
+- Flow를 StateFlow로 변환 시 `stateIn()`과 `SharingStarted.WhileSubscribed(5000)` 사용
 
-### Compose Guidelines
+### Compose 가이드라인
 
-**State Management**
-- State hoisting: pass state and callbacks down from parent
-- Use `remember` for UI state (e.g., text field values)
-- Use ViewModel StateFlow for business logic state
-- Collect StateFlow with `collectAsState()` in composables
+**상태 관리**
+- State hoisting: 부모로부터 상태와 콜백을 전달
+- UI 상태에는 `remember` 사용 (예: 텍스트 필드 값)
+- 비즈니스 로직 상태에는 ViewModel StateFlow 사용
+- Composable에서 `collectAsState()`로 StateFlow 수집
 
-**Composable Structure**
+**Composable 구조**
 ```kotlin
 @Composable
 fun ComponentName(
-    data: DataType,              // Data parameters first
-    modifier: Modifier = Modifier,  // Modifier with default
-    onAction: () -> Unit         // Callbacks last
+    data: DataType,              // 데이터 파라미터 먼저
+    modifier: Modifier = Modifier,  // 기본값을 가진 Modifier
+    onAction: () -> Unit         // 콜백 마지막
 ) {
-    // Implementation
+    // 구현
 }
 ```
 
-**Modifiers**
-- Always accept `modifier: Modifier = Modifier` parameter
-- Apply received modifier first: `modifier.then(localModifiers)`
-- Use semantic modifiers before layout modifiers
+**Modifier 사용**
+- 항상 `modifier: Modifier = Modifier` 파라미터 받기
+- 받은 modifier를 먼저 적용: `modifier.then(localModifiers)`
+- 레이아웃 modifier 전에 의미론적 modifier 사용
 
 ### Room Database
 
-**Entity Design**
-- Always include `createdAt` and `updatedAt` timestamps
-- Use `@PrimaryKey(autoGenerate = true)` for ID fields
-- Provide default values for optional fields
+**엔티티 설계**
+- 항상 `createdAt`과 `updatedAt` 타임스탬프 포함
+- ID 필드에는 `@PrimaryKey(autoGenerate = true)` 사용
+- 선택적 필드에는 기본값 제공
 
-**DAO Queries**
-- Return `Flow<T>` for queries that need reactive updates
-- Return `suspend fun` for single-shot operations (insert/update/delete)
-- Use clear, descriptive query function names
+**DAO 쿼리**
+- 반응형 업데이트가 필요한 쿼리는 `Flow<T>` 반환
+- 단일 작업(insert/update/delete)은 `suspend fun` 반환
+- 명확하고 설명적인 쿼리 함수 이름 사용
 
-### Comments and Documentation
+### 주석과 문서화
 
-**When to Comment**
-- Complex business logic requiring explanation
-- Non-obvious Room queries or Compose logic
-- TODOs with context: `// TODO: Add notification scheduling`
+**주석이 필요한 경우**
+- 설명이 필요한 복잡한 비즈니스 로직
+- 명확하지 않은 Room 쿼리나 Compose 로직
+- 컨텍스트가 있는 TODO: `// TODO: 알림 스케줄링 추가`
 
-**When NOT to Comment**
-- Self-explanatory code
-- Restating what the code does
-- Commented-out code (remove instead)
+**주석이 불필요한 경우**
+- 자명한 코드
+- 코드가 하는 일을 단순히 반복하는 경우
+- 주석 처리된 코드 (삭제할 것)
 
-### Architecture Rules
+### 아키텍처 규칙
 
 **ViewModel**
-- Never pass Context to ViewModel
-- No Android framework dependencies (except lifecycle)
-- Expose immutable state (StateFlow) to UI
-- All business logic lives here
+- ViewModel에 Context를 절대 전달하지 않기
+- Android 프레임워크 의존성 금지 (lifecycle 제외)
+- UI에 불변 상태(StateFlow) 노출
+- 모든 비즈니스 로직은 여기에 위치
 
 **Repository**
-- Single source of truth for data access
-- Abstracts data sources (Room, network, etc.)
-- Simple passthrough for this app, but prepared for expansion
+- 데이터 접근의 단일 진실 공급원(Single Source of Truth)
+- 데이터 소스 추상화 (Room, network 등)
+- 현재 앱에서는 단순 패스스루이지만 확장 가능하도록 준비
 
 **UI Layer**
-- Screens should be stateless except for local UI state
-- No direct database or repository access
-- All business logic delegated to ViewModel
+- 화면은 로컬 UI 상태를 제외하고 무상태(stateless)여야 함
+- 직접적인 데이터베이스나 저장소 접근 금지
+- 모든 비즈니스 로직은 ViewModel에 위임
 
-**Dependency Flow**
+**의존성 흐름**
 - UI → ViewModel → Repository → DAO → Database
-- Never skip layers or create circular dependencies
+- 레이어를 건너뛰거나 순환 의존성을 만들지 않기
