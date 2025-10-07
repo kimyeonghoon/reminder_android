@@ -26,8 +26,14 @@ import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.theme.ReminderTheme
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     // 알림 권한 요청 런처 (Android 13+)
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -40,6 +46,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 초기 동기화 (백그라운드)
+        val app = application as ReminderApplication
+        activityScope.launch {
+            app.syncManager.initialSync()
+        }
 
         // Android 13+ 알림 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
