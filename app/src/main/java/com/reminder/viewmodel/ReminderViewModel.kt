@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
+import com.reminder.notification.AlarmScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class ReminderViewModel(private val repository: ReminderRepository) : ViewModel() {
+class ReminderViewModel(
+    private val repository: ReminderRepository,
+    private val alarmScheduler: AlarmScheduler
+) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -46,24 +50,49 @@ class ReminderViewModel(private val repository: ReminderRepository) : ViewModel(
                 category = category
             )
             repository.insertReminder(reminder)
+
+            // 알람 스케줄링
+            if (dueDateTime != null) {
+                alarmScheduler.schedule(reminder)
+            }
         }
     }
 
     fun updateReminder(reminder: ReminderEntity) {
         viewModelScope.launch {
-            repository.updateReminder(reminder.copy(updatedAt = LocalDateTime.now()))
+            val updatedReminder = reminder.copy(updatedAt = LocalDateTime.now())
+            repository.updateReminder(updatedReminder)
+
+            // 알람 재스케줄링
+            alarmScheduler.cancel(updatedReminder.id)
+            if (updatedReminder.dueDateTime != null && !updatedReminder.isCompleted) {
+                alarmScheduler.schedule(updatedReminder)
+            }
         }
     }
 
     fun deleteReminder(reminder: ReminderEntity) {
         viewModelScope.launch {
             repository.deleteReminder(reminder)
+            // 알람 취소
+            alarmScheduler.cancel(reminder.id)
         }
     }
 
     fun toggleReminderCompletion(reminder: ReminderEntity) {
         viewModelScope.launch {
             repository.toggleReminderCompletion(reminder)
+
+            // 완료되면 알람 취소, 완료 취소되면 알람 재스케줄링
+            if (!reminder.isCompleted) {
+                // 완료로 변경되면 알람 취소
+                alarmScheduler.cancel(reminder.id)
+            } else {
+                // 완료 취소되면 알람 재스케줄링
+                if (reminder.dueDateTime != null) {
+                    alarmScheduler.schedule(reminder)
+                }
+            }
         }
     }
 

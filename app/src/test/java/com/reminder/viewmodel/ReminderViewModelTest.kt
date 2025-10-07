@@ -23,6 +23,7 @@ class ReminderViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var repository: ReminderRepository
+    private lateinit var alarmScheduler: com.reminder.notification.AlarmScheduler
     private lateinit var viewModel: ReminderViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -30,13 +31,14 @@ class ReminderViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = mock()
+        alarmScheduler = mock()
 
         // Mock repository flows
         whenever(repository.allReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.activeReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.completedReminders).thenReturn(flowOf(emptyList()))
 
-        viewModel = ReminderViewModel(repository)
+        viewModel = ReminderViewModel(repository, alarmScheduler)
     }
 
     @After
