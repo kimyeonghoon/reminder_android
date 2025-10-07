@@ -9,8 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.ui.components.DatePickerField
+import com.reminder.ui.components.TimePickerField
 import com.reminder.viewmodel.ReminderViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +27,8 @@ fun AddEditReminderScreen(
     var description by remember { mutableStateOf(reminder?.description ?: "") }
     var category by remember { mutableStateOf(reminder?.category ?: "") }
     var priority by remember { mutableStateOf(reminder?.priority ?: Priority.MEDIUM) }
+    var selectedDate by remember { mutableStateOf(reminder?.dueDateTime?.toLocalDate()) }
+    var selectedTime by remember { mutableStateOf(reminder?.dueDateTime?.toLocalTime()) }
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -100,17 +106,36 @@ fun AddEditReminderScreen(
                 }
             }
 
+            DatePickerField(
+                selectedDate = selectedDate,
+                onDateSelected = { selectedDate = it }
+            )
+
+            TimePickerField(
+                selectedTime = selectedTime,
+                onTimeSelected = { selectedTime = it }
+            )
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
+                        val dueDateTime = if (selectedDate != null && selectedTime != null) {
+                            LocalDateTime.of(selectedDate, selectedTime)
+                        } else if (selectedDate != null) {
+                            LocalDateTime.of(selectedDate, LocalTime.of(0, 0))
+                        } else {
+                            null
+                        }
+
                         if (reminder == null) {
                             viewModel.addReminder(
                                 title = title,
                                 description = description,
                                 priority = priority,
-                                category = category
+                                category = category,
+                                dueDateTime = dueDateTime
                             )
                         } else {
                             viewModel.updateReminder(
@@ -119,6 +144,7 @@ fun AddEditReminderScreen(
                                     description = description,
                                     priority = priority,
                                     category = category,
+                                    dueDateTime = dueDateTime,
                                     updatedAt = LocalDateTime.now()
                                 )
                             )
