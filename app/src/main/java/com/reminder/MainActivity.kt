@@ -23,9 +23,12 @@ import androidx.navigation.compose.rememberNavController
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.HomeScreen
+import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
+import com.reminder.viewmodel.StatisticsViewModel
+import com.reminder.viewmodel.StatisticsViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -92,11 +95,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReminderApp() {
     val navController = rememberNavController()
+    val app = (navController.context as MainActivity).application as ReminderApplication
+
     val viewModel: ReminderViewModel = viewModel(
-        factory = ReminderViewModelFactory(
-            (navController.context as MainActivity).application as ReminderApplication
-        )
+        factory = ReminderViewModelFactory(app)
     )
+
+    val statisticsViewModel: StatisticsViewModel = viewModel(
+        factory = StatisticsViewModelFactory(app.repository)
+    )
+
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
     NavHost(navController = navController, startDestination = "home") {
@@ -108,13 +116,20 @@ fun ReminderApp() {
                 onReminderClick = { reminder ->
                     selectedReminder = reminder
                     navController.navigate("add_edit")
-                }
+                },
+                onStatisticsClick = { navController.navigate("statistics") }
             )
         }
         composable("add_edit") {
             AddEditReminderScreen(
                 viewModel = viewModel,
                 reminder = selectedReminder,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("statistics") {
+            StatisticsScreen(
+                viewModel = statisticsViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
