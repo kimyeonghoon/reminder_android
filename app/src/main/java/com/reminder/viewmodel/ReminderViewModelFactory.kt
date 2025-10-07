@@ -8,7 +8,10 @@ class ReminderViewModelFactory(private val application: ReminderApplication) : V
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReminderViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ReminderViewModel(application.repository) as T
+            return ReminderViewModel(
+                application.repository,
+                application.alarmScheduler
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
