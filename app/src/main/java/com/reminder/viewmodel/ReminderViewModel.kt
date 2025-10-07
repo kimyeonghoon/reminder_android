@@ -118,4 +118,69 @@ class ReminderViewModel(
                     it.category.contains(query, ignoreCase = true)
         }
     }
+
+    fun filterByPriority(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterPriority): List<ReminderEntity> {
+        return when (filter) {
+            com.reminder.data.entity.FilterPriority.ALL -> reminders
+            com.reminder.data.entity.FilterPriority.HIGH -> reminders.filter { it.priority == Priority.HIGH }
+            com.reminder.data.entity.FilterPriority.MEDIUM -> reminders.filter { it.priority == Priority.MEDIUM }
+            com.reminder.data.entity.FilterPriority.LOW -> reminders.filter { it.priority == Priority.LOW }
+        }
+    }
+
+    fun filterByDate(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterDate): List<ReminderEntity> {
+        val now = LocalDateTime.now()
+        val today = now.toLocalDate()
+        val startOfWeek = today.minusDays(today.dayOfWeek.value.toLong() - 1)
+        val endOfWeek = startOfWeek.plusDays(6)
+        val startOfMonth = today.withDayOfMonth(1)
+        val endOfMonth = today.withDayOfMonth(today.lengthOfMonth())
+
+        return when (filter) {
+            com.reminder.data.entity.FilterDate.ALL -> reminders
+            com.reminder.data.entity.FilterDate.TODAY -> reminders.filter {
+                it.dueDateTime?.toLocalDate() == today
+            }
+            com.reminder.data.entity.FilterDate.THIS_WEEK -> reminders.filter {
+                val dueDate = it.dueDateTime?.toLocalDate()
+                dueDate != null && !dueDate.isBefore(startOfWeek) && !dueDate.isAfter(endOfWeek)
+            }
+            com.reminder.data.entity.FilterDate.THIS_MONTH -> reminders.filter {
+                val dueDate = it.dueDateTime?.toLocalDate()
+                dueDate != null && !dueDate.isBefore(startOfMonth) && !dueDate.isAfter(endOfMonth)
+            }
+            com.reminder.data.entity.FilterDate.OVERDUE -> reminders.filter {
+                it.dueDateTime != null && it.dueDateTime.isBefore(now) && !it.isCompleted
+            }
+        }
+    }
+
+    fun sortReminders(reminders: List<ReminderEntity>, sortOption: com.reminder.data.entity.SortOption): List<ReminderEntity> {
+        return when (sortOption) {
+            com.reminder.data.entity.SortOption.BY_DATE_ASC -> reminders.sortedWith(
+                compareBy(nullsLast()) { it.dueDateTime }
+            )
+            com.reminder.data.entity.SortOption.BY_DATE_DESC -> reminders.sortedWith(
+                compareByDescending(nullsLast()) { it.dueDateTime }
+            )
+            com.reminder.data.entity.SortOption.BY_PRIORITY_HIGH_FIRST -> reminders.sortedBy {
+                when (it.priority) {
+                    Priority.HIGH -> 0
+                    Priority.MEDIUM -> 1
+                    Priority.LOW -> 2
+                }
+            }
+            com.reminder.data.entity.SortOption.BY_PRIORITY_LOW_FIRST -> reminders.sortedBy {
+                when (it.priority) {
+                    Priority.LOW -> 0
+                    Priority.MEDIUM -> 1
+                    Priority.HIGH -> 2
+                }
+            }
+            com.reminder.data.entity.SortOption.BY_TITLE_ASC -> reminders.sortedBy { it.title.lowercase() }
+            com.reminder.data.entity.SortOption.BY_TITLE_DESC -> reminders.sortedByDescending { it.title.lowercase() }
+            com.reminder.data.entity.SortOption.BY_CREATED_ASC -> reminders.sortedBy { it.createdAt }
+            com.reminder.data.entity.SortOption.BY_CREATED_DESC -> reminders.sortedByDescending { it.createdAt }
+        }
+    }
 }
