@@ -146,7 +146,12 @@ fun AddEditReminderScreen(
                 recurrenceDaysOfWeek = recurrenceDaysOfWeek,
                 onDaysOfWeekChange = { recurrenceDaysOfWeek = it },
                 recurrenceEndDate = recurrenceEndDate,
-                onEndDateChange = { recurrenceEndDate = it }
+                onEndDateChange = { recurrenceEndDate = it },
+                startDateTime = if (selectedDate != null && selectedTime != null) {
+                    LocalDateTime.of(selectedDate, selectedTime)
+                } else {
+                    null
+                }
             )
 
             Spacer(modifier = Modifier.weight(1f))

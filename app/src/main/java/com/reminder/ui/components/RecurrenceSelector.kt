@@ -7,10 +7,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.reminder.data.entity.RecurrencePattern
+import com.reminder.notification.AlarmScheduler
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
@@ -28,10 +30,28 @@ fun RecurrenceSelector(
     onDaysOfWeekChange: (Set<DayOfWeek>?) -> Unit,
     recurrenceEndDate: LocalDateTime?,
     onEndDateChange: (LocalDateTime?) -> Unit,
+    startDateTime: LocalDateTime? = null,
     modifier: Modifier = Modifier
 ) {
     var patternExpanded by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
+
+    // 미리보기 계산
+    val previewOccurrences = remember(recurrencePattern, recurrenceInterval, recurrenceDaysOfWeek, recurrenceEndDate, startDateTime) {
+        if (startDateTime != null && recurrencePattern != RecurrencePattern.NONE) {
+            val daysOfWeekString = recurrenceDaysOfWeek?.joinToString(",") { it.name }
+            AlarmScheduler.calculateNextOccurrences(
+                startDateTime = startDateTime,
+                pattern = recurrencePattern,
+                interval = recurrenceInterval,
+                daysOfWeek = daysOfWeekString,
+                endDate = recurrenceEndDate,
+                count = 5
+            )
+        } else {
+            emptyList()
+        }
+    }
 
     Column(
         modifier = modifier,
@@ -155,6 +175,36 @@ fun RecurrenceSelector(
                         TextButton(onClick = { showEndDatePicker = true }) {
                             Text("Set end date")
                         }
+                    }
+                }
+            }
+        }
+
+        // 미리보기
+        if (previewOccurrences.isNotEmpty()) {
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+            Text(
+                text = "Next occurrences:",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    previewOccurrences.forEach { occurrence ->
+                        Text(
+                            text = occurrence.format(DateTimeFormatter.ofPattern("MMM dd, yyyy - HH:mm")),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }

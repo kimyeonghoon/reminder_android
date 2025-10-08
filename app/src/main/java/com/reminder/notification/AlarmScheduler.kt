@@ -30,6 +30,35 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_RECURRENCE_END_DATE = "recurrence_end_date"
 
         /**
+         * 다음 N개의 반복 일정 계산 (미리보기용)
+         */
+        fun calculateNextOccurrences(
+            startDateTime: LocalDateTime,
+            pattern: RecurrencePattern,
+            interval: Int,
+            daysOfWeek: String?,
+            endDate: LocalDateTime?,
+            count: Int = 5
+        ): List<LocalDateTime> {
+            if (pattern == RecurrencePattern.NONE) return emptyList()
+
+            val occurrences = mutableListOf<LocalDateTime>()
+            var current = startDateTime
+
+            repeat(count) {
+                val next = calculateNextOccurrence(current, pattern, interval, daysOfWeek, endDate)
+                if (next != null) {
+                    occurrences.add(next)
+                    current = next
+                } else {
+                    return occurrences // 종료 날짜 도달 또는 더 이상 없음
+                }
+            }
+
+            return occurrences
+        }
+
+        /**
          * 다음 반복 알람 시간 계산
          */
         fun calculateNextOccurrence(
