@@ -1,5 +1,7 @@
 package com.reminder.ui.screen
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +24,7 @@ import com.reminder.ui.components.ReminderCard
 import com.reminder.ui.components.SortDropdown
 import com.reminder.viewmodel.ReminderViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: ReminderViewModel,
@@ -124,12 +126,18 @@ fun HomeScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(sortedReminders, key = { it.id }) { reminder ->
+                    items(
+                        items = sortedReminders,
+                        key = { it.id }
+                    ) { reminder ->
                         ReminderCard(
                             reminder = reminder,
                             onCheckedChange = { viewModel.toggleReminderCompletion(reminder) },
                             onDelete = { viewModel.deleteReminder(reminder) },
-                            onClick = { onReminderClick(reminder) }
+                            onClick = { onReminderClick(reminder) },
+                            modifier = Modifier.animateItemPlacement(
+                                animationSpec = tween(durationMillis = 300)
+                            )
                         )
                     }
                 }
