@@ -73,11 +73,15 @@ fun HomeScreen(
             }
         }
     ) { paddingValues ->
-        // Apply filters and sorting
-        val searchFiltered = viewModel.getFilteredReminders(activeReminders, searchQuery)
-        val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
-        val dateFiltered = viewModel.filterByDate(priorityFiltered, selectedDateFilter)
-        val sortedReminders = viewModel.sortReminders(dateFiltered, selectedSortOption)
+        // Apply filters and sorting with derivedStateOf to avoid unnecessary recompositions
+        val sortedReminders by remember {
+            derivedStateOf {
+                val searchFiltered = viewModel.getFilteredReminders(activeReminders, searchQuery)
+                val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
+                val dateFiltered = viewModel.filterByDate(priorityFiltered, selectedDateFilter)
+                viewModel.sortReminders(dateFiltered, selectedSortOption)
+            }
+        }
 
         Column(
             modifier = Modifier

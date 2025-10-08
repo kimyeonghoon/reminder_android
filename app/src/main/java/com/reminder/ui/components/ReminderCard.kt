@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -17,6 +18,8 @@ import com.reminder.ui.theme.LowPriority
 import com.reminder.ui.theme.MediumPriority
 import java.time.format.DateTimeFormatter
 
+private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderCard(
@@ -26,6 +29,10 @@ fun ReminderCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // 불필요한 재구성 방지를 위해 람다를 remember로 캐싱
+    val onCheckChange = remember(reminder.id) {
+        { checked: Boolean -> onCheckedChange(checked) }
+    }
     Card(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
@@ -41,7 +48,7 @@ fun ReminderCard(
         ) {
             Checkbox(
                 checked = reminder.isCompleted,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckChange
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -77,7 +84,7 @@ fun ReminderCard(
                 reminder.dueDateTime?.let { dueDate ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = dueDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                        text = dueDate.format(dateTimeFormatter),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
