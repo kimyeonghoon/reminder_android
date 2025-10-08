@@ -19,12 +19,21 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromPriority(value: Priority): String {
-        return value.name
+    fun fromPriority(value: Priority): Int {
+        return when (value) {
+            Priority.LOW -> 1
+            Priority.MEDIUM -> 2
+            Priority.HIGH -> 3
+        }
     }
 
     @TypeConverter
-    fun toPriority(value: String): Priority {
-        return Priority.valueOf(value)
+    fun toPriority(value: Int): Priority {
+        return when (value) {
+            1 -> Priority.LOW
+            2 -> Priority.MEDIUM
+            3 -> Priority.HIGH
+            else -> Priority.MEDIUM
+        }
     }
 }
