@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 우선순위 색상 (다크 모드) -->
+    <color name="priority_high">#EF5350</color>
+    <color name="priority_medium">#FFA726</color>
+    <color name="priority_low">#66BB6A</color>
+
+    <!-- 위젯 색상 (다크 모드) -->
+    <color name="widget_background">#1E1E1E</color>
+    <color name="widget_text_primary">#E0E0E0</color>
+    <color name="widget_text_secondary">#BDBDBD</color>
+    <color name="widget_divider">#424242</color>
+</resources>

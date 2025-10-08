@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Reminder</string>
+    <string name="app_name">할 일 관리</string>
 
     <!-- 위젯 관련 -->
     <string name="widget_refresh">새로고침</string>
-    <string name="widget_no_reminders">리마인더가 없습니다</string>
+    <string name="widget_no_reminders">할 일이 없습니다</string>
     <string name="widget_description">할 일 목록 위젯</string>
+    <string name="widget_complete">완료</string>
 </resources>

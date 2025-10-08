@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-10-08
+
+### Added
+- **홈 화면 위젯**: 홈 화면에서 할 일 목록 바로 확인
+- **위젯 완료 체크**: 위젯에서 직접 할 일 완료 처리 가능
+- **다크 모드 위젯**: 시스템 다크 모드 자동 대응
+- **실시간 자동 업데이트**: 할 일 추가/수정/삭제 시 위젯 자동 갱신
+
+### Changed
+- **앱 이름**: "Reminder" → "할 일 관리" (70대 사용자 친화)
+- **위젯 텍스트**: 모든 영어 표시를 한글로 변경
+
+### Features
+- **위젯 정렬**: 마감일 가까운 순서로 자동 정렬 (최대 10개 표시)
+- **우선순위 표시**: 좌측 색상 바로 우선순위 구분
+- **새로고침 버튼**: 수동 위젯 업데이트 지원
+- **앱 바로가기**: 위젯 항목 클릭 시 앱 열기
+
+### Technical Details
+- TDD 방식 구현 (테스트 우선 작성)
+- RemoteViewsService/Factory 패턴
+- AppWidgetProvider 커스텀 구현
+- Repository 변경 자동 감지 및 위젯 업데이트
+
 ## [1.0.0] - 2025-10-07
 
 ### Added
@@ -38,4 +62,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Min SDK 26 (Android 8.0)
 - Target SDK 34 (Android 14)
 
+[1.7.0]: https://github.com/yourusername/reminder/releases/tag/v1.7.0
 [1.0.0]: https://github.com/yourusername/reminder/releases/tag/v1.0.0

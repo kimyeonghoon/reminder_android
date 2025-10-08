@@ -10,6 +10,9 @@ import android.net.Uri
 import android.widget.RemoteViews
 import com.reminder.MainActivity
 import com.reminder.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * 리마인더 위젯 Provider
@@ -19,6 +22,7 @@ class ReminderWidgetProvider : AppWidgetProvider() {
     companion object {
         const val ACTION_UPDATE_WIDGET = "com.reminder.widget.ACTION_UPDATE_WIDGET"
         const val ACTION_ITEM_CLICK = "com.reminder.widget.ACTION_ITEM_CLICK"
+        const val ACTION_TOGGLE_COMPLETE = "com.reminder.widget.ACTION_TOGGLE_COMPLETE"
 
         /**
          * 모든 위젯 업데이트
@@ -44,7 +48,9 @@ class ReminderWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
 
-        when (intent.action) {
+        val action = intent.getStringExtra("action") ?: intent.action
+
+        when (action) {
             ACTION_UPDATE_WIDGET -> {
                 // 모든 위젯 업데이트
                 val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -55,7 +61,7 @@ class ReminderWidgetProvider : AppWidgetProvider() {
                     updateWidget(context, appWidgetManager, widgetId)
                 }
             }
-            ACTION_ITEM_CLICK -> {
+            "open", ACTION_ITEM_CLICK -> {
                 // 리마인더 아이템 클릭 시 앱 열기
                 val reminderId = intent.getLongExtra("reminder_id", -1)
                 val appIntent = Intent(context, MainActivity::class.java).apply {
@@ -65,6 +71,28 @@ class ReminderWidgetProvider : AppWidgetProvider() {
                     }
                 }
                 context.startActivity(appIntent)
+            }
+            "toggle_complete", ACTION_TOGGLE_COMPLETE -> {
+                // 체크박스 클릭 시 완료 처리
+                val reminderId = intent.getLongExtra("reminder_id", -1)
+                if (reminderId != -1L) {
+                    handleToggleComplete(context, reminderId)
+                }
+            }
+        }
+    }
+
+    private fun handleToggleComplete(context: Context, reminderId: Long) {
+        // Repository를 통해 완료 상태 토글
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val app = context.applicationContext as com.reminder.ReminderApplication
+                val reminder = app.repository.getReminderById(reminderId)
+                if (reminder != null) {
+                    app.repository.toggleReminderCompletion(reminder)
+                }
+            } catch (e: Exception) {
+                // 에러 무시
             }
         }
     }

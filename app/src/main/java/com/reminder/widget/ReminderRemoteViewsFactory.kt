@@ -74,11 +74,22 @@ class ReminderRemoteViewsFactory(
         }
         remoteViews.setInt(R.id.widget_item_priority_indicator, "setBackgroundColor", priorityColor)
 
-        // 클릭 시 앱 열기를 위한 Fill-in Intent 설정
-        val fillInIntent = Intent().apply {
+        // 체크박스 상태 설정 (항상 체크 안 됨 - 완료된 항목은 목록에 없음)
+        remoteViews.setBoolean(R.id.widget_item_checkbox, "setChecked", false)
+
+        // 컨테이너 클릭 시 앱 열기를 위한 Fill-in Intent
+        val containerFillInIntent = Intent().apply {
             putExtra("reminder_id", item.id)
+            putExtra("action", "open")
         }
-        remoteViews.setOnClickFillInIntent(R.id.widget_item_container, fillInIntent)
+        remoteViews.setOnClickFillInIntent(R.id.widget_item_container, containerFillInIntent)
+
+        // 체크박스 클릭 시 완료 처리를 위한 Fill-in Intent
+        val checkboxFillInIntent = Intent().apply {
+            putExtra("reminder_id", item.id)
+            putExtra("action", "toggle_complete")
+        }
+        remoteViews.setOnClickFillInIntent(R.id.widget_item_checkbox, checkboxFillInIntent)
 
         return remoteViews
     }
