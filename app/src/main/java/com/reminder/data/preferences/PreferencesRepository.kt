@@ -20,6 +20,7 @@ class PreferencesRepository(
     private object PreferencesKeys {
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     }
 
     val userPreferences: Flow<UserPreferences> = dataStore.data
@@ -39,10 +40,12 @@ class PreferencesRepository(
             }
 
             val dynamicColor = preferences[PreferencesKeys.DYNAMIC_COLOR] ?: true
+            val onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
 
             UserPreferences(
                 themeMode = themeMode,
-                dynamicColor = dynamicColor
+                dynamicColor = dynamicColor,
+                onboardingCompleted = onboardingCompleted
             )
         }
 
@@ -55,6 +58,12 @@ class PreferencesRepository(
     suspend fun updateDynamicColor(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.DYNAMIC_COLOR] = enabled
+        }
+    }
+
+    suspend fun updateOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
         }
     }
 

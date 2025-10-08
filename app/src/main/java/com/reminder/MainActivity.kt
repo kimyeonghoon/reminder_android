@@ -25,6 +25,7 @@ import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.HomeScreen
+import com.reminder.ui.screen.OnboardingScreen
 import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
 fun ReminderApp() {
     val navController = rememberNavController()
     val app = (navController.context as MainActivity).application as ReminderApplication
+    val scope = rememberCoroutineScope()
 
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModelFactory(app.preferencesRepository)
@@ -116,7 +118,18 @@ fun ReminderApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ReminderAppContent(settingsViewModel = settingsViewModel)
+            // 온보딩 완료 여부에 따라 화면 분기
+            if (!userPreferences.onboardingCompleted) {
+                OnboardingScreen(
+                    onFinished = {
+                        scope.launch {
+                            settingsViewModel.setOnboardingCompleted()
+                        }
+                    }
+                )
+            } else {
+                ReminderAppContent(settingsViewModel = settingsViewModel)
+            }
         }
     }
 }

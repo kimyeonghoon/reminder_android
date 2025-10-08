@@ -33,4 +33,10 @@ class SettingsViewModel(
             preferencesRepository.updateDynamicColor(enabled)
         }
     }
+
+    fun setOnboardingCompleted() {
+        viewModelScope.launch {
+            preferencesRepository.updateOnboardingCompleted(true)
+        }
+    }
 }
