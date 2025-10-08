@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical"
+    android:background="@android:color/transparent">
+
+    <!-- 우선순위 표시 -->
+    <View
+        android:id="@+id/widget_item_priority_indicator"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="12dp"
+        android:background="@color/priority_medium" />
+
+    <!-- 텍스트 영역 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- 제목 -->
+        <TextView
+            android:id="@+id/widget_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="할 일"
+            android:textSize="16sp"
+            android:textColor="@color/widget_text_primary"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <!-- 마감일 -->
+        <TextView
+            android:id="@+id/widget_item_due_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2025-10-10 10:00"
+            android:textSize="12sp"
+            android:textColor="@color/widget_text_secondary"
+            android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+</LinearLayout>

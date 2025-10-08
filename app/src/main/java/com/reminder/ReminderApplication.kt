@@ -16,9 +16,12 @@ import com.reminder.notification.AlarmScheduler
 import com.reminder.notification.NotificationHelper
 import com.reminder.sync.SyncManager
 import com.reminder.sync.SyncWorker
+import com.reminder.widget.ReminderWidgetProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -57,6 +60,9 @@ class ReminderApplication : Application() {
 
         // 주기적 동기화 워커 설정
         setupSyncWorker()
+
+        // 위젯 업데이트 관찰
+        setupWidgetUpdates()
     }
 
     private fun setupSyncWorker() {
@@ -75,5 +81,17 @@ class ReminderApplication : Application() {
             ExistingPeriodicWorkPolicy.KEEP,
             syncWorkRequest
         )
+    }
+
+    /**
+     * Repository 변경사항을 관찰하여 위젯 자동 업데이트
+     */
+    private fun setupWidgetUpdates() {
+        repository.allReminders
+            .onEach {
+                // 리마인더 목록이 변경될 때마다 위젯 업데이트
+                ReminderWidgetProvider.updateAllWidgets(this)
+            }
+            .launchIn(applicationScope)
     }
 }
