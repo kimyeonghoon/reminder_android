@@ -12,7 +12,7 @@ import com.reminder.data.entity.ReminderEntity
 
 @Database(
     entities = [ReminderEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -59,6 +59,16 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 반복 리마인더 컬럼 추가
+                db.execSQL("ALTER TABLE reminders ADD COLUMN recurrencePattern TEXT NOT NULL DEFAULT 'NONE'")
+                db.execSQL("ALTER TABLE reminders ADD COLUMN recurrenceInterval INTEGER NOT NULL DEFAULT 1")
+                db.execSQL("ALTER TABLE reminders ADD COLUMN recurrenceDaysOfWeek TEXT")
+                db.execSQL("ALTER TABLE reminders ADD COLUMN recurrenceEndDate TEXT")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -66,7 +76,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance

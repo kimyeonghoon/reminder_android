@@ -2,6 +2,7 @@ package com.reminder.data.database
 
 import androidx.room.TypeConverter
 import com.reminder.data.entity.Priority
+import com.reminder.data.entity.RecurrencePattern
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -34,6 +35,20 @@ class Converters {
             2 -> Priority.MEDIUM
             3 -> Priority.HIGH
             else -> Priority.MEDIUM
+        }
+    }
+
+    @TypeConverter
+    fun fromRecurrencePattern(value: RecurrencePattern): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toRecurrencePattern(value: String): RecurrencePattern {
+        return try {
+            RecurrencePattern.valueOf(value)
+        } catch (e: Exception) {
+            RecurrencePattern.NONE
         }
     }
 }
