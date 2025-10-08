@@ -3,6 +3,7 @@ package com.reminder.data.repository
 import com.reminder.data.dao.ReminderDao
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.remote.RemoteDataSource
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,9 +15,10 @@ import kotlinx.coroutines.launch
  */
 class FirebaseSyncRepository(
     private val reminderDao: ReminderDao,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    private val syncScope = CoroutineScope(Dispatchers.IO)
+    private val syncScope = CoroutineScope(ioDispatcher)
 
     // 로컬 데이터 Flow
     val allReminders: Flow<List<ReminderEntity>> = reminderDao.getAllReminders()
