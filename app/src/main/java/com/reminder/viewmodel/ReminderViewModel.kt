@@ -39,7 +39,11 @@ class ReminderViewModel(
         description: String = "",
         dueDateTime: LocalDateTime? = null,
         priority: Priority = Priority.MEDIUM,
-        category: String = ""
+        category: String = "",
+        recurrencePattern: com.reminder.data.entity.RecurrencePattern = com.reminder.data.entity.RecurrencePattern.NONE,
+        recurrenceInterval: Int = 1,
+        recurrenceDaysOfWeek: String? = null,
+        recurrenceEndDate: LocalDateTime? = null
     ) {
         viewModelScope.launch {
             val reminder = ReminderEntity(
@@ -47,7 +51,11 @@ class ReminderViewModel(
                 description = description,
                 dueDateTime = dueDateTime,
                 priority = priority,
-                category = category
+                category = category,
+                recurrencePattern = recurrencePattern,
+                recurrenceInterval = recurrenceInterval,
+                recurrenceDaysOfWeek = recurrenceDaysOfWeek,
+                recurrenceEndDate = recurrenceEndDate
             )
             repository.insertReminder(reminder)
 

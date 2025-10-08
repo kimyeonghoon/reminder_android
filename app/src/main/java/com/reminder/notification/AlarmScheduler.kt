@@ -6,9 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 class AlarmScheduler(private val context: Context) {
 
@@ -21,6 +24,92 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_REMINDER_TITLE = "reminder_title"
         const val EXTRA_REMINDER_DESCRIPTION = "reminder_description"
         const val EXTRA_REMINDER_PRIORITY = "reminder_priority"
+        const val EXTRA_RECURRENCE_PATTERN = "recurrence_pattern"
+        const val EXTRA_RECURRENCE_INTERVAL = "recurrence_interval"
+        const val EXTRA_RECURRENCE_DAYS_OF_WEEK = "recurrence_days_of_week"
+        const val EXTRA_RECURRENCE_END_DATE = "recurrence_end_date"
+
+        /**
+         * 다음 반복 알람 시간 계산
+         */
+        fun calculateNextOccurrence(
+            currentDateTime: LocalDateTime,
+            pattern: RecurrencePattern,
+            interval: Int,
+            daysOfWeek: String?,
+            endDate: LocalDateTime?
+        ): LocalDateTime? {
+            var nextDateTime = when (pattern) {
+                RecurrencePattern.NONE -> return null
+
+                RecurrencePattern.DAILY -> {
+                    currentDateTime.plusDays(interval.toLong())
+                }
+
+                RecurrencePattern.WEEKLY -> {
+                    if (daysOfWeek.isNullOrEmpty()) {
+                        // 요일 지정 없으면 interval 주 후
+                        currentDateTime.plusWeeks(interval.toLong())
+                    } else {
+                        // 지정된 요일 중 다음 요일 찾기
+                        val selectedDays = daysOfWeek.split(",")
+                            .mapNotNull { dayName ->
+                                try {
+                                    DayOfWeek.valueOf(dayName.trim())
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            }
+                            .sortedBy { it.value }
+
+                        if (selectedDays.isEmpty()) {
+                            currentDateTime.plusWeeks(interval.toLong())
+                        } else {
+                            findNextDayOfWeek(currentDateTime, selectedDays, interval)
+                        }
+                    }
+                }
+
+                RecurrencePattern.MONTHLY -> {
+                    currentDateTime.plusMonths(interval.toLong())
+                }
+
+                RecurrencePattern.YEARLY -> {
+                    currentDateTime.plusYears(interval.toLong())
+                }
+            }
+
+            // 종료 날짜 확인
+            if (endDate != null && nextDateTime.isAfter(endDate)) {
+                return null
+            }
+
+            return nextDateTime
+        }
+
+        /**
+         * 지정된 요일 중 다음 발생 요일 찾기
+         */
+        private fun findNextDayOfWeek(
+            currentDateTime: LocalDateTime,
+            daysOfWeek: List<DayOfWeek>,
+            interval: Int
+        ): LocalDateTime {
+            val currentDayOfWeek = currentDateTime.dayOfWeek
+
+            // 이번 주에서 다음 요일 찾기
+            val nextDayInWeek = daysOfWeek.firstOrNull { it.value > currentDayOfWeek.value }
+
+            return if (nextDayInWeek != null) {
+                // 이번 주에 다음 요일이 있음
+                currentDateTime.with(TemporalAdjusters.next(nextDayInWeek))
+            } else {
+                // 다음 주기로 이동
+                val firstDay = daysOfWeek.first()
+                currentDateTime.plusWeeks(interval.toLong())
+                    .with(TemporalAdjusters.nextOrSame(firstDay))
+            }
+        }
     }
 
     /**
@@ -47,6 +136,13 @@ class AlarmScheduler(private val context: Context) {
             putExtra(EXTRA_REMINDER_TITLE, reminder.title)
             putExtra(EXTRA_REMINDER_DESCRIPTION, reminder.description)
             putExtra(EXTRA_REMINDER_PRIORITY, reminder.priority.name)
+            // 반복 정보 추가
+            putExtra(EXTRA_RECURRENCE_PATTERN, reminder.recurrencePattern.name)
+            putExtra(EXTRA_RECURRENCE_INTERVAL, reminder.recurrenceInterval)
+            putExtra(EXTRA_RECURRENCE_DAYS_OF_WEEK, reminder.recurrenceDaysOfWeek)
+            reminder.recurrenceEndDate?.let {
+                putExtra(EXTRA_RECURRENCE_END_DATE, it.toString())
+            }
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -114,4 +210,5 @@ class AlarmScheduler(private val context: Context) {
             true
         }
     }
+
 }

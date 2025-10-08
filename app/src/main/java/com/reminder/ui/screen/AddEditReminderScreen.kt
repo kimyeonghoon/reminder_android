@@ -8,10 +8,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.reminder.data.entity.Priority
+import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.ui.components.DatePickerField
+import com.reminder.ui.components.RecurrenceSelector
 import com.reminder.ui.components.TimePickerField
 import com.reminder.viewmodel.ReminderViewModel
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -30,6 +33,23 @@ fun AddEditReminderScreen(
     var selectedDate by remember { mutableStateOf(reminder?.dueDateTime?.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(reminder?.dueDateTime?.toLocalTime()) }
     var expanded by remember { mutableStateOf(false) }
+
+    // 반복 설정
+    var recurrencePattern by remember { mutableStateOf(reminder?.recurrencePattern ?: RecurrencePattern.NONE) }
+    var recurrenceInterval by remember { mutableStateOf(reminder?.recurrenceInterval ?: 1) }
+    var recurrenceDaysOfWeek by remember {
+        mutableStateOf(
+            reminder?.recurrenceDaysOfWeek?.split(",")
+                ?.mapNotNull { dayName ->
+                    try {
+                        DayOfWeek.valueOf(dayName.trim())
+                    } catch (e: Exception) {
+                        null
+                    }
+                }?.toSet()
+        )
+    }
+    var recurrenceEndDate by remember { mutableStateOf(reminder?.recurrenceEndDate) }
 
     Scaffold(
         topBar = {
@@ -116,6 +136,19 @@ fun AddEditReminderScreen(
                 onTimeSelected = { selectedTime = it }
             )
 
+            Divider()
+
+            RecurrenceSelector(
+                recurrencePattern = recurrencePattern,
+                onPatternChange = { recurrencePattern = it },
+                recurrenceInterval = recurrenceInterval,
+                onIntervalChange = { recurrenceInterval = it },
+                recurrenceDaysOfWeek = recurrenceDaysOfWeek,
+                onDaysOfWeekChange = { recurrenceDaysOfWeek = it },
+                recurrenceEndDate = recurrenceEndDate,
+                onEndDateChange = { recurrenceEndDate = it }
+            )
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
@@ -129,13 +162,20 @@ fun AddEditReminderScreen(
                             null
                         }
 
+                        val daysOfWeekString = recurrenceDaysOfWeek
+                            ?.joinToString(",") { it.name }
+
                         if (reminder == null) {
                             viewModel.addReminder(
                                 title = title,
                                 description = description,
                                 priority = priority,
                                 category = category,
-                                dueDateTime = dueDateTime
+                                dueDateTime = dueDateTime,
+                                recurrencePattern = recurrencePattern,
+                                recurrenceInterval = recurrenceInterval,
+                                recurrenceDaysOfWeek = daysOfWeekString,
+                                recurrenceEndDate = recurrenceEndDate
                             )
                         } else {
                             viewModel.updateReminder(
@@ -145,7 +185,11 @@ fun AddEditReminderScreen(
                                     priority = priority,
                                     category = category,
                                     dueDateTime = dueDateTime,
-                                    updatedAt = LocalDateTime.now()
+                                    updatedAt = LocalDateTime.now(),
+                                    recurrencePattern = recurrencePattern,
+                                    recurrenceInterval = recurrenceInterval,
+                                    recurrenceDaysOfWeek = daysOfWeekString,
+                                    recurrenceEndDate = recurrenceEndDate
                                 )
                             )
                         }
