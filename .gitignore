@@ -53,6 +53,7 @@ keystore.properties
 
 # API Keys and sensitive data
 google-services.json
+!**/*.example
 **/secrets.xml
 **/secret.properties
 .env
@@ -62,6 +63,7 @@ apikeys.properties
 
 # Firebase
 **/google-services.json
+!**/google-services.json.example
 firebase-debug.log
 
 # Captures folder

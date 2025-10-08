@@ -10,6 +10,7 @@ import com.reminder.auth.AuthManager
 import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.remote.FirestoreDataSource
+import com.reminder.data.repository.FirebaseSyncRepository
 import com.reminder.data.repository.ReminderRepository
 import com.reminder.notification.AlarmScheduler
 import com.reminder.notification.NotificationHelper
@@ -28,7 +29,17 @@ class ReminderApplication : Application() {
     val authManager by lazy { AuthManager() }
     val remoteDataSource by lazy { FirestoreDataSource(authManager) }
     val syncManager by lazy { SyncManager(this, database.reminderDao(), remoteDataSource) }
-    val repository by lazy { ReminderRepository(database.reminderDao()) }
+
+    // Firebase 동기화가 통합된 Repository
+    val repository by lazy {
+        ReminderRepository(database.reminderDao(), remoteDataSource)
+    }
+
+    // Firebase 동기화 전용 Repository (직접 접근이 필요한 경우)
+    val firebaseSyncRepository by lazy {
+        FirebaseSyncRepository(database.reminderDao(), remoteDataSource)
+    }
+
     val alarmScheduler by lazy { AlarmScheduler(this) }
     val notificationHelper by lazy { NotificationHelper(this) }
     val preferencesRepository by lazy { PreferencesRepository.create(this) }
