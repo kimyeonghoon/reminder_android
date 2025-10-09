@@ -8,16 +8,19 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.reminder.data.dao.ReminderDao
+import com.reminder.data.dao.SubTaskDao
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class],
-    version = 4,
+    entities = [ReminderEntity::class, SubTask::class],
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ReminderDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
+    abstract fun subTaskDao(): SubTaskDao
 
     companion object {
         @Volatile
@@ -81,6 +84,27 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 서브태스크 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS subtasks (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        reminderId INTEGER NOT NULL,
+                        title TEXT NOT NULL,
+                        isCompleted INTEGER NOT NULL DEFAULT 0,
+                        position INTEGER NOT NULL DEFAULT 0,
+                        createdAt TEXT NOT NULL,
+                        FOREIGN KEY(reminderId) REFERENCES reminders(id) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+
+                // 서브태스크 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_subtasks_reminderId ON subtasks(reminderId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_subtasks_reminderId_position ON subtasks(reminderId, position)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -88,7 +112,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                 INSTANCE = instance
                 instance
