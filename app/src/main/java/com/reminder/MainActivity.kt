@@ -186,6 +186,7 @@ fun ReminderAppContent(
         composable("settings") {
             SettingsScreen(
                 viewModel = settingsViewModel,
+                backupManager = app.backupManager,
                 onNavigateBack = { navController.popBackStack() },
                 onHelpClick = { navController.navigate("help") }
             )

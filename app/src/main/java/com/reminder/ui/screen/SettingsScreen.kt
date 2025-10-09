@@ -1,5 +1,7 @@
 package com.reminder.ui.screen
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -11,23 +13,121 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.reminder.backup.BackupManager
 import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.viewmodel.SettingsViewModel
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    backupManager: BackupManager,
     onNavigateBack: () -> Unit,
     onHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val userPreferences by viewModel.userPreferences.collectAsState()
+
+    var showBackupSuccessDialog by remember { mutableStateOf(false) }
+    var showBackupErrorDialog by remember { mutableStateOf(false) }
+    var showRestoreSuccessDialog by remember { mutableStateOf(false) }
+    var showRestoreErrorDialog by remember { mutableStateOf(false) }
+
+    // 백업 파일 생성 launcher
+    val backupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val success = backupManager.exportToJson(uri)
+                if (success) {
+                    showBackupSuccessDialog = true
+                } else {
+                    showBackupErrorDialog = true
+                }
+            }
+        }
+    }
+
+    // 복원 파일 선택 launcher
+    val restoreLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val success = backupManager.importFromJson(uri)
+                if (success) {
+                    showRestoreSuccessDialog = true
+                } else {
+                    showRestoreErrorDialog = true
+                }
+            }
+        }
+    }
+
+    // 성공/실패 다이얼로그
+    if (showBackupSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { showBackupSuccessDialog = false },
+            title = { Text("백업 완료") },
+            text = { Text("데이터가 성공적으로 백업되었습니다.") },
+            confirmButton = {
+                TextButton(onClick = { showBackupSuccessDialog = false }) {
+                    Text("확인")
+                }
+            }
+        )
+    }
+
+    if (showBackupErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showBackupErrorDialog = false },
+            title = { Text("백업 실패") },
+            text = { Text("데이터 백업 중 오류가 발생했습니다.") },
+            confirmButton = {
+                TextButton(onClick = { showBackupErrorDialog = false }) {
+                    Text("확인")
+                }
+            }
+        )
+    }
+
+    if (showRestoreSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestoreSuccessDialog = false },
+            title = { Text("복원 완료") },
+            text = { Text("데이터가 성공적으로 복원되었습니다.") },
+            confirmButton = {
+                TextButton(onClick = { showRestoreSuccessDialog = false }) {
+                    Text("확인")
+                }
+            }
+        )
+    }
+
+    if (showRestoreErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestoreErrorDialog = false },
+            title = { Text("복원 실패") },
+            text = { Text("데이터 복원 중 오류가 발생했습니다.") },
+            confirmButton = {
+                TextButton(onClick = { showRestoreErrorDialog = false }) {
+                    Text("확인")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -84,6 +184,23 @@ fun SettingsScreen(
             )
 
             Divider()
+
+            // 백업/복원 섹션 (간편 모드에서는 숨기기)
+            if (!userPreferences.simpleMode) {
+                BackupRestoreSection(
+                    onBackupClick = {
+                        val timestamp = LocalDateTime.now().format(
+                            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
+                        )
+                        backupLauncher.launch("reminder_backup_$timestamp.json")
+                    },
+                    onRestoreClick = {
+                        restoreLauncher.launch("application/json")
+                    }
+                )
+
+                Divider()
+            }
 
             // 도움말
             Button(
@@ -311,5 +428,56 @@ private fun getFontSizeLabel(fontSize: FontSize): String {
         FontSize.NORMAL -> "보통"
         FontSize.LARGE -> "크게"
         FontSize.EXTRA_LARGE -> "아주 크게"
+    }
+}
+
+@Composable
+fun BackupRestoreSection(
+    onBackupClick: () -> Unit,
+    onRestoreClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "데이터 관리",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Text(
+            text = "리마인더와 서브태스크를 JSON 파일로 백업하거나 복원할 수 있습니다.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                onClick = onBackupClick,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("백업")
+            }
+
+            OutlinedButton(
+                onClick = onRestoreClick,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("복원")
+            }
+        }
+
+        Text(
+            text = "⚠️ 복원 시 기존 데이터와 병합됩니다.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }

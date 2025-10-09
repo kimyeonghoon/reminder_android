@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.reminder.BuildConfig
 import com.reminder.auth.AuthManager
+import com.reminder.backup.BackupManager
 import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.remote.FirestoreDataSource
@@ -48,6 +49,7 @@ class ReminderApplication : Application() {
     val alarmScheduler by lazy { AlarmScheduler(this) }
     val notificationHelper by lazy { NotificationHelper(this) }
     val preferencesRepository by lazy { PreferencesRepository.create(this) }
+    val backupManager by lazy { BackupManager(this, database) }
 
     override fun onCreate() {
         super.onCreate()
