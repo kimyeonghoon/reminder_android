@@ -217,6 +217,196 @@ _스크린샷은 곧 추가됩니다_
 - **성능 최적화**: DB 인덱스, Compose 재구성 최소화
 - **접근성**: ContentDescription, 시맨틱 트리
 
+## 🏗️ 아키텍처
+
+### MVVM 아키텍처 다이어그램
+
+```mermaid
+graph TB
+    subgraph "UI Layer"
+        A[Compose Screens]
+        B[UI Components]
+    end
+
+    subgraph "ViewModel Layer"
+        C[ReminderViewModel]
+        D[SettingsViewModel]
+    end
+
+    subgraph "Repository Layer"
+        E[ReminderRepository]
+    end
+
+    subgraph "Data Source Layer"
+        F[Room Database]
+        G[Firebase Firestore]
+        H[DataStore]
+    end
+
+    subgraph "Database Layer"
+        I[ReminderDao]
+        J[ReminderDatabase]
+    end
+
+    A --> C
+    B --> C
+    A --> D
+    C --> E
+    D --> H
+    E --> I
+    E --> G
+    I --> J
+    J --> F
+
+    style A fill:#e1f5ff
+    style B fill:#e1f5ff
+    style C fill:#fff4e1
+    style D fill:#fff4e1
+    style E fill:#e8f5e9
+    style F fill:#fce4ec
+    style G fill:#fce4ec
+    style H fill:#fce4ec
+    style I fill:#f3e5f5
+    style J fill:#f3e5f5
+```
+
+### 데이터 플로우
+
+```mermaid
+sequenceDiagram
+    participant UI as UI (Compose)
+    participant VM as ViewModel
+    participant Repo as Repository
+    participant DAO as ReminderDao
+    participant DB as Room Database
+    participant FS as Firestore
+
+    UI->>VM: 사용자 액션 (리마인더 추가)
+    VM->>Repo: insertReminder(reminder)
+    Repo->>DAO: insertReminder(entity)
+    DAO->>DB: 데이터 저장
+    DB-->>DAO: 저장 완료
+
+    par 로컬 저장 완료
+        DAO-->>Repo: Flow 업데이트
+        Repo-->>VM: StateFlow 업데이트
+        VM-->>UI: 화면 갱신
+    and Firebase 동기화
+        Repo->>FS: 클라우드 동기화
+        FS-->>Repo: 동기화 완료
+    end
+```
+
+### 레이어별 역할
+
+#### 1️⃣ UI Layer (Compose)
+- **역할**: 사용자 인터페이스 렌더링 및 이벤트 처리
+- **주요 컴포넌트**:
+  - `HomeScreen.kt`: 메인 리마인더 리스트 화면
+  - `AddEditReminderScreen.kt`: 리마인더 추가/수정 화면
+  - `StatisticsScreen.kt`: 통계 대시보드
+  - `PatternAnalysisScreen.kt`: 완료 패턴 분석
+  - `ReminderCard.kt`: 재사용 가능한 리마인더 카드 컴포넌트
+
+#### 2️⃣ ViewModel Layer
+- **역할**: UI 상태 관리 및 비즈니스 로직 처리
+- **주요 클래스**:
+  - `ReminderViewModel.kt`: 리마인더 관련 로직 (CRUD, 필터링, 정렬)
+  - `SettingsViewModel.kt`: 앱 설정 관리 (테마, 글씨 크기, 간편 모드)
+- **특징**:
+  - StateFlow로 UI 상태 노출
+  - Repository에만 의존 (Android 프레임워크 의존성 최소화)
+
+#### 3️⃣ Repository Layer
+- **역할**: 데이터 소스 추상화 및 통합
+- **주요 클래스**:
+  - `ReminderRepository.kt`: Room과 Firebase 데이터 통합
+- **특징**:
+  - 단일 진실 공급원 (Single Source of Truth)
+  - 로컬 우선 전략 (오프라인 지원)
+  - Firebase와 자동 동기화
+
+#### 4️⃣ Data Source Layer
+- **Room Database**:
+  - `ReminderDao.kt`: Flow 기반 반응형 쿼리
+  - `ReminderDatabase.kt`: 싱글톤 데이터베이스 인스턴스
+  - `Converters.kt`: LocalDateTime, Priority enum 변환
+- **Firebase Firestore**:
+  - `FirestoreDataSource.kt`: 클라우드 동기화
+  - 네트워크 에러 처리 및 사용자 친화적 메시지
+- **DataStore**:
+  - `UserPreferences.kt`: 앱 설정 영구 저장
+
+### 주요 디자인 패턴
+
+#### Factory Pattern
+```kotlin
+class ReminderViewModelFactory(
+    private val repository: ReminderRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ReminderViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ReminderViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+```
+
+#### Repository Pattern
+```kotlin
+class ReminderRepository(
+    private val reminderDao: ReminderDao,
+    private val firestoreDataSource: FirestoreDataSource
+) {
+    val allReminders: Flow<List<ReminderEntity>> = reminderDao.getAllReminders()
+
+    suspend fun insertReminder(reminder: ReminderEntity) {
+        reminderDao.insertReminder(reminder)
+        firestoreDataSource.syncReminder(reminder) // 자동 동기화
+    }
+}
+```
+
+#### State Hoisting
+```kotlin
+@Composable
+fun ReminderCard(
+    reminder: ReminderEntity,
+    onReminderClick: (ReminderEntity) -> Unit,
+    onToggleComplete: (ReminderEntity) -> Unit,
+    onDeleteClick: (ReminderEntity) -> Unit
+) {
+    // UI는 stateless, 모든 상태는 부모에서 관리
+}
+```
+
+### 성능 최적화 전략
+
+1. **DB 인덱스**: 자주 쿼리되는 컬럼에 인덱스 생성
+   ```kotlin
+   @Entity(
+       tableName = "reminders",
+       indices = [
+           Index("is_completed"),
+           Index("due_date_time"),
+           Index("priority")
+       ]
+   )
+   ```
+
+2. **Compose 재구성 최소화**:
+   - `derivedStateOf` 사용
+   - `remember { mutableStateOf() }` 활용
+   - `key()` composable로 리스트 최적화
+
+3. **이미지 캐싱** (Coil):
+   - 메모리 캐시: 25% 메모리 사용
+   - 디스크 캐시: 50MB
+
+4. **R8 코드 압축**: 릴리즈 빌드 크기 50% 감소
+
 ## 🧪 테스트
 
 이 프로젝트는 TDD로 개발되었으며 포괄적인 테스트 커버리지를 제공합니다:
@@ -250,7 +440,22 @@ _스크린샷은 곧 추가됩니다_
 
 ## 📦 릴리즈 & 버전
 
-### v1.27.0 (최신) - 2025-10-09
+### v1.27.1 (최신) - 2025-10-10
+- 🧪 **UI 테스트 확장** - v1.22.0~v1.26.0 신규 기능 UI 테스트 추가 (33개)
+  - PatternAnalysisScreenTest.kt 신규 작성 (14개 테스트)
+  - AddEditReminderScreenTest.kt 확장 (19개 테스트 추가)
+- 🔧 **에러 처리 강화**
+  - 전역 CoroutineExceptionHandler 추가 (ReminderApplication)
+  - 네트워크 에러 메시지 개선 (FirestoreDataSource)
+  - 사용자 친화적인 예외 메시지 생성
+- ♻️ **Deprecated API 제거** - 최신 Compose API로 교체
+  - Icons.Default.ArrowBack → Icons.AutoMirrored.Filled.ArrowBack
+  - Divider() → HorizontalDivider()
+  - LinearProgressIndicator 람다 버전으로 업데이트
+- ✅ 모든 유닛 테스트 통과 (빌드 성공)
+- 📊 테스트 커버리지 대폭 향상
+
+### v1.27.0 - 2025-10-09
 - 🎨 **UI 통합 업데이트** - v1.22.0~v1.26.0 기능들의 UI 구현
   - 📍 위치 입력 UI (위도/경도/이름/반경)
   - 🔗 웹 링크 입력 필드

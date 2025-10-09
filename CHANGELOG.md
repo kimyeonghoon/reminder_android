@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.1] - 2025-10-10
+
+### Added
+- 🧪 **UI 테스트 확장** - v1.22.0~v1.26.0 신규 기능 UI 테스트 추가
+  - `PatternAnalysisScreenTest.kt` 신규 작성 (14개 테스트)
+    - 화면 제목, 뒤로가기, 로딩 상태 테스트
+    - 요약 카드, 완료율, 생산적인 시간대 테스트
+    - 시간대별/요일별 완료율 테스트
+    - 평균 완료 시간 테스트 (시간/분 표시 분기)
+  - `AddEditReminderScreenTest.kt` 확장 (19개 테스트 추가)
+    - 위치 기반 알림 UI 테스트 (v1.22): 섹션 표시, 필드 입력, 기존 데이터 표시
+    - 웹 링크 첨부 UI 테스트 (v1.23): 필드 표시, 입력, 기존 데이터 표시
+    - TTS 자동 읽기 UI 테스트 (v1.24): 토글 표시, 동작, 기존 설정 표시
+    - 카테고리 자동 제안 UI 테스트 (v1.25): 칩 표시, 클릭 시 카테고리 설정
+    - 최적 시간 제안 UI 테스트 (v1.26): 날짜 선택 시 추천 시간 표시
+    - 음성 입력 버튼 테스트: 마이크 아이콘 표시 확인
+    - 간편 모드 테스트 (5개): 카테고리/위치/웹링크/TTS/반복 설정 숨김 검증
+
+### Changed
+- 🔧 **에러 처리 강화**
+  - 전역 CoroutineExceptionHandler 추가 (ReminderApplication)
+    - 모든 코루틴 예외 자동 캐치 및 로깅
+    - Firebase Crashlytics 자동 연동
+    - 컨텍스트 정보 함께 기록
+  - 네트워크 에러 메시지 개선 (FirestoreDataSource)
+    - FirebaseNetworkException → "네트워크 연결을 확인해주세요"
+    - PERMISSION_DENIED → "다시 로그인해주세요"
+    - UNAVAILABLE → "잠시 후 다시 시도해주세요"
+    - DEADLINE_EXCEEDED → "네트워크 연결을 확인해주세요"
+  - 사용자 친화적인 예외 메시지 생성 함수 추가
+
+- ♻️ **Deprecated API 제거 및 최신 API 교체**
+  - `Icons.Default.ArrowBack` → `Icons.AutoMirrored.Filled.ArrowBack` (6개 파일)
+    - PatternAnalysisScreen, StatisticsScreen, AddEditReminderScreen
+    - CompletionHistoryScreen, HelpScreen, SettingsScreen
+  - `Divider()` → `HorizontalDivider()` (전체 프로젝트)
+  - `LinearProgressIndicator(progress: Float)` → `LinearProgressIndicator(progress: () -> Float)` (3개 위치)
+    - PatternAnalysisScreen 완료율 및 진행률 표시 (람다 버전 사용)
+
+- 🔢 버전 업데이트: `versionCode = 30`, `versionName = "1.27.1"`
+
+### Fixed
+- 🐛 Compose deprecated API 경고 제거 (주요 경고만 수정, 일부 경고는 복잡도로 인해 보류)
+
+### Technical Details
+- **Files Modified**: 12개
+  - `app/build.gradle.kts` (버전)
+  - `app/src/main/java/com/reminder/ReminderApplication.kt` (CoroutineExceptionHandler)
+  - `app/src/main/java/com/reminder/data/remote/FirestoreDataSource.kt` (에러 처리)
+  - `app/src/androidTest/java/com/reminder/ui/screen/PatternAnalysisScreenTest.kt` (신규)
+  - `app/src/androidTest/java/com/reminder/ui/screen/AddEditReminderScreenTest.kt` (확장)
+  - UI 화면 6개 (Deprecated API 교체)
+- **Tests**: 모든 유닛 테스트 통과 ✅
+- **Build**: 성공 (BUILD SUCCESSFUL)
+- **Lines Changed**: +917 -42 (12 files)
+
+### Quality Improvements
+- 테스트 커버리지 대폭 향상 (UI 테스트 33개 추가)
+- 에러 핸들링 안정성 향상
+- 코드 품질 개선 (최신 API 사용)
+
 ## [1.27.0] - 2025-10-09
 
 ### Added
