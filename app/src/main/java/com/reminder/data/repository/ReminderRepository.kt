@@ -83,4 +83,9 @@ class ReminderRepository(
     ): List<ReminderEntity> {
         return reminderDao.getCompletedRemindersInRange(startDate, endDate)
     }
+
+    // 카테고리 제안을 위한 메서드
+    suspend fun getAllRemindersList(): List<ReminderEntity> {
+        return reminderDao.getAllRemindersList()
+    }
 }
