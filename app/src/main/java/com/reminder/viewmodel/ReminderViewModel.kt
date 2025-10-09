@@ -16,7 +16,8 @@ import java.time.LocalDateTime
 
 class ReminderViewModel(
     private val repository: ReminderRepository,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val database: com.reminder.data.database.ReminderDatabase
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -190,5 +191,55 @@ class ReminderViewModel(
             com.reminder.data.entity.SortOption.BY_CREATED_ASC -> reminders.sortedBy { it.createdAt }
             com.reminder.data.entity.SortOption.BY_CREATED_DESC -> reminders.sortedByDescending { it.createdAt }
         }
+    }
+
+    // ==================== 서브태스크 관련 함수 ====================
+
+    /**
+     * 리마인더의 서브태스크 목록 조회
+     */
+    fun getSubTasks(reminderId: Long) =
+        database.subTaskDao().getSubTasksByReminderId(reminderId)
+
+    /**
+     * 서브태스크 추가
+     */
+    fun addSubTask(reminderId: Long, title: String) {
+        viewModelScope.launch {
+            val subTask = com.reminder.data.entity.SubTask(
+                reminderId = reminderId,
+                title = title,
+                position = database.subTaskDao().getTotalSubTasksCount(reminderId)
+            )
+            database.subTaskDao().insert(subTask)
+        }
+    }
+
+    /**
+     * 서브태스크 완료 상태 토글
+     */
+    fun toggleSubTaskCompletion(subTask: com.reminder.data.entity.SubTask) {
+        viewModelScope.launch {
+            val updated = subTask.copy(isCompleted = !subTask.isCompleted)
+            database.subTaskDao().update(updated)
+        }
+    }
+
+    /**
+     * 서브태스크 삭제
+     */
+    fun deleteSubTask(subTask: com.reminder.data.entity.SubTask) {
+        viewModelScope.launch {
+            database.subTaskDao().delete(subTask)
+        }
+    }
+
+    /**
+     * 서브태스크 진행률 계산 (완료/전체)
+     */
+    suspend fun getSubTaskProgress(reminderId: Long): Pair<Int, Int> {
+        val completed = database.subTaskDao().getCompletedSubTasksCount(reminderId)
+        val total = database.subTaskDao().getTotalSubTasksCount(reminderId)
+        return Pair(completed, total)
     }
 }

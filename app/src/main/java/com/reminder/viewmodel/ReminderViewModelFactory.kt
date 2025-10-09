@@ -10,7 +10,8 @@ class ReminderViewModelFactory(private val application: ReminderApplication) : V
             @Suppress("UNCHECKED_CAST")
             return ReminderViewModel(
                 application.repository,
-                application.alarmScheduler
+                application.alarmScheduler,
+                application.database
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
