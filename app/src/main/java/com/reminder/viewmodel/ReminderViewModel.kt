@@ -2,6 +2,7 @@ package com.reminder.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reminder.analytics.AnalyticsHelper
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
@@ -13,11 +14,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class ReminderViewModel(
     private val repository: ReminderRepository,
     private val alarmScheduler: AlarmScheduler,
-    private val database: com.reminder.data.database.ReminderDatabase
+    private val database: com.reminder.data.database.ReminderDatabase,
+    private val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -64,6 +67,13 @@ class ReminderViewModel(
             if (dueDateTime != null) {
                 alarmScheduler.schedule(reminder)
             }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logReminderCreated(
+                priority = priority,
+                category = category,
+                hasRecurrence = recurrencePattern != com.reminder.data.entity.RecurrencePattern.NONE
+            )
         }
     }
 
@@ -77,6 +87,9 @@ class ReminderViewModel(
             if (updatedReminder.dueDateTime != null && !updatedReminder.isCompleted) {
                 alarmScheduler.schedule(updatedReminder)
             }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logReminderEdited()
         }
     }
 
@@ -85,6 +98,9 @@ class ReminderViewModel(
             repository.deleteReminder(reminder)
             // 알람 취소
             alarmScheduler.cancel(reminder.id)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logReminderDeleted()
         }
     }
 
@@ -96,6 +112,12 @@ class ReminderViewModel(
             if (!reminder.isCompleted) {
                 // 완료로 변경되면 알람 취소
                 alarmScheduler.cancel(reminder.id)
+
+                // Analytics 이벤트 로깅 (완료 시에만)
+                val daysUntilDue = reminder.dueDateTime?.let {
+                    ChronoUnit.DAYS.between(LocalDateTime.now(), it).toInt()
+                }
+                analyticsHelper.logReminderCompleted(daysUntilDue)
             } else {
                 // 완료 취소되면 알람 재스케줄링
                 if (reminder.dueDateTime != null) {
@@ -117,6 +139,11 @@ class ReminderViewModel(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+
+        // Analytics 이벤트 로깅 (검색어가 비어있지 않을 때만)
+        if (query.isNotBlank()) {
+            analyticsHelper.logSearchPerformed(query.length)
+        }
     }
 
     fun getFilteredReminders(reminders: List<ReminderEntity>, query: String): List<ReminderEntity> {
@@ -220,6 +247,9 @@ class ReminderViewModel(
                 position = database.subTaskDao().getTotalSubTasksCount(reminderId)
             )
             database.subTaskDao().insert(subTask)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logSubtaskAdded()
         }
     }
 
@@ -282,6 +312,9 @@ class ReminderViewModel(
                 imageUri = imageUri
             )
             database.reminderImageDao().insert(image)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logImageAttached()
         }
     }
 
@@ -356,6 +389,9 @@ class ReminderViewModel(
                 defaultRecurrenceInterval = defaultRecurrenceInterval
             )
             database.reminderTemplateDao().insert(template)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logTemplateCreated()
         }
     }
 
@@ -379,6 +415,9 @@ class ReminderViewModel(
             if (dueDateTime != null) {
                 alarmScheduler.schedule(reminder.copy(id = reminderId))
             }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logTemplateUsed(template.name)
         }
     }
 
@@ -423,6 +462,9 @@ class ReminderViewModel(
                 repository.deleteReminder(reminder)
                 alarmScheduler.cancel(reminder.id)
             }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logBatchOperation("delete", reminders.size)
         }
     }
 
@@ -437,6 +479,9 @@ class ReminderViewModel(
                     alarmScheduler.cancel(reminder.id)
                 }
             }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logBatchOperation("complete", reminders.size)
         }
     }
 

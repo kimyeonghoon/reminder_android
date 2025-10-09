@@ -99,7 +99,7 @@ fun ReminderApp() {
     val scope = rememberCoroutineScope()
 
     val settingsViewModel: SettingsViewModel = viewModel(
-        factory = SettingsViewModelFactory(app.preferencesRepository)
+        factory = SettingsViewModelFactory(app.preferencesRepository, app.analyticsHelper)
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()

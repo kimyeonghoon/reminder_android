@@ -10,8 +10,11 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.reminder.BuildConfig
+import com.reminder.analytics.AnalyticsHelper
+import com.reminder.analytics.CrashlyticsHelper
 import com.reminder.auth.AuthManager
 import com.reminder.backup.BackupManager
 import com.reminder.data.database.ReminderDatabase
@@ -54,6 +57,8 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val notificationHelper by lazy { NotificationHelper(this) }
     val preferencesRepository by lazy { PreferencesRepository.create(this) }
     val backupManager by lazy { BackupManager(this, database) }
+    val analyticsHelper by lazy { AnalyticsHelper(FirebaseAnalytics.getInstance(this)) }
+    val crashlyticsHelper by lazy { CrashlyticsHelper(FirebaseCrashlytics.getInstance()) }
 
     override fun onCreate() {
         super.onCreate()
@@ -74,6 +79,9 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
         // 위젯 업데이트 관찰
         setupWidgetUpdates()
+
+        // 초기 사용자 속성 설정
+        setupInitialUserProperties()
     }
 
     /**
@@ -127,6 +135,30 @@ class ReminderApplication : Application(), ImageLoaderFactory {
                 ReminderWidgetProvider.updateAllWidgets(this)
             }
             .launchIn(applicationScope)
+    }
+
+    /**
+     * 초기 사용자 속성 설정
+     */
+    private fun setupInitialUserProperties() {
+        applicationScope.launch {
+            preferencesRepository.userPreferences.collect { preferences ->
+                // Crashlytics 사용자 속성 설정
+                val totalReminders = database.reminderDao().getAllRemindersList().size
+                crashlyticsHelper.setUserProperties(
+                    themeMode = preferences.themeMode.name,
+                    simpleMode = preferences.simpleMode,
+                    totalReminders = totalReminders
+                )
+
+                // Firebase Analytics 사용자 속성 설정
+                FirebaseAnalytics.getInstance(this@ReminderApplication).apply {
+                    setUserProperty("theme_mode", preferences.themeMode.name)
+                    setUserProperty("simple_mode", preferences.simpleMode.toString())
+                    setUserProperty("font_size", preferences.fontSize.name)
+                }
+            }
+        }
     }
 
     /**
