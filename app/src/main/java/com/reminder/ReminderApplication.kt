@@ -17,6 +17,7 @@ import com.reminder.analytics.AnalyticsHelper
 import com.reminder.analytics.CrashlyticsHelper
 import com.reminder.auth.AuthManager
 import com.reminder.backup.BackupManager
+import com.reminder.badge.BadgeManager
 import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.remote.FirestoreDataSource
@@ -59,6 +60,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val backupManager by lazy { BackupManager(this, database) }
     val analyticsHelper by lazy { AnalyticsHelper(FirebaseAnalytics.getInstance(this)) }
     val crashlyticsHelper by lazy { CrashlyticsHelper(FirebaseCrashlytics.getInstance()) }
+    val badgeManager by lazy { BadgeManager(this) }
 
     override fun onCreate() {
         super.onCreate()
@@ -79,6 +81,9 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
         // 위젯 업데이트 관찰
         setupWidgetUpdates()
+
+        // 배지 업데이트 관찰
+        setupBadgeUpdates()
 
         // 초기 사용자 속성 설정
         setupInitialUserProperties()
@@ -133,6 +138,21 @@ class ReminderApplication : Application(), ImageLoaderFactory {
             .onEach {
                 // 리마인더 목록이 변경될 때마다 위젯 업데이트
                 ReminderWidgetProvider.updateAllWidgets(this)
+            }
+            .launchIn(applicationScope)
+    }
+
+    /**
+     * Repository 변경사항을 관찰하여 배지 카운트 자동 업데이트
+     */
+    private fun setupBadgeUpdates() {
+        repository.allReminders
+            .onEach { reminders ->
+                // 미완료 리마인더 수를 배지에 표시
+                val incompleteCount = reminders.count { !it.isCompleted }
+                applicationScope.launch(Dispatchers.IO) {
+                    badgeManager.updateBadgeCount(incompleteCount)
+                }
             }
             .launchIn(applicationScope)
     }

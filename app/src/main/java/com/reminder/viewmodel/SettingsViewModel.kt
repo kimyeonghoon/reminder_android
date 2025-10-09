@@ -97,4 +97,10 @@ class SettingsViewModel(
             analyticsHelper.logNotificationSettingsChanged("led", enabled.toString())
         }
     }
+
+    fun updateBadgeEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateBadgeEnabled(enabled)
+        }
+    }
 }

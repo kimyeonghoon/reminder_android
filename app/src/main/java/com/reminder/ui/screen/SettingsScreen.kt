@@ -196,6 +196,14 @@ fun SettingsScreen(
 
             Divider()
 
+            // 배지 설정 섹션
+            BadgeSection(
+                badgeEnabled = userPreferences.badgeEnabled,
+                onBadgeChange = { viewModel.updateBadgeEnabled(it) }
+            )
+
+            Divider()
+
             // 백업/복원 섹션 (간편 모드에서는 숨기기)
             if (!userPreferences.simpleMode) {
                 BackupRestoreSection(
@@ -531,6 +539,31 @@ fun BackupRestoreSection(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
+@Composable
+fun BadgeSection(
+    badgeEnabled: Boolean,
+    onBadgeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "앱 아이콘 배지",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        SettingsSwitchItem(
+            title = "배지 표시",
+            description = "미완료 리마인더 수를 앱 아이콘에 표시",
+            checked = badgeEnabled,
+            onCheckedChange = onBadgeChange
         )
     }
 }

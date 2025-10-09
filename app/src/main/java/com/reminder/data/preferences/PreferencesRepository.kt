@@ -30,6 +30,9 @@ class PreferencesRepository(
         val NOTIFICATION_SOUND = booleanPreferencesKey("notification_sound")
         val NOTIFICATION_VIBRATION = booleanPreferencesKey("notification_vibration")
         val NOTIFICATION_LED = booleanPreferencesKey("notification_led")
+
+        // 배지 설정
+        val BADGE_ENABLED = booleanPreferencesKey("badge_enabled")
     }
 
     val userPreferences: Flow<UserPreferences> = dataStore.data
@@ -72,6 +75,9 @@ class PreferencesRepository(
             val notificationVibration = preferences[PreferencesKeys.NOTIFICATION_VIBRATION] ?: true
             val notificationLed = preferences[PreferencesKeys.NOTIFICATION_LED] ?: true
 
+            // 배지 설정 (기본값: 활성화)
+            val badgeEnabled = preferences[PreferencesKeys.BADGE_ENABLED] ?: true
+
             UserPreferences(
                 themeMode = themeMode,
                 themePreset = themePreset,
@@ -82,7 +88,8 @@ class PreferencesRepository(
                 simpleMode = simpleMode,
                 notificationSound = notificationSound,
                 notificationVibration = notificationVibration,
-                notificationLed = notificationLed
+                notificationLed = notificationLed,
+                badgeEnabled = badgeEnabled
             )
         }
 
@@ -143,6 +150,12 @@ class PreferencesRepository(
     suspend fun updateNotificationLed(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.NOTIFICATION_LED] = enabled
+        }
+    }
+
+    suspend fun updateBadgeEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BADGE_ENABLED] = enabled
         }
     }
 
