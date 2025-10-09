@@ -2,6 +2,7 @@ package com.reminder.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -32,7 +33,11 @@ fun ReminderCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     subTaskProgress: Pair<Int, Int>? = null, // (완료, 전체)
-    onShare: (() -> Unit)? = null
+    onShare: (() -> Unit)? = null,
+    onDuplicate: (() -> Unit)? = null,
+    isSelected: Boolean = false,
+    isSelectionMode: Boolean = false,
+    onSelectionToggle: (() -> Unit)? = null
 ) {
     // 불필요한 재구성 방지를 위해 람다를 remember로 캐싱
     val onCheckChange = remember(reminder.id) {
@@ -40,9 +45,13 @@ fun ReminderCard(
     }
     Card(
         modifier = modifier.fillMaxWidth(),
-        onClick = onClick,
+        onClick = if (isSelectionMode) { onSelectionToggle ?: {} } else onClick,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
         )
     ) {
         Row(
@@ -132,22 +141,34 @@ fun ReminderCard(
                 }
             }
 
-            onShare?.let { shareAction ->
-                IconButton(onClick = shareAction) {
+            if (!isSelectionMode) {
+                onDuplicate?.let { duplicateAction ->
+                    IconButton(onClick = duplicateAction) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "복제",
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+
+                onShare?.let { shareAction ->
+                    IconButton(onClick = shareAction) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "공유",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "공유",
-                        tint = MaterialTheme.colorScheme.primary
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "삭제",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
-            }
-
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "삭제",
-                    tint = MaterialTheme.colorScheme.error
-                )
             }
         }
     }
