@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.viewmodel.SettingsViewModel
@@ -149,7 +151,10 @@ fun DynamicColorSection(
 
             Switch(
                 checked = dynamicColorEnabled,
-                onCheckedChange = onDynamicColorChange
+                onCheckedChange = onDynamicColorChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "동적 컬러 사용 ${if (dynamicColorEnabled) "켜짐" else "꺼짐"}"
+                }
             )
         }
 

@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,7 +50,10 @@ fun ReminderCard(
         ) {
             Checkbox(
                 checked = reminder.isCompleted,
-                onCheckedChange = onCheckChange
+                onCheckedChange = onCheckChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "완료 여부 체크박스"
+                }
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -102,7 +107,7 @@ fun ReminderCard(
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = "삭제",
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -118,8 +123,18 @@ fun PriorityIndicator(priority: Priority) {
         Priority.LOW -> LowPriority
     }
 
+    val priorityText = when (priority) {
+        Priority.HIGH -> "높음"
+        Priority.MEDIUM -> "중간"
+        Priority.LOW -> "낮음"
+    }
+
     Surface(
-        modifier = Modifier.size(12.dp),
+        modifier = Modifier
+            .size(12.dp)
+            .semantics {
+                contentDescription = "우선순위: $priorityText"
+            },
         shape = MaterialTheme.shapes.small,
         color = color
     ) {}

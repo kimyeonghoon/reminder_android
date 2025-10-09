@@ -57,13 +57,13 @@ fun HomeScreen(
                     title = { Text("Reminder") },
                     actions = {
                         IconButton(onClick = onStatisticsClick) {
-                            Icon(Icons.Default.BarChart, "Statistics")
+                            Icon(Icons.Default.BarChart, contentDescription = "통계")
                         }
                         IconButton(onClick = onSettingsClick) {
-                            Icon(Icons.Default.Settings, "Settings")
+                            Icon(Icons.Default.Settings, contentDescription = "설정")
                         }
                         IconButton(onClick = { showSearchBar = true }) {
-                            Icon(Icons.Default.Search, "Search")
+                            Icon(Icons.Default.Search, contentDescription = "검색")
                         }
                     }
                 )
@@ -71,7 +71,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddClick) {
-                Icon(Icons.Default.Add, "Add Reminder")
+                Icon(Icons.Default.Add, contentDescription = "리마인더 추가")
             }
         }
     ) { paddingValues ->

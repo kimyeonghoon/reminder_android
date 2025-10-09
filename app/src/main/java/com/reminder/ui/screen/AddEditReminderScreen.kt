@@ -57,7 +57,7 @@ fun AddEditReminderScreen(
                 title = { Text(if (reminder == null) "New Reminder" else "Edit Reminder") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
