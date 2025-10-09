@@ -33,7 +33,8 @@ import java.time.LocalTime
 fun AddEditReminderScreen(
     viewModel: ReminderViewModel,
     reminder: ReminderEntity?,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
     var title by remember { mutableStateOf(reminder?.title ?: "") }
@@ -157,13 +158,16 @@ fun AddEditReminderScreen(
                 maxLines = 5
             )
 
-            OutlinedTextField(
-                value = category,
-                onValueChange = { category = it },
-                label = { Text("Category") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            // 간편 모드에서는 카테고리 숨기기
+            if (!simpleMode) {
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    label = { Text("Category") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -206,23 +210,26 @@ fun AddEditReminderScreen(
                 onTimeSelected = { selectedTime = it }
             )
 
-            Divider()
+            // 간편 모드에서는 반복 일정 숨기기
+            if (!simpleMode) {
+                Divider()
 
-            RecurrenceSelector(
-                recurrencePattern = recurrencePattern,
-                onPatternChange = { recurrencePattern = it },
-                recurrenceInterval = recurrenceInterval,
-                onIntervalChange = { recurrenceInterval = it },
-                recurrenceDaysOfWeek = recurrenceDaysOfWeek,
-                onDaysOfWeekChange = { recurrenceDaysOfWeek = it },
-                recurrenceEndDate = recurrenceEndDate,
-                onEndDateChange = { recurrenceEndDate = it },
-                startDateTime = if (selectedDate != null && selectedTime != null) {
-                    LocalDateTime.of(selectedDate, selectedTime)
-                } else {
-                    null
-                }
-            )
+                RecurrenceSelector(
+                    recurrencePattern = recurrencePattern,
+                    onPatternChange = { recurrencePattern = it },
+                    recurrenceInterval = recurrenceInterval,
+                    onIntervalChange = { recurrenceInterval = it },
+                    recurrenceDaysOfWeek = recurrenceDaysOfWeek,
+                    onDaysOfWeekChange = { recurrenceDaysOfWeek = it },
+                    recurrenceEndDate = recurrenceEndDate,
+                    onEndDateChange = { recurrenceEndDate = it },
+                    startDateTime = if (selectedDate != null && selectedTime != null) {
+                        LocalDateTime.of(selectedDate, selectedTime)
+                    } else {
+                        null
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

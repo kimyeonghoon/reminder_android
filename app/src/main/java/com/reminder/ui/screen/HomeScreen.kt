@@ -31,7 +31,8 @@ fun HomeScreen(
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
     onStatisticsClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    simpleMode: Boolean = false
 ) {
     val activeReminders by viewModel.activeReminders.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -56,22 +57,36 @@ fun HomeScreen(
                 TopAppBar(
                     title = { Text("Reminder") },
                     actions = {
-                        IconButton(onClick = onStatisticsClick) {
-                            Icon(Icons.Default.BarChart, contentDescription = "통계")
+                        // 간편 모드에서는 통계와 검색 숨기기
+                        if (!simpleMode) {
+                            IconButton(onClick = onStatisticsClick) {
+                                Icon(Icons.Default.BarChart, contentDescription = "통계")
+                            }
                         }
                         IconButton(onClick = onSettingsClick) {
                             Icon(Icons.Default.Settings, contentDescription = "설정")
                         }
-                        IconButton(onClick = { showSearchBar = true }) {
-                            Icon(Icons.Default.Search, contentDescription = "검색")
+                        if (!simpleMode) {
+                            IconButton(onClick = { showSearchBar = true }) {
+                                Icon(Icons.Default.Search, contentDescription = "검색")
+                            }
                         }
                     }
                 )
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
-                Icon(Icons.Default.Add, contentDescription = "리마인더 추가")
+            FloatingActionButton(
+                onClick = onAddClick,
+                // 간편 모드에서는 버튼을 더 크게
+                modifier = if (simpleMode) Modifier.size(72.dp) else Modifier
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "리마인더 추가",
+                    // 간편 모드에서는 아이콘도 더 크게
+                    modifier = if (simpleMode) Modifier.size(36.dp) else Modifier
+                )
             }
         }
     ) { paddingValues ->
@@ -90,23 +105,26 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Filter and Sort UI
-            FilterChips(
-                selectedPriorityFilter = selectedPriorityFilter,
-                selectedDateFilter = selectedDateFilter,
-                onPriorityFilterChange = { selectedPriorityFilter = it },
-                onDateFilterChange = { selectedDateFilter = it },
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            // 간편 모드에서는 필터와 정렬 숨기기
+            if (!simpleMode) {
+                // Filter and Sort UI
+                FilterChips(
+                    selectedPriorityFilter = selectedPriorityFilter,
+                    selectedDateFilter = selectedDateFilter,
+                    onPriorityFilterChange = { selectedPriorityFilter = it },
+                    onDateFilterChange = { selectedDateFilter = it },
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
 
-            Divider()
+                Divider()
 
-            SortDropdown(
-                selectedSortOption = selectedSortOption,
-                onSortOptionChange = { selectedSortOption = it }
-            )
+                SortDropdown(
+                    selectedSortOption = selectedSortOption,
+                    onSortOptionChange = { selectedSortOption = it }
+                )
 
-            Divider()
+                Divider()
+            }
 
             // Reminders list
             if (sortedReminders.isEmpty()) {

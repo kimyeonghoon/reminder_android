@@ -56,13 +56,16 @@ fun SettingsScreen(
                 onThemeModeChange = { viewModel.updateThemeMode(it) }
             )
 
-            Divider()
+            // 간편 모드가 아닐 때만 동적 컬러 설정 표시
+            if (!userPreferences.simpleMode) {
+                Divider()
 
-            // 동적 컬러 설정
-            DynamicColorSection(
-                dynamicColorEnabled = userPreferences.dynamicColor,
-                onDynamicColorChange = { viewModel.updateDynamicColor(it) }
-            )
+                // 동적 컬러 설정
+                DynamicColorSection(
+                    dynamicColorEnabled = userPreferences.dynamicColor,
+                    onDynamicColorChange = { viewModel.updateDynamicColor(it) }
+                )
+            }
 
             Divider()
 

@@ -151,6 +151,7 @@ fun ReminderAppContent(
         factory = StatisticsViewModelFactory(app.repository)
     )
 
+    val userPreferences by settingsViewModel.userPreferences.collectAsState()
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
     NavHost(navController = navController, startDestination = "home") {
@@ -164,14 +165,16 @@ fun ReminderAppContent(
                     navController.navigate("add_edit")
                 },
                 onStatisticsClick = { navController.navigate("statistics") },
-                onSettingsClick = { navController.navigate("settings") }
+                onSettingsClick = { navController.navigate("settings") },
+                simpleMode = userPreferences.simpleMode
             )
         }
         composable("add_edit") {
             AddEditReminderScreen(
                 viewModel = viewModel,
                 reminder = selectedReminder,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                simpleMode = userPreferences.simpleMode
             )
         }
         composable("statistics") {
