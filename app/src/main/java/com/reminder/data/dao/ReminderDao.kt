@@ -63,4 +63,17 @@ interface ReminderDao {
         startDate: java.time.LocalDateTime,
         endDate: java.time.LocalDateTime
     ): List<ReminderEntity>
+
+    // Snooze methods
+    @Query("UPDATE reminders SET snoozeUntil = :snoozeUntil, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun snoozeReminder(id: Long, snoozeUntil: java.time.LocalDateTime, updatedAt: java.time.LocalDateTime)
+
+    @Query("UPDATE reminders SET snoozeUntil = NULL, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun cancelSnooze(id: Long, updatedAt: java.time.LocalDateTime)
+
+    @Query("SELECT * FROM reminders WHERE snoozeUntil IS NOT NULL AND snoozeUntil <= :currentTime AND isCompleted = 0")
+    suspend fun getSnoozedRemindersDue(currentTime: java.time.LocalDateTime): List<ReminderEntity>
+
+    @Query("SELECT * FROM reminders WHERE snoozeUntil IS NOT NULL AND isCompleted = 0 ORDER BY snoozeUntil ASC")
+    fun getSnoozedReminders(): Flow<List<ReminderEntity>>
 }

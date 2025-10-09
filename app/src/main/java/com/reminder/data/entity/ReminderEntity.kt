@@ -29,6 +29,9 @@ data class ReminderEntity(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 
+    // 스누즈 기능
+    val snoozeUntil: LocalDateTime? = null,  // 스누즈된 시간 (null이면 스누즈되지 않음)
+
     // 반복 리마인더
     val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
     val recurrenceInterval: Int = 1,

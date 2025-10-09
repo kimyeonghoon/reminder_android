@@ -7,6 +7,8 @@ import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
 import com.reminder.notification.AlarmScheduler
+import com.reminder.snooze.SnoozeManager
+import com.reminder.snooze.SnoozeOption
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +22,8 @@ class ReminderViewModel(
     private val repository: ReminderRepository,
     private val alarmScheduler: AlarmScheduler,
     private val database: com.reminder.data.database.ReminderDatabase,
-    private val analyticsHelper: AnalyticsHelper
+    private val analyticsHelper: AnalyticsHelper,
+    private val snoozeManager: SnoozeManager
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -507,4 +510,30 @@ class ReminderViewModel(
             }
         }
     }
+
+    // ==================== 스누즈 관련 함수 ====================
+
+    /**
+     * 리마인더 스누즈
+     */
+    fun snoozeReminder(reminderId: Long, option: SnoozeOption) {
+        viewModelScope.launch {
+            snoozeManager.snoozeReminder(reminderId, option)
+        }
+    }
+
+    /**
+     * 스누즈 취소
+     */
+    fun cancelSnooze(reminderId: Long) {
+        viewModelScope.launch {
+            snoozeManager.cancelSnooze(reminderId)
+        }
+    }
+
+    /**
+     * 스누즈된 리마인더 목록 조회
+     */
+    val snoozedReminders = database.reminderDao().getSnoozedReminders()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }
