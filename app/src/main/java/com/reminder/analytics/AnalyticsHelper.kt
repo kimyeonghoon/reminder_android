@@ -205,4 +205,16 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
     fun logReadAloudEnabled() {
         firebaseAnalytics.logEvent("read_aloud_enabled", Bundle())
     }
+
+    /**
+     * 카테고리 제안 이벤트 로깅
+     *
+     * @param suggestionsCount 제안된 카테고리 수
+     */
+    fun logCategorySuggested(suggestionsCount: Int) {
+        val bundle = Bundle().apply {
+            putInt("suggestions_count", suggestionsCount)
+        }
+        firebaseAnalytics.logEvent("category_suggested", bundle)
+    }
 }

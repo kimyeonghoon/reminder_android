@@ -25,7 +25,8 @@ class ReminderViewModel(
     private val analyticsHelper: AnalyticsHelper,
     private val snoozeManager: SnoozeManager,
     private val locationManager: com.reminder.location.LocationManager,
-    private val ttsHelper: com.reminder.tts.TtsHelper
+    private val ttsHelper: com.reminder.tts.TtsHelper,
+    private val categorySuggestionHelper: com.reminder.ml.CategorySuggestionHelper
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -742,5 +743,45 @@ class ReminderViewModel(
     override fun onCleared() {
         super.onCleared()
         ttsHelper.shutdown()
+    }
+
+    // ==================== 카테고리 제안 (ML) 관련 함수 ====================
+
+    /**
+     * 제목과 설명을 기반으로 카테고리 제안
+     */
+    suspend fun suggestCategories(title: String, description: String = ""): List<String> {
+        val allReminders = repository.getAllRemindersList()
+        val suggestions = categorySuggestionHelper.suggestCategories(title, description, allReminders)
+
+        // Analytics 이벤트 로깅
+        if (suggestions.isNotEmpty()) {
+            analyticsHelper.logCategorySuggested(suggestions.size)
+        }
+
+        return suggestions
+    }
+
+    /**
+     * 모든 고유 카테고리 목록 조회
+     */
+    suspend fun getAllCategories(): List<String> {
+        val allReminders = repository.getAllRemindersList()
+        return categorySuggestionHelper.getAllCategories(allReminders)
+    }
+
+    /**
+     * 카테고리 사용 빈도 조회
+     */
+    suspend fun getCategoryFrequency(): Map<String, Int> {
+        val allReminders = repository.getAllRemindersList()
+        return categorySuggestionHelper.getCategoryFrequency(allReminders)
+    }
+
+    /**
+     * 기본 카테고리 목록 반환
+     */
+    fun getDefaultCategories(): List<String> {
+        return com.reminder.ml.CategorySuggestionHelper.DEFAULT_CATEGORIES
     }
 }
