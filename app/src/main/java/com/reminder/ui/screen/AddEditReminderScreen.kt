@@ -5,10 +5,17 @@ import android.content.Intent
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -115,6 +122,27 @@ fun AddEditReminderScreen(
         remember { mutableStateOf(emptyList<SubTask>()) }
     }
     var newSubTaskTitle by remember { mutableStateOf("") }
+
+    // 이미지 관련 (편집 모드일 때만)
+    val images = if (reminder != null) {
+        viewModel.getImages(reminder.id).collectAsState(initial = emptyList())
+    } else {
+        remember { mutableStateOf(emptyList<com.reminder.data.entity.ReminderImage>()) }
+    }
+
+    // 이미지 선택 launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null && reminder != null) {
+            // URI를 영구적으로 사용할 수 있도록 권한 요청
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.addImage(reminder.id, uri.toString())
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -289,6 +317,88 @@ fun AddEditReminderScreen(
                             contentDescription = "서브태스크 추가"
                         )
                     }
+                }
+            }
+
+            // 이미지 첨부 섹션 (편집 모드일 때만, 간편 모드 제외)
+            if (reminder != null && !simpleMode) {
+                Divider()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "이미지",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    FilledIconButton(
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "이미지 추가",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                // 이미지 목록 (가로 스크롤)
+                if (images.value.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(images.value) { image ->
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                // TODO: 이미지 로딩 라이브러리 (Coil) 필요
+                                // AsyncImage를 사용하여 이미지 표시
+                                // 지금은 placeholder로 Icon 표시
+                                Icon(
+                                    imageVector = Icons.Default.Image,
+                                    contentDescription = "첨부된 이미지",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(32.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
+                                // 삭제 버튼
+                                IconButton(
+                                    onClick = { viewModel.deleteImage(image) },
+                                    modifier = Modifier
+                                        .align(androidx.compose.ui.Alignment.TopEnd)
+                                        .size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "이미지 삭제",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Text(
+                        text = "첨부된 이미지가 없습니다",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
 
