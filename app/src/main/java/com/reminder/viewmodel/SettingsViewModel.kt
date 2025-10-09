@@ -6,6 +6,7 @@ import com.reminder.analytics.AnalyticsHelper
 import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
+import com.reminder.data.preferences.ThemePreset
 import com.reminder.data.preferences.UserPreferences
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,15 @@ class SettingsViewModel(
 
             // Analytics 이벤트 로깅
             analyticsHelper.logThemeChanged(themeMode.name)
+        }
+    }
+
+    fun updateThemePreset(themePreset: ThemePreset) {
+        viewModelScope.launch {
+            preferencesRepository.updateThemePreset(themePreset)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logThemeChanged("preset_${themePreset.name}")
         }
     }
 

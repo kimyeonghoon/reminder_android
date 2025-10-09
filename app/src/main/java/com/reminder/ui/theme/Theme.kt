@@ -15,22 +15,64 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.reminder.data.preferences.FontSize
+import com.reminder.data.preferences.ThemePreset
 
-private val DarkColorScheme = darkColorScheme(
+// Purple Theme (Default)
+private val PurpleDarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
-private val LightColorScheme = lightColorScheme(
+private val PurpleLightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
 )
 
+// Blue Theme
+private val BlueDarkColorScheme = darkColorScheme(
+    primary = Blue80,
+    secondary = BlueGrey80,
+    tertiary = LightBlue80
+)
+
+private val BlueLightColorScheme = lightColorScheme(
+    primary = Blue40,
+    secondary = BlueGrey40,
+    tertiary = LightBlue40
+)
+
+// Green Theme
+private val GreenDarkColorScheme = darkColorScheme(
+    primary = Green80,
+    secondary = GreenGrey80,
+    tertiary = LightGreen80
+)
+
+private val GreenLightColorScheme = lightColorScheme(
+    primary = Green40,
+    secondary = GreenGrey40,
+    tertiary = LightGreen40
+)
+
+// Pink Theme
+private val PinkDarkColorScheme = darkColorScheme(
+    primary = Pink80New,
+    secondary = PinkGrey80,
+    tertiary = LightPink80
+)
+
+private val PinkLightColorScheme = lightColorScheme(
+    primary = Pink40New,
+    secondary = PinkGrey40,
+    tertiary = LightPink40
+)
+
 @Composable
 fun ReminderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    themePreset: ThemePreset = ThemePreset.PURPLE,
     dynamicColor: Boolean = true,
     fontSize: FontSize = FontSize.NORMAL,
     content: @Composable () -> Unit
@@ -41,8 +83,19 @@ fun ReminderTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> when (themePreset) {
+            ThemePreset.PURPLE -> PurpleDarkColorScheme
+            ThemePreset.BLUE -> BlueDarkColorScheme
+            ThemePreset.GREEN -> GreenDarkColorScheme
+            ThemePreset.PINK -> PinkDarkColorScheme
+        }
+
+        else -> when (themePreset) {
+            ThemePreset.PURPLE -> PurpleLightColorScheme
+            ThemePreset.BLUE -> BlueLightColorScheme
+            ThemePreset.GREEN -> GreenLightColorScheme
+            ThemePreset.PINK -> PinkLightColorScheme
+        }
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

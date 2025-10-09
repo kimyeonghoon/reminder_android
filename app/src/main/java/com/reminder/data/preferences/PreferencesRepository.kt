@@ -19,6 +19,7 @@ class PreferencesRepository(
 ) {
     private object PreferencesKeys {
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val THEME_PRESET = stringPreferencesKey("theme_preset")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FONT_SIZE = stringPreferencesKey("font_size")
@@ -46,6 +47,13 @@ class PreferencesRepository(
                 ThemeMode.SYSTEM
             }
 
+            val themePresetString = preferences[PreferencesKeys.THEME_PRESET] ?: ThemePreset.PURPLE.name
+            val themePreset = try {
+                ThemePreset.valueOf(themePresetString)
+            } catch (e: IllegalArgumentException) {
+                ThemePreset.PURPLE
+            }
+
             val fontSizeString = preferences[PreferencesKeys.FONT_SIZE] ?: FontSize.NORMAL.name
             val fontSize = try {
                 FontSize.valueOf(fontSizeString)
@@ -64,6 +72,7 @@ class PreferencesRepository(
 
             UserPreferences(
                 themeMode = themeMode,
+                themePreset = themePreset,
                 dynamicColor = dynamicColor,
                 onboardingCompleted = onboardingCompleted,
                 fontSize = fontSize,
@@ -77,6 +86,12 @@ class PreferencesRepository(
     suspend fun updateThemeMode(themeMode: ThemeMode) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = themeMode.name
+        }
+    }
+
+    suspend fun updateThemePreset(themePreset: ThemePreset) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME_PRESET] = themePreset.name
         }
     }
 
