@@ -32,6 +32,7 @@ import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
+import com.reminder.ui.screen.PatternAnalysisScreen
 import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
@@ -266,7 +267,8 @@ fun ReminderAppContent(
             StatisticsScreen(
                 viewModel = statisticsViewModel,
                 onNavigateBack = { navController.popBackStack() },
-                onCompletionHistoryClick = { navController.navigate("completion_history") }
+                onCompletionHistoryClick = { navController.navigate("completion_history") },
+                onPatternAnalysisClick = { navController.navigate("pattern_analysis") }
             )
         }
         composable(
@@ -363,6 +365,38 @@ fun ReminderAppContent(
             }
         ) {
             HelpScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            "pattern_analysis",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            PatternAnalysisScreen(
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

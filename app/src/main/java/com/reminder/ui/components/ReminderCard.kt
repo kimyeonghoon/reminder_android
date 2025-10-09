@@ -121,6 +121,38 @@ fun ReminderCard(
                     )
                 }
 
+                // v1.22.0: 위치 표시
+                if (!reminder.locationName.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "📍 ${reminder.locationName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                // v1.23.0: 웹 링크 표시
+                if (!reminder.webLink.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "🔗 ${reminder.webLink}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // v1.24.0: TTS 활성화 표시
+                if (reminder.readAloud) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "🔊 자동 읽기",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
                 // 서브태스크 진행률 표시
                 subTaskProgress?.let { (completed, total) ->
                     if (total > 0) {

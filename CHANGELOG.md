@@ -5,6 +5,83 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0] - 2025-10-09
+
+### Added
+- 🎨 **UI 통합 업데이트** - v1.22.0~v1.26.0 백엔드 기능들의 UI 구현 완료
+  - 📍 위치 입력 UI (위도, 경도, 위치 이름, 반경 미터)
+  - 🔗 웹 링크 입력 필드 with 자동 https:// placeholder
+  - 🔊 TTS 자동 읽기 토글 스위치
+  - 🏷️ 카테고리 자동 제안 칩 (LazyRow)
+  - ⏰ 최적 시간 제안 버튼 (날짜 선택 시 자동 표시)
+  - 📊 완료 패턴 분석 대시보드 화면 (`PatternAnalysisScreen.kt`)
+    - 전체 완료율 시각화
+    - 시간대별 완료율 (상위 5개)
+    - 요일별 완료율 (전체)
+    - 평균 완료 소요 시간
+- 🔗 **네비게이션 통합**
+  - PatternAnalysisScreen 라우트 추가 (`pattern_analysis`)
+  - StatisticsScreen에서 패턴 분석 버튼 연결
+- ✨ **ReminderCard 업데이트**
+  - 위치 이름 표시 (📍 아이콘)
+  - 웹 링크 표시 (🔗 아이콘, 1줄 말줄임)
+  - TTS 활성화 표시 (🔊 아이콘)
+
+### Changed
+- 🔧 버전 업데이트: `versionCode = 29`, `versionName = "1.27.0"`
+- 📝 CLAUDE.md 업데이트: v1.27.0 현황 반영
+- 📄 README.md 업데이트: 스마트 기능 섹션 추가, v1.15.0~v1.27.0 릴리즈 노트 추가
+
+### Fixed
+- 🐛 PatternAnalysisScreen.kt smart cast 오류 수정 (pattern → currentPattern 지역 변수 사용)
+
+### Technical Details
+- **Files Modified**: 7개
+  - `app/build.gradle.kts` (버전)
+  - `app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt` (UI 추가)
+  - `app/src/main/java/com/reminder/ui/screen/PatternAnalysisScreen.kt` (신규)
+  - `app/src/main/java/com/reminder/ui/screen/StatisticsScreen.kt` (버튼 추가)
+  - `app/src/main/java/com/reminder/ui/components/ReminderCard.kt` (필드 표시)
+  - `app/src/main/java/com/reminder/MainActivity.kt` (네비게이션)
+  - `CLAUDE.md`, `README.md`, `CHANGELOG.md` (문서)
+- **Tests**: 115개 모두 통과 ✅
+- **Build**: 성공 (1m 46s)
+
+## [1.22.0 ~ 1.26.0] - 2025-10-09
+
+### v1.26.0 - 완료 패턴 분석
+- 📊 CompletionPatternAnalyzer 구현
+- 시간대별/요일별 생산성 분석
+- 최적 시간 제안 기능
+
+### v1.25.0 - 자동 카테고리 제안
+- 🏷️ CategorySuggestionHelper 구현
+- 키워드/패턴/빈도 기반 제안
+
+### v1.24.0 - 음성 알림 (TTS)
+- 🔊 TtsHelper 구현
+- 한국어 음성 지원
+- readAloud 필드 추가 (DB v11→v12)
+
+### v1.23.0 - 웹 링크 첨부
+- 🔗 UrlValidator 구현
+- 자동 https:// 정규화
+- webLink 필드 추가 (DB v10→v11)
+
+### v1.22.0 - 위치 기반 리마인더
+- 📍 LocationManager 구현
+- Google Play Services Location
+- location* 필드 추가 (DB v9→v10)
+
+## [1.19.0 ~ 1.21.0] - 2025-10-09
+- 🔵 배지 카운트 (v1.19.0)
+- ⏰ 스누즈 기능 (v1.20.0)
+- 📝 빠른 메모 위젯 (v1.21.0)
+
+## [1.15.0 ~ 1.18.1] - 2025-10-09
+- 🎨 UX/UI 개선 (햅틱 피드백, 고대비 모드)
+- 🎬 온보딩 애니메이션
+
 ## [1.8.0] - 2025-10-09
 
 ### Added
