@@ -3,7 +3,6 @@ package com.reminder.data.remote
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import com.reminder.auth.AuthManager
 import com.reminder.data.entity.ReminderEntity
 import kotlinx.coroutines.channels.awaitClose
@@ -39,7 +38,7 @@ class FirestoreDataSource(
 
             val reminders = snapshot?.documents?.mapNotNull { doc ->
                 try {
-                    doc.toObject<FirestoreReminder>()?.toEntity()
+                    doc.toObject(FirestoreReminder::class.java)?.toEntity()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error parsing document ${doc.id}", e)
                     null
@@ -57,7 +56,7 @@ class FirestoreDataSource(
 
         return try {
             val doc = collection.document(id.toString()).get().await()
-            doc.toObject<FirestoreReminder>()?.toEntity()
+            doc.toObject(FirestoreReminder::class.java)?.toEntity()
         } catch (e: Exception) {
             Log.e(TAG, "Error getting reminder $id", e)
             null
@@ -105,7 +104,7 @@ class FirestoreDataSource(
 
             snapshot.documents.mapNotNull { doc ->
                 try {
-                    doc.toObject<FirestoreReminder>()?.toEntity()
+                    doc.toObject(FirestoreReminder::class.java)?.toEntity()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error parsing document ${doc.id}", e)
                     null
