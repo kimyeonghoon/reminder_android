@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
@@ -60,7 +60,7 @@ fun CompletionHistoryScreen(
                 title = { Text("완료 이력") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
@@ -93,7 +93,7 @@ fun CompletionHistoryScreen(
 
             // 선택한 날짜의 리마인더 목록
             if (selectedDate != null && selectedDayReminders.isNotEmpty()) {
-                Divider()
+                HorizontalDivider()
 
                 Text(
                     text = "${selectedDate!!.format(DateTimeFormatter.ofPattern("M월 d일"))} 완료 목록",

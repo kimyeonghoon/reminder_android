@@ -234,14 +234,14 @@ fun HomeScreen(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
-                Divider()
+                HorizontalDivider()
 
                 SortDropdown(
                     selectedSortOption = selectedSortOption,
                     onSortOptionChange = { selectedSortOption = it }
                 )
 
-                Divider()
+                HorizontalDivider()
             }
 
             // Reminders list

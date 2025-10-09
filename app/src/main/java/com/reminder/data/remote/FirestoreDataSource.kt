@@ -3,6 +3,8 @@ package com.reminder.data.remote
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.FirebaseNetworkException
 import com.reminder.auth.AuthManager
 import com.reminder.data.entity.ReminderEntity
 import kotlinx.coroutines.channels.awaitClose
@@ -58,7 +60,7 @@ class FirestoreDataSource(
             val doc = collection.document(id.toString()).get().await()
             doc.toObject(FirestoreReminder::class.java)?.toEntity()
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting reminder $id", e)
+            logError("getting reminder $id", e)
             null
         }
     }
@@ -74,8 +76,8 @@ class FirestoreDataSource(
                 .await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e(TAG, "Error upserting reminder ${reminder.id}", e)
-            Result.failure(e)
+            logError("upserting reminder ${reminder.id}", e)
+            Result.failure(createUserFriendlyException(e))
         }
     }
 
@@ -87,8 +89,8 @@ class FirestoreDataSource(
             collection.document(id.toString()).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e(TAG, "Error deleting reminder $id", e)
-            Result.failure(e)
+            logError("deleting reminder $id", e)
+            Result.failure(createUserFriendlyException(e))
         }
     }
 
@@ -130,8 +132,50 @@ class FirestoreDataSource(
             batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e(TAG, "Error uploading all reminders", e)
-            Result.failure(e)
+            logError("uploading all reminders", e)
+            Result.failure(createUserFriendlyException(e))
+        }
+    }
+
+    /**
+     * 에러를 로깅하고 에러 타입을 구분합니다
+     */
+    private fun logError(operation: String, error: Exception) {
+        val errorType = when (error) {
+            is FirebaseNetworkException -> "네트워크 오류"
+            is FirebaseFirestoreException -> "Firestore 오류"
+            else -> "알 수 없는 오류"
+        }
+        Log.e(TAG, "[$errorType] Error $operation: ${error.message}", error)
+    }
+
+    /**
+     * 사용자 친화적인 예외 메시지를 생성합니다
+     */
+    private fun createUserFriendlyException(error: Exception): Exception {
+        return when (error) {
+            is FirebaseNetworkException -> {
+                Exception("네트워크 연결을 확인해주세요. 오프라인 상태에서는 데이터가 로컬에만 저장됩니다.", error)
+            }
+            is FirebaseFirestoreException -> {
+                when (error.code) {
+                    FirebaseFirestoreException.Code.PERMISSION_DENIED -> {
+                        Exception("데이터 접근 권한이 없습니다. 다시 로그인해주세요.", error)
+                    }
+                    FirebaseFirestoreException.Code.UNAVAILABLE -> {
+                        Exception("서버에 일시적으로 연결할 수 없습니다. 잠시 후 다시 시도해주세요.", error)
+                    }
+                    FirebaseFirestoreException.Code.DEADLINE_EXCEEDED -> {
+                        Exception("요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.", error)
+                    }
+                    else -> {
+                        Exception("데이터 동기화 중 오류가 발생했습니다: ${error.code}", error)
+                    }
+                }
+            }
+            else -> {
+                Exception("알 수 없는 오류가 발생했습니다: ${error.message}", error)
+            }
         }
     }
 }

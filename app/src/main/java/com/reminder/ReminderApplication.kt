@@ -29,6 +29,7 @@ import com.reminder.notification.NotificationHelper
 import com.reminder.sync.SyncManager
 import com.reminder.sync.SyncWorker
 import com.reminder.widget.ReminderWidgetProvider
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,9 +37,30 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import android.util.Log
 
 class ReminderApplication : Application(), ImageLoaderFactory {
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    /**
+     * 전역 Coroutine Exception Handler
+     * 모든 처리되지 않은 코루틴 예외를 캐치하여 로깅
+     */
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+        Log.e("ReminderApp", "Uncaught coroutine exception in context: $context", throwable)
+
+        // Firebase Crashlytics에 예외 기록
+        try {
+            val crashlytics = FirebaseCrashlytics.getInstance()
+            crashlytics.log("Coroutine context: $context")
+            crashlytics.recordException(throwable)
+        } catch (e: Exception) {
+            // Crashlytics 초기화 전에 예외가 발생한 경우
+            Log.e("ReminderApp", "Failed to record exception to Crashlytics", e)
+        }
+    }
+
+    private val applicationScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Main + coroutineExceptionHandler
+    )
 
     val database by lazy { ReminderDatabase.getDatabase(this) }
     val authManager by lazy { AuthManager() }
@@ -205,5 +227,15 @@ class ReminderApplication : Application(), ImageLoaderFactory {
             }
             .respectCacheHeaders(false) // 캐시 헤더 무시 (로컬 이미지용)
             .build()
+    }
+
+    /**
+     * ViewModel에서 사용할 수 있는 전역 CoroutineExceptionHandler를 반환
+     *
+     * ViewModel의 viewModelScope에서 발생하는 예외는 자동으로 처리되지만,
+     * 추가적인 로깅이 필요한 경우 이 핸들러를 사용할 수 있습니다.
+     */
+    fun getCoroutineExceptionHandler(): CoroutineExceptionHandler {
+        return coroutineExceptionHandler
     }
 }

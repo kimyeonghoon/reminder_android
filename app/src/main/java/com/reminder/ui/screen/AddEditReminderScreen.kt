@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
@@ -221,7 +221,7 @@ fun AddEditReminderScreen(
                 title = { Text(if (reminder == null) "New Reminder" else "Edit Reminder") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
@@ -383,7 +383,7 @@ fun AddEditReminderScreen(
 
             // v1.22.0: 위치 입력 (간편 모드 제외)
             if (!simpleMode) {
-                Divider()
+                HorizontalDivider()
                 Text(
                     text = "📍 위치 기반 알림 (선택사항)",
                     style = MaterialTheme.typography.titleSmall,
@@ -434,7 +434,7 @@ fun AddEditReminderScreen(
 
             // 간편 모드에서는 반복 일정 숨기기
             if (!simpleMode) {
-                Divider()
+                HorizontalDivider()
 
                 RecurrenceSelector(
                     recurrencePattern = recurrencePattern,
@@ -455,7 +455,7 @@ fun AddEditReminderScreen(
 
             // 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
-                Divider()
+                HorizontalDivider()
 
                 Text(
                     text = "서브태스크",
@@ -541,7 +541,7 @@ fun AddEditReminderScreen(
 
             // 이미지 첨부 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
-                Divider()
+                HorizontalDivider()
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

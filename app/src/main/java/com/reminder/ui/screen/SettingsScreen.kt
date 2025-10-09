@@ -8,7 +8,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -134,7 +134,7 @@ fun SettingsScreen(
                 title = { Text("설정") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
@@ -157,7 +157,7 @@ fun SettingsScreen(
 
             // 간편 모드가 아닐 때만 동적 컬러 설정 표시
             if (!userPreferences.simpleMode) {
-                Divider()
+                HorizontalDivider()
 
                 // 동적 컬러 설정
                 DynamicColorSection(
@@ -166,7 +166,7 @@ fun SettingsScreen(
                 )
             }
 
-            Divider()
+            HorizontalDivider()
 
             // 글씨 크기 설정
             FontSizeSection(
@@ -174,7 +174,7 @@ fun SettingsScreen(
                 onFontSizeChange = { viewModel.updateFontSize(it) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 간편 모드 설정
             SimpleModeSection(
@@ -182,7 +182,7 @@ fun SettingsScreen(
                 onSimpleModeChange = { viewModel.updateSimpleMode(it) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 알림 설정 섹션
             NotificationSection(
@@ -194,7 +194,7 @@ fun SettingsScreen(
                 onLedChange = { viewModel.updateNotificationLed(it) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 배지 설정 섹션
             BadgeSection(
@@ -202,7 +202,7 @@ fun SettingsScreen(
                 onBadgeChange = { viewModel.updateBadgeEnabled(it) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 백업/복원 섹션 (간편 모드에서는 숨기기)
             if (!userPreferences.simpleMode) {
@@ -218,7 +218,7 @@ fun SettingsScreen(
                     }
                 )
 
-                Divider()
+                HorizontalDivider()
             }
 
             // 도움말

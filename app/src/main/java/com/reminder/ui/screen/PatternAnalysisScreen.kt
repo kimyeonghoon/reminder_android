@@ -3,7 +3,7 @@ package com.reminder.ui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,7 +41,7 @@ fun PatternAnalysisScreen(
                 title = { Text("📊 완료 패턴 분석") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
@@ -116,7 +116,7 @@ fun PatternAnalysisScreen(
                                 style = MaterialTheme.typography.titleMedium
                             )
                             LinearProgressIndicator(
-                                progress = currentPattern.completionRate.toFloat(),
+                                progress = { currentPattern.completionRate.toFloat() },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(12.dp),
@@ -175,7 +175,7 @@ fun PatternAnalysisScreen(
                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
                                             LinearProgressIndicator(
-                                                progress = rate.toFloat(),
+                                                progress = { rate.toFloat() },
                                                 modifier = Modifier
                                                     .width(100.dp)
                                                     .height(6.dp)
@@ -233,7 +233,7 @@ fun PatternAnalysisScreen(
                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
                                             LinearProgressIndicator(
-                                                progress = rate.toFloat(),
+                                                progress = { rate.toFloat() },
                                                 modifier = Modifier
                                                     .width(100.dp)
                                                     .height(6.dp)

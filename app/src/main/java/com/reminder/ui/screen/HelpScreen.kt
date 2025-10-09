@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,7 +22,7 @@ fun HelpScreen(
                 title = { Text("도움말") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
                 }
             )
@@ -76,7 +76,7 @@ fun HelpScreen(
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 설정 기능 섹션
             HelpSection(
@@ -97,7 +97,7 @@ fun HelpScreen(
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 자주 묻는 질문
             HelpSection(
@@ -126,7 +126,7 @@ fun HelpScreen(
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 문의하기
             Card(
