@@ -35,7 +35,6 @@ fun SettingsScreen(
     onHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val userPreferences by viewModel.userPreferences.collectAsState()
 

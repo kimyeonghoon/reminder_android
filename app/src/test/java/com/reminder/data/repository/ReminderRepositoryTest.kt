@@ -74,7 +74,7 @@ class ReminderRepositoryTest {
         whenever(dao.getRemindersByCategory(category)).thenReturn(flowOf(reminders))
 
         // When
-        val result = repository.getRemindersByCategory(category)
+        repository.getRemindersByCategory(category)
 
         // Then
         verify(dao).getRemindersByCategory(category)
