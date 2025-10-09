@@ -28,6 +28,7 @@ class ReminderViewModelTest {
     private lateinit var analyticsHelper: com.reminder.analytics.AnalyticsHelper
     private lateinit var snoozeManager: com.reminder.snooze.SnoozeManager
     private lateinit var locationManager: com.reminder.location.LocationManager
+    private lateinit var ttsHelper: com.reminder.tts.TtsHelper
     private lateinit var viewModel: ReminderViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -40,6 +41,7 @@ class ReminderViewModelTest {
         analyticsHelper = mock()
         snoozeManager = mock()
         locationManager = mock()
+        ttsHelper = mock()
 
         // Mock DAO and its methods
         val reminderDao = mock<com.reminder.data.dao.ReminderDao>()
@@ -51,7 +53,7 @@ class ReminderViewModelTest {
         whenever(repository.activeReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.completedReminders).thenReturn(flowOf(emptyList()))
 
-        viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper, snoozeManager, locationManager)
+        viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper, snoozeManager, locationManager, ttsHelper)
     }
 
     @After

@@ -64,6 +64,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val badgeManager by lazy { BadgeManager(this) }
     val snoozeManager by lazy { SnoozeManager(database.reminderDao()) }
     val locationManager by lazy { com.reminder.location.LocationManager(this) }
+    val ttsHelper by lazy { com.reminder.tts.TtsHelper(this) }
 
     override fun onCreate() {
         super.onCreate()
