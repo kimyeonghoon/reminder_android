@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-10-09
+
+### Added
+- **접근성 개선**: TalkBack 스크린 리더 완벽 지원
+  - 모든 UI 요소에 한글 contentDescription 추가
+  - 우선순위, 완료 상태, 버튼 등 명확한 음성 안내
+- **글씨 크기 조절**: 4단계 글씨 크기 설정
+  - 작게 (0.85배), 보통 (1.0배), 크게 (1.15배), 아주 크게 (1.3배)
+  - 전체 앱 Typography 동적 스케일링
+- **간편 모드**: 70세+ 사용자를 위한 단순화 인터페이스
+  - 복잡한 기능 숨김 (필터, 정렬, 통계, 검색)
+  - 더 큰 버튼 (FAB 72dp, 아이콘 36dp)
+  - 카테고리, 반복 설정 등 고급 기능 자동 숨김
+- **도움말 화면**: 앱 내 종합 사용 가이드
+  - 주요 기능 설명 (8개 항목)
+  - 설정 기능 안내 (3개 항목)
+  - 자주 묻는 질문 FAQ (5개 항목, 펼치기/접기 가능)
+- **음성 입력**: 할 일 제목 음성으로 입력
+  - Android Speech Recognition API 통합
+  - 한국어 음성 인식 (ko-KR)
+  - 큰 마이크 버튼 (56dp) - 노년층 사용자 배려
+  - RECORD_AUDIO 권한 동적 요청
+
+### Changed
+- **설정 화면**: 간편 모드 시 동적 컬러 옵션 자동 숨김
+- **홈 화면**: 간편 모드 시 FAB 크기 1.6배 확대
+- **할 일 추가 화면**: 간편 모드 시 카테고리/반복 섹션 숨김
+
+### Features
+- **동적 Typography**: 사용자 설정에 따른 실시간 글씨 크기 변경
+- **조건부 UI**: simpleMode 파라미터 기반 UI 요소 동적 표시/숨김
+- **FAQ 컴포넌트**: 클릭으로 펼치기/접기 가능한 대화형 FAQ 카드
+- **음성 권한 처리**: ActivityResultContracts로 권한 요청 및 처리
+
+### Technical Details
+- TDD 방식 구현 (AccessibilityTest.kt 작성)
+- DataStore에 fontSize, simpleMode 필드 추가
+- getTypography() 함수로 동적 Typography 생성
+- Speech Recognition launcher 패턴 구현
+- @OptIn(ExperimentalMaterial3Api::class) for Card onClick
+- 모든 Screen에 simpleMode 파라미터 전파
+
+### Accessibility
+- 체크박스: "완료 여부 체크박스"
+- 우선순위: "우선순위: 높음/중간/낮음"
+- 삭제 버튼: "할 일 삭제"
+- 통계 차트: 상세한 음성 설명 (예: "완료율 75 퍼센트")
+
 ## [1.7.0] - 2025-10-08
 
 ### Added
@@ -62,5 +110,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Min SDK 26 (Android 8.0)
 - Target SDK 34 (Android 14)
 
+[1.8.0]: https://github.com/yourusername/reminder/releases/tag/v1.8.0
 [1.7.0]: https://github.com/yourusername/reminder/releases/tag/v1.7.0
 [1.0.0]: https://github.com/yourusername/reminder/releases/tag/v1.0.0
