@@ -38,6 +38,9 @@ data class ReminderEntity(
     val locationName: String? = null,        // 위치 이름 (예: "집", "회사")
     val locationRadius: Float? = null,       // 반경 (미터, 기본 100m)
 
+    // 웹 링크 첨부
+    val webLink: String? = null,             // 관련 웹 링크 (URL)
+
     // 반복 리마인더
     val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
     val recurrenceInterval: Int = 1,

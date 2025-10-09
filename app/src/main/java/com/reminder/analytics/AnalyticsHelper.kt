@@ -184,4 +184,11 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
     fun logLocationAdded() {
         firebaseAnalytics.logEvent("location_added", Bundle())
     }
+
+    /**
+     * 웹 링크 추가 이벤트 로깅
+     */
+    fun logWebLinkAdded() {
+        firebaseAnalytics.logEvent("web_link_added", Bundle())
+    }
 }
