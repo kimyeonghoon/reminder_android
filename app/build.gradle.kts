@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 23
-        versionName = "1.21.0"
+        versionCode = 24
+        versionName = "1.22.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -121,6 +121,9 @@ dependencies {
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     // Testing (Updated)
     testImplementation("junit:junit:4.13.2")

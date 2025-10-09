@@ -177,4 +177,11 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
         }
         firebaseAnalytics.logEvent("simple_mode_toggled", bundle)
     }
+
+    /**
+     * 위치 추가 이벤트 로깅
+     */
+    fun logLocationAdded() {
+        firebaseAnalytics.logEvent("location_added", Bundle())
+    }
 }

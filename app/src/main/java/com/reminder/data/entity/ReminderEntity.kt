@@ -32,6 +32,12 @@ data class ReminderEntity(
     // 스누즈 기능
     val snoozeUntil: LocalDateTime? = null,  // 스누즈된 시간 (null이면 스누즈되지 않음)
 
+    // 위치 기반 리마인더
+    val locationLatitude: Double? = null,    // 위도
+    val locationLongitude: Double? = null,   // 경도
+    val locationName: String? = null,        // 위치 이름 (예: "집", "회사")
+    val locationRadius: Float? = null,       // 반경 (미터, 기본 100m)
+
     // 반복 리마인더
     val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
     val recurrenceInterval: Int = 1,

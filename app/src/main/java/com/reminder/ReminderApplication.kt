@@ -63,6 +63,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val crashlyticsHelper by lazy { CrashlyticsHelper(FirebaseCrashlytics.getInstance()) }
     val badgeManager by lazy { BadgeManager(this) }
     val snoozeManager by lazy { SnoozeManager(database.reminderDao()) }
+    val locationManager by lazy { com.reminder.location.LocationManager(this) }
 
     override fun onCreate() {
         super.onCreate()
