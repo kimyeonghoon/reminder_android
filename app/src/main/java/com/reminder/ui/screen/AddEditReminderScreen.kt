@@ -20,8 +20,12 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import com.reminder.data.entity.Priority
@@ -142,6 +146,34 @@ fun AddEditReminderScreen(
             )
             viewModel.addImage(reminder.id, uri.toString())
         }
+    }
+
+    // 이미지 확대 보기
+    var selectedImageUri by remember { mutableStateOf<String?>(null) }
+
+    // 이미지 확대 다이얼로그
+    selectedImageUri?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { selectedImageUri = null },
+            confirmButton = {
+                TextButton(onClick = { selectedImageUri = null }) {
+                    Text("닫기")
+                }
+            },
+            text = {
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(uri.toUri())
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "확대된 이미지",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 400.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        )
     }
 
     Scaffold(
@@ -363,16 +395,23 @@ fun AddEditReminderScreen(
                                         shape = RoundedCornerShape(8.dp)
                                     )
                             ) {
-                                // TODO: 이미지 로딩 라이브러리 (Coil) 필요
-                                // AsyncImage를 사용하여 이미지 표시
-                                // 지금은 placeholder로 Icon 표시
-                                Icon(
-                                    imageVector = Icons.Default.Image,
+                                // Coil AsyncImage로 실제 이미지 표시
+                                AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(image.imageUri.toUri())
+                                        .crossfade(true)
+                                        .build(),
                                     contentDescription = "첨부된 이미지",
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(32.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        .clickable { selectedImageUri = image.imageUri },
+                                    contentScale = ContentScale.Crop,
+                                    placeholder = androidx.compose.ui.graphics.painter.ColorPainter(
+                                        MaterialTheme.colorScheme.surfaceVariant
+                                    ),
+                                    error = androidx.compose.ui.graphics.painter.ColorPainter(
+                                        MaterialTheme.colorScheme.errorContainer
+                                    )
                                 )
 
                                 // 삭제 버튼

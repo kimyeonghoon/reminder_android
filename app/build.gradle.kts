@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.9.1"
+        versionCode = 11
+        versionName = "1.9.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -76,6 +76,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Image Loading (Coil)
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
