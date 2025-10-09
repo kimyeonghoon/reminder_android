@@ -14,7 +14,8 @@ class ReminderViewModelFactory(private val application: ReminderApplication) : V
                 application.database,
                 application.analyticsHelper,
                 application.snoozeManager,
-                application.locationManager
+                application.locationManager,
+                application.ttsHelper
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

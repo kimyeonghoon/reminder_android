@@ -41,6 +41,9 @@ data class ReminderEntity(
     // 웹 링크 첨부
     val webLink: String? = null,             // 관련 웹 링크 (URL)
 
+    // 음성 알림 (TTS)
+    val readAloud: Boolean = false,          // 알림 시 음성으로 읽기
+
     // 반복 리마인더
     val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
     val recurrenceInterval: Int = 1,

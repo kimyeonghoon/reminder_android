@@ -24,7 +24,8 @@ class ReminderViewModel(
     private val database: com.reminder.data.database.ReminderDatabase,
     private val analyticsHelper: AnalyticsHelper,
     private val snoozeManager: SnoozeManager,
-    private val locationManager: com.reminder.location.LocationManager
+    private val locationManager: com.reminder.location.LocationManager,
+    private val ttsHelper: com.reminder.tts.TtsHelper
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -668,5 +669,78 @@ class ReminderViewModel(
             )
             repository.updateReminder(updated)
         }
+    }
+
+    // ==================== TTS (음성 알림) 관련 함수 ====================
+
+    /**
+     * TTS 초기화
+     */
+    fun initializeTts(
+        onSuccess: (() -> Unit)? = null,
+        onError: ((String) -> Unit)? = null
+    ) {
+        ttsHelper.initialize(onSuccess, onError)
+    }
+
+    /**
+     * 리마인더 내용을 음성으로 읽기
+     */
+    fun speakReminder(
+        reminder: ReminderEntity,
+        onStart: (() -> Unit)? = null,
+        onDone: (() -> Unit)? = null,
+        onError: ((String) -> Unit)? = null
+    ) {
+        ttsHelper.speakReminder(
+            title = reminder.title,
+            description = reminder.description,
+            onStart = onStart,
+            onDone = onDone,
+            onError = onError
+        )
+
+        // Analytics 이벤트 로깅
+        analyticsHelper.logTtsUsed()
+    }
+
+    /**
+     * TTS 읽기 중지
+     */
+    fun stopTts() {
+        ttsHelper.stop()
+    }
+
+    /**
+     * TTS가 현재 말하고 있는지 확인
+     */
+    fun isTtsSpeaking(): Boolean {
+        return ttsHelper.isSpeaking()
+    }
+
+    /**
+     * 리마인더의 자동 읽기 설정 변경
+     */
+    fun toggleReadAloud(reminder: ReminderEntity) {
+        viewModelScope.launch {
+            val updated = reminder.copy(
+                readAloud = !reminder.readAloud,
+                updatedAt = LocalDateTime.now()
+            )
+            repository.updateReminder(updated)
+
+            // Analytics 이벤트 로깅
+            if (updated.readAloud) {
+                analyticsHelper.logReadAloudEnabled()
+            }
+        }
+    }
+
+    /**
+     * ViewModel 정리 시 TTS 리소스 해제
+     */
+    override fun onCleared() {
+        super.onCleared()
+        ttsHelper.shutdown()
     }
 }

@@ -191,4 +191,18 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
     fun logWebLinkAdded() {
         firebaseAnalytics.logEvent("web_link_added", Bundle())
     }
+
+    /**
+     * TTS 사용 이벤트 로깅
+     */
+    fun logTtsUsed() {
+        firebaseAnalytics.logEvent("tts_used", Bundle())
+    }
+
+    /**
+     * 자동 읽기 활성화 이벤트 로깅
+     */
+    fun logReadAloudEnabled() {
+        firebaseAnalytics.logEvent("read_aloud_enabled", Bundle())
+    }
 }
