@@ -242,4 +242,34 @@ class ReminderViewModel(
         val total = database.subTaskDao().getTotalSubTasksCount(reminderId)
         return Pair(completed, total)
     }
+
+    // ==================== 이미지 첨부 관련 함수 ====================
+
+    /**
+     * 리마인더의 이미지 목록 조회
+     */
+    fun getImages(reminderId: Long) =
+        database.reminderImageDao().getImagesByReminderId(reminderId)
+
+    /**
+     * 이미지 추가
+     */
+    fun addImage(reminderId: Long, imageUri: String) {
+        viewModelScope.launch {
+            val image = com.reminder.data.entity.ReminderImage(
+                reminderId = reminderId,
+                imageUri = imageUri
+            )
+            database.reminderImageDao().insert(image)
+        }
+    }
+
+    /**
+     * 이미지 삭제
+     */
+    fun deleteImage(image: com.reminder.data.entity.ReminderImage) {
+        viewModelScope.launch {
+            database.reminderImageDao().delete(image)
+        }
+    }
 }

@@ -139,6 +139,21 @@ fun HomeScreen(
                     )
                 }
             } else {
+                // Load subtask progress for all visible reminders
+                val subTaskProgressMap by produceState(
+                    initialValue = emptyMap<Long, Pair<Int, Int>>(),
+                    key1 = sortedReminders
+                ) {
+                    val progressMap = mutableMapOf<Long, Pair<Int, Int>>()
+                    sortedReminders.forEach { reminder ->
+                        val progress = viewModel.getSubTaskProgress(reminder.id)
+                        if (progress.second > 0) { // Only include reminders with subtasks
+                            progressMap[reminder.id] = progress
+                        }
+                    }
+                    value = progressMap
+                }
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
@@ -155,7 +170,8 @@ fun HomeScreen(
                             onClick = { onReminderClick(reminder) },
                             modifier = Modifier.animateItemPlacement(
                                 animationSpec = tween(durationMillis = 300)
-                            )
+                            ),
+                            subTaskProgress = subTaskProgressMap[reminder.id]
                         )
                     }
                 }
