@@ -29,7 +29,8 @@ fun ReminderCard(
     onCheckedChange: (Boolean) -> Unit,
     onDelete: () -> Unit,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    subTaskProgress: Pair<Int, Int>? = null // (완료, 전체)
 ) {
     // 불필요한 재구성 방지를 위해 람다를 remember로 캐싱
     val onCheckChange = remember(reminder.id) {
@@ -101,6 +102,31 @@ fun ReminderCard(
                         onClick = { },
                         label = { Text(reminder.category) }
                     )
+                }
+
+                // 서브태스크 진행률 표시
+                subTaskProgress?.let { (completed, total) ->
+                    if (total > 0) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            LinearProgressIndicator(
+                                progress = completed.toFloat() / total.toFloat(),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(6.dp),
+                                color = MaterialTheme.colorScheme.tertiary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                            Text(
+                                text = "$completed/$total",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
 
