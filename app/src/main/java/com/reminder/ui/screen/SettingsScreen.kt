@@ -12,7 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.viewmodel.SettingsViewModel
 
@@ -21,6 +24,7 @@ import com.reminder.viewmodel.SettingsViewModel
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onNavigateBack: () -> Unit,
+    onHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val userPreferences by viewModel.userPreferences.collectAsState()
@@ -52,13 +56,42 @@ fun SettingsScreen(
                 onThemeModeChange = { viewModel.updateThemeMode(it) }
             )
 
+            // 간편 모드가 아닐 때만 동적 컬러 설정 표시
+            if (!userPreferences.simpleMode) {
+                Divider()
+
+                // 동적 컬러 설정
+                DynamicColorSection(
+                    dynamicColorEnabled = userPreferences.dynamicColor,
+                    onDynamicColorChange = { viewModel.updateDynamicColor(it) }
+                )
+            }
+
             Divider()
 
-            // 동적 컬러 설정
-            DynamicColorSection(
-                dynamicColorEnabled = userPreferences.dynamicColor,
-                onDynamicColorChange = { viewModel.updateDynamicColor(it) }
+            // 글씨 크기 설정
+            FontSizeSection(
+                selectedFontSize = userPreferences.fontSize,
+                onFontSizeChange = { viewModel.updateFontSize(it) }
             )
+
+            Divider()
+
+            // 간편 모드 설정
+            SimpleModeSection(
+                simpleModeEnabled = userPreferences.simpleMode,
+                onSimpleModeChange = { viewModel.updateSimpleMode(it) }
+            )
+
+            Divider()
+
+            // 도움말
+            Button(
+                onClick = onHelpClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("도움말 보기")
+            }
         }
     }
 }
@@ -149,7 +182,10 @@ fun DynamicColorSection(
 
             Switch(
                 checked = dynamicColorEnabled,
-                onCheckedChange = onDynamicColorChange
+                onCheckedChange = onDynamicColorChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "동적 컬러 사용 ${if (dynamicColorEnabled) "켜짐" else "꺼짐"}"
+                }
             )
         }
 
@@ -165,10 +201,115 @@ fun DynamicColorSection(
 }
 
 @Composable
+fun FontSizeSection(
+    selectedFontSize: FontSize,
+    onFontSizeChange: (FontSize) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "글씨 크기",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.selectableGroup()
+        ) {
+            FontSize.values().forEach { fontSize ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = selectedFontSize == fontSize,
+                            onClick = { onFontSizeChange(fontSize) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedFontSize == fontSize,
+                        onClick = null
+                    )
+                    Text(
+                        text = getFontSizeLabel(fontSize),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun getThemeModeLabel(themeMode: ThemeMode): String {
     return when (themeMode) {
         ThemeMode.LIGHT -> "라이트 모드"
         ThemeMode.DARK -> "다크 모드"
         ThemeMode.SYSTEM -> "시스템 설정 따르기"
+    }
+}
+
+@Composable
+fun SimpleModeSection(
+    simpleModeEnabled: Boolean,
+    onSimpleModeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "간편 모드",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "간편 모드 사용",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "복잡한 기능 숨김, 더 큰 버튼",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = simpleModeEnabled,
+                onCheckedChange = onSimpleModeChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "간편 모드 ${if (simpleModeEnabled) "켜짐" else "꺼짐"}"
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun getFontSizeLabel(fontSize: FontSize): String {
+    return when (fontSize) {
+        FontSize.SMALL -> "작게"
+        FontSize.NORMAL -> "보통"
+        FontSize.LARGE -> "크게"
+        FontSize.EXTRA_LARGE -> "아주 크게"
     }
 }

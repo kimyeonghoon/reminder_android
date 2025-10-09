@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
+import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
 import com.reminder.ui.screen.SettingsScreen
@@ -112,7 +113,8 @@ fun ReminderApp() {
 
     ReminderTheme(
         darkTheme = darkTheme,
-        dynamicColor = userPreferences.dynamicColor
+        dynamicColor = userPreferences.dynamicColor,
+        fontSize = userPreferences.fontSize
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -149,6 +151,7 @@ fun ReminderAppContent(
         factory = StatisticsViewModelFactory(app.repository)
     )
 
+    val userPreferences by settingsViewModel.userPreferences.collectAsState()
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
     NavHost(navController = navController, startDestination = "home") {
@@ -162,14 +165,16 @@ fun ReminderAppContent(
                     navController.navigate("add_edit")
                 },
                 onStatisticsClick = { navController.navigate("statistics") },
-                onSettingsClick = { navController.navigate("settings") }
+                onSettingsClick = { navController.navigate("settings") },
+                simpleMode = userPreferences.simpleMode
             )
         }
         composable("add_edit") {
             AddEditReminderScreen(
                 viewModel = viewModel,
                 reminder = selectedReminder,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                simpleMode = userPreferences.simpleMode
             )
         }
         composable("statistics") {
@@ -181,6 +186,12 @@ fun ReminderAppContent(
         composable("settings") {
             SettingsScreen(
                 viewModel = settingsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onHelpClick = { navController.navigate("help") }
+            )
+        }
+        composable("help") {
+            HelpScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

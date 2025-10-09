@@ -2,6 +2,7 @@ package com.reminder.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.data.preferences.UserPreferences
@@ -37,6 +38,18 @@ class SettingsViewModel(
     fun setOnboardingCompleted() {
         viewModelScope.launch {
             preferencesRepository.updateOnboardingCompleted(true)
+        }
+    }
+
+    fun updateFontSize(fontSize: FontSize) {
+        viewModelScope.launch {
+            preferencesRepository.updateFontSize(fontSize)
+        }
+    }
+
+    fun updateSimpleMode(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateSimpleMode(enabled)
         }
     }
 }

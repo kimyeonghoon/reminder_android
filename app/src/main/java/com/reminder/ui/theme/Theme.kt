@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.reminder.data.preferences.FontSize
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -31,6 +32,7 @@ private val LightColorScheme = lightColorScheme(
 fun ReminderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
+    fontSize: FontSize = FontSize.NORMAL,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -53,7 +55,7 @@ fun ReminderTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = getTypography(fontSize),
         content = content
     )
 }

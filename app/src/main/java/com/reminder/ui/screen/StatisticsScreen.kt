@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
@@ -162,7 +164,10 @@ fun CompletionRateCard(
                     progress = statistics.completionRate,
                     modifier = Modifier
                         .weight(1f)
-                        .height(24.dp),
+                        .height(24.dp)
+                        .semantics {
+                            contentDescription = "완료율 $completionPercentage 퍼센트"
+                        },
                     color = MaterialTheme.colorScheme.tertiary
                 )
 
@@ -205,6 +210,13 @@ fun PriorityDistributionChart(
                             transparentCircleRadius = 45f
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .semantics {
+                            contentDescription = "우선순위별 분포 차트. 높음 ${statistics.highPriorityCount}개, " +
+                                    "중간 ${statistics.mediumPriorityCount}개, 낮음 ${statistics.lowPriorityCount}개"
+                        },
                     update = { chart ->
                         val entries = mutableListOf<PieEntry>()
                         val colors = mutableListOf<Int>()
@@ -230,10 +242,7 @@ fun PriorityDistributionChart(
 
                         chart.data = PieData(dataSet)
                         chart.invalidate()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
+                    }
                 )
             } else {
                 Text(
@@ -264,6 +273,10 @@ fun CategoryDistributionChart(
                 style = MaterialTheme.typography.titleMedium
             )
 
+            val categoryText = statistics.categoryDistribution
+                .map { (category, count) -> "$category $count 개" }
+                .joinToString(", ")
+
             AndroidView(
                 factory = { context ->
                     PieChart(context).apply {
@@ -275,6 +288,12 @@ fun CategoryDistributionChart(
                         transparentCircleRadius = 45f
                     }
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .semantics {
+                        contentDescription = "카테고리별 분포 차트. $categoryText"
+                    },
                 update = { chart ->
                     val entries = statistics.categoryDistribution.map { (category, count) ->
                         PieEntry(count.toFloat(), category)
@@ -299,10 +318,7 @@ fun CategoryDistributionChart(
 
                     chart.data = PieData(dataSet)
                     chart.invalidate()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
+                }
             )
         }
     }
