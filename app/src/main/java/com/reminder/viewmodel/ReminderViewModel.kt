@@ -23,7 +23,8 @@ class ReminderViewModel(
     private val alarmScheduler: AlarmScheduler,
     private val database: com.reminder.data.database.ReminderDatabase,
     private val analyticsHelper: AnalyticsHelper,
-    private val snoozeManager: SnoozeManager
+    private val snoozeManager: SnoozeManager,
+    private val locationManager: com.reminder.location.LocationManager
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -536,4 +537,90 @@ class ReminderViewModel(
      */
     val snoozedReminders = database.reminderDao().getSnoozedReminders()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // ==================== 위치 기반 리마인더 관련 함수 ====================
+
+    /**
+     * 위치 권한 확인
+     */
+    fun hasLocationPermission(): Boolean {
+        return locationManager.hasLocationPermission()
+    }
+
+    /**
+     * 백그라운드 위치 권한 확인
+     */
+    fun hasBackgroundLocationPermission(): Boolean {
+        return locationManager.hasBackgroundLocationPermission()
+    }
+
+    /**
+     * 현재 위치 가져오기
+     */
+    suspend fun getCurrentLocation(): Pair<Double, Double>? {
+        return try {
+            locationManager.getCurrentLocation()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 마지막으로 알려진 위치 가져오기
+     */
+    suspend fun getLastKnownLocation(): Pair<Double, Double>? {
+        return locationManager.getLastKnownLocation()
+    }
+
+    /**
+     * 리마인더에 위치 추가
+     */
+    fun addLocationToReminder(
+        reminder: ReminderEntity,
+        latitude: Double,
+        longitude: Double,
+        locationName: String,
+        radius: Float = com.reminder.location.LocationManager.DEFAULT_RADIUS
+    ) {
+        viewModelScope.launch {
+            val updated = reminder.copy(
+                locationLatitude = latitude,
+                locationLongitude = longitude,
+                locationName = locationName,
+                locationRadius = radius,
+                updatedAt = LocalDateTime.now()
+            )
+            repository.updateReminder(updated)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logLocationAdded()
+        }
+    }
+
+    /**
+     * 리마인더에서 위치 제거
+     */
+    fun removeLocationFromReminder(reminder: ReminderEntity) {
+        viewModelScope.launch {
+            val updated = reminder.copy(
+                locationLatitude = null,
+                locationLongitude = null,
+                locationName = null,
+                locationRadius = null,
+                updatedAt = LocalDateTime.now()
+            )
+            repository.updateReminder(updated)
+        }
+    }
+
+    /**
+     * 현재 위치가 리마인더 위치 범위 내에 있는지 확인
+     */
+    suspend fun isWithinReminderRadius(reminder: ReminderEntity): Boolean {
+        val lat = reminder.locationLatitude ?: return false
+        val lon = reminder.locationLongitude ?: return false
+        val radius = reminder.locationRadius ?: com.reminder.location.LocationManager.DEFAULT_RADIUS
+
+        return locationManager.isWithinRadius(lat, lon, radius)
+    }
 }
