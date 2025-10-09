@@ -37,7 +37,6 @@ fun CompletionHistoryScreen(
     var completionCounts by remember { mutableStateOf<Map<LocalDateTime, Int>>(emptyMap()) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var selectedDayReminders by remember { mutableStateOf<List<ReminderEntity>>(emptyList()) }
-    val scope = rememberCoroutineScope()
 
     // 현재 월의 완료 개수 로드
     LaunchedEffect(currentYearMonth) {
@@ -172,7 +171,6 @@ fun CalendarGrid(
 
         // 날짜 그리드
         val firstDayOfMonth = yearMonth.atDay(1)
-        val lastDayOfMonth = yearMonth.atEndOfMonth()
         val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7 // 0 = Sunday
         val daysInMonth = yearMonth.lengthOfMonth()
 

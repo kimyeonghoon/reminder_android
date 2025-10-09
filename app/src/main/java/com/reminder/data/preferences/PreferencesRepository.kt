@@ -23,6 +23,11 @@ class PreferencesRepository(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FONT_SIZE = stringPreferencesKey("font_size")
         val SIMPLE_MODE = booleanPreferencesKey("simple_mode")
+
+        // 알림 설정
+        val NOTIFICATION_SOUND = booleanPreferencesKey("notification_sound")
+        val NOTIFICATION_VIBRATION = booleanPreferencesKey("notification_vibration")
+        val NOTIFICATION_LED = booleanPreferencesKey("notification_led")
     }
 
     val userPreferences: Flow<UserPreferences> = dataStore.data
@@ -52,12 +57,20 @@ class PreferencesRepository(
             val onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
             val simpleMode = preferences[PreferencesKeys.SIMPLE_MODE] ?: false
 
+            // 알림 설정 (기본값: 모두 활성화)
+            val notificationSound = preferences[PreferencesKeys.NOTIFICATION_SOUND] ?: true
+            val notificationVibration = preferences[PreferencesKeys.NOTIFICATION_VIBRATION] ?: true
+            val notificationLed = preferences[PreferencesKeys.NOTIFICATION_LED] ?: true
+
             UserPreferences(
                 themeMode = themeMode,
                 dynamicColor = dynamicColor,
                 onboardingCompleted = onboardingCompleted,
                 fontSize = fontSize,
-                simpleMode = simpleMode
+                simpleMode = simpleMode,
+                notificationSound = notificationSound,
+                notificationVibration = notificationVibration,
+                notificationLed = notificationLed
             )
         }
 
@@ -88,6 +101,24 @@ class PreferencesRepository(
     suspend fun updateSimpleMode(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.SIMPLE_MODE] = enabled
+        }
+    }
+
+    suspend fun updateNotificationSound(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATION_SOUND] = enabled
+        }
+    }
+
+    suspend fun updateNotificationVibration(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATION_VIBRATION] = enabled
+        }
+    }
+
+    suspend fun updateNotificationLed(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATION_LED] = enabled
         }
     }
 

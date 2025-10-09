@@ -35,7 +35,7 @@ class BootReceiver : BroadcastReceiver() {
                     // 완료되지 않은 모든 리마인더 가져오기
                     repository.activeReminders.collect { reminders ->
                         reminders
-                            .filter { it.dueDateTime != null && it.dueDateTime!!.isAfter(LocalDateTime.now()) }
+                            .filter { it.dueDateTime != null && it.dueDateTime.isAfter(LocalDateTime.now()) }
                             .forEach { reminder ->
                                 alarmScheduler.schedule(reminder)
                                 Log.d(TAG, "Rescheduled alarm for reminder: ${reminder.title}")

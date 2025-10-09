@@ -8,5 +8,10 @@ data class UserPreferences(
     val dynamicColor: Boolean = true,  // Material You 동적 컬러 사용 여부
     val onboardingCompleted: Boolean = false,  // 온보딩 완료 여부
     val fontSize: FontSize = FontSize.NORMAL,  // 글씨 크기
-    val simpleMode: Boolean = false  // 간편 모드
+    val simpleMode: Boolean = false,  // 간편 모드
+
+    // 알림 설정
+    val notificationSound: Boolean = true,  // 알림 소리
+    val notificationVibration: Boolean = true,  // 진동
+    val notificationLed: Boolean = true  // LED 표시등
 )
