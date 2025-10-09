@@ -26,7 +26,8 @@ class ReminderViewModel(
     private val snoozeManager: SnoozeManager,
     private val locationManager: com.reminder.location.LocationManager,
     private val ttsHelper: com.reminder.tts.TtsHelper,
-    private val categorySuggestionHelper: com.reminder.ml.CategorySuggestionHelper
+    private val categorySuggestionHelper: com.reminder.ml.CategorySuggestionHelper,
+    private val completionPatternAnalyzer: com.reminder.analytics.CompletionPatternAnalyzer
 ) : ViewModel() {
 
     val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
@@ -783,5 +784,70 @@ class ReminderViewModel(
      */
     fun getDefaultCategories(): List<String> {
         return com.reminder.ml.CategorySuggestionHelper.DEFAULT_CATEGORIES
+    }
+
+    // ==================== 완료 패턴 분석 관련 함수 ====================
+
+    /**
+     * 완료 패턴 분석
+     */
+    suspend fun analyzeCompletionPattern(): com.reminder.analytics.CompletionPatternAnalyzer.CompletionPattern? {
+        val allReminders = repository.getAllRemindersList()
+        val pattern = completionPatternAnalyzer.analyzeCompletionPattern(allReminders)
+
+        // Analytics 이벤트 로깅
+        if (pattern != null) {
+            analyticsHelper.logPatternAnalyzed(pattern.completionRate)
+        }
+
+        return pattern
+    }
+
+    /**
+     * 최적의 리마인더 시간 제안
+     */
+    suspend fun suggestOptimalTime(dueDate: java.time.LocalDate): LocalDateTime {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.suggestOptimalTime(pattern, dueDate)
+    }
+
+    /**
+     * 완료하기 좋은 시간대 목록
+     */
+    suspend fun getBestCompletionHours(): List<Int> {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.getBestCompletionHours(pattern)
+    }
+
+    /**
+     * 완료하기 좋은 요일 목록
+     */
+    suspend fun getBestCompletionDays(): List<java.time.DayOfWeek> {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.getBestCompletionDays(pattern)
+    }
+
+    /**
+     * 완료 패턴 요약 텍스트
+     */
+    suspend fun getPatternSummary(): String {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.getPatternSummary(pattern)
+    }
+
+    /**
+     * 특정 시간대의 완료 확률
+     */
+    suspend fun getCompletionProbabilityByHour(hour: Int): Double {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.getCompletionProbability(pattern, hour)
+    }
+
+    /**
+     * 특정 요일의 완료 확률
+     */
+    suspend fun getCompletionProbabilityByDay(day: java.time.DayOfWeek): Double {
+        val pattern = analyzeCompletionPattern()
+        return completionPatternAnalyzer.getCompletionProbability(pattern, day)
     }
 }
