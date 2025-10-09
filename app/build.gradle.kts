@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 20
-        versionName = "1.18.0"
+        versionCode = 21
+        versionName = "1.19.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -84,6 +84,9 @@ dependencies {
 
     // Image Loading (Coil - Updated)
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    // Badge Counter
+    implementation("me.leolin:ShortcutBadger:1.1.22")
 
     // Reorderable (Drag & Drop)
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")

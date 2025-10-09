@@ -15,5 +15,8 @@ data class UserPreferences(
     // 알림 설정
     val notificationSound: Boolean = true,  // 알림 소리
     val notificationVibration: Boolean = true,  // 진동
-    val notificationLed: Boolean = true  // LED 표시등
+    val notificationLed: Boolean = true,  // LED 표시등
+
+    // 배지 설정
+    val badgeEnabled: Boolean = true  // 앱 아이콘 배지 표시
 )
