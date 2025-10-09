@@ -1,6 +1,7 @@
 package com.reminder.ui.screen
 
 import androidx.compose.animation.core.tween
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.reminder.data.entity.FilterDate
 import com.reminder.data.entity.FilterPriority
@@ -34,12 +36,43 @@ fun HomeScreen(
     onSettingsClick: () -> Unit = {},
     simpleMode: Boolean = false
 ) {
+    val context = LocalContext.current
     val activeReminders by viewModel.activeReminders.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     var showSearchBar by remember { mutableStateOf(false) }
     var selectedPriorityFilter by remember { mutableStateOf(FilterPriority.ALL) }
     var selectedDateFilter by remember { mutableStateOf(FilterDate.ALL) }
     var selectedSortOption by remember { mutableStateOf(SortOption.BY_DATE_ASC) }
+
+    // 리마인더 공유 함수
+    val shareReminder: (ReminderEntity) -> Unit = { reminder ->
+        val shareText = buildString {
+            append("📋 ${reminder.title}\n\n")
+            if (reminder.description.isNotBlank()) {
+                append("${reminder.description}\n\n")
+            }
+            reminder.dueDateTime?.let {
+                append("📅 마감: ${it.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))}\n")
+            }
+            if (reminder.category.isNotBlank()) {
+                append("🏷️ 카테고리: ${reminder.category}\n")
+            }
+            val priority = when (reminder.priority) {
+                com.reminder.data.entity.Priority.HIGH -> "높음"
+                com.reminder.data.entity.Priority.MEDIUM -> "중간"
+                com.reminder.data.entity.Priority.LOW -> "낮음"
+            }
+            append("⭐ 우선순위: $priority\n")
+        }
+
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "리마인더 공유")
+        context.startActivity(shareIntent)
+    }
 
     Scaffold(
         topBar = {
@@ -171,7 +204,8 @@ fun HomeScreen(
                             modifier = Modifier.animateItemPlacement(
                                 animationSpec = tween(durationMillis = 300)
                             ),
-                            subTaskProgress = subTaskProgressMap[reminder.id]
+                            subTaskProgress = subTaskProgressMap[reminder.id],
+                            onShare = { shareReminder(reminder) }
                         )
                     }
                 }

@@ -6,6 +6,10 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.reminder.BuildConfig
 import com.reminder.auth.AuthManager
@@ -28,7 +32,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class ReminderApplication : Application() {
+class ReminderApplication : Application(), ImageLoaderFactory {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     val database by lazy { ReminderDatabase.getDatabase(this) }
@@ -123,5 +127,25 @@ class ReminderApplication : Application() {
                 ReminderWidgetProvider.updateAllWidgets(this)
             }
             .launchIn(applicationScope)
+    }
+
+    /**
+     * Coil ImageLoader 설정 (메모리 최적화)
+     */
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.25) // 메모리의 25% 사용
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(cacheDir.resolve("image_cache"))
+                    .maxSizeBytes(50 * 1024 * 1024) // 50MB
+                    .build()
+            }
+            .respectCacheHeaders(false) // 캐시 헤더 무시 (로컬 이미지용)
+            .build()
     }
 }

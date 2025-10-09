@@ -38,6 +38,14 @@ interface SubTaskDao {
     suspend fun update(subTask: SubTask)
 
     /**
+     * 여러 서브태스크 업데이트 (재정렬 시 사용)
+     *
+     * @param subTasks 업데이트할 서브태스크 리스트
+     */
+    @Update
+    suspend fun updateAll(subTasks: List<SubTask>)
+
+    /**
      * 서브태스크 삭제
      *
      * @param subTask 삭제할 서브태스크

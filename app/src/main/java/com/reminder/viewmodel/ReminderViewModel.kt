@@ -235,6 +235,19 @@ class ReminderViewModel(
     }
 
     /**
+     * 서브태스크 재정렬 (드래그 앤 드롭)
+     */
+    fun reorderSubTasks(subTasks: List<com.reminder.data.entity.SubTask>) {
+        viewModelScope.launch {
+            // position 값을 새로운 순서로 업데이트
+            val reorderedSubTasks = subTasks.mapIndexed { index, subTask ->
+                subTask.copy(position = index)
+            }
+            database.subTaskDao().updateAll(reorderedSubTasks)
+        }
+    }
+
+    /**
      * 서브태스크 진행률 계산 (완료/전체)
      */
     suspend fun getSubTaskProgress(reminderId: Long): Pair<Int, Int> {

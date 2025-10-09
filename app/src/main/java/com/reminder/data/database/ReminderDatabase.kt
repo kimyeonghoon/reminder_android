@@ -134,6 +134,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     "reminder_database"
                 )
                     .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance
                 instance
