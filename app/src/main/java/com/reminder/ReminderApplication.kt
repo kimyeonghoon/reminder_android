@@ -66,6 +66,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val locationManager by lazy { com.reminder.location.LocationManager(this) }
     val ttsHelper by lazy { com.reminder.tts.TtsHelper(this) }
     val categorySuggestionHelper by lazy { com.reminder.ml.CategorySuggestionHelper() }
+    val completionPatternAnalyzer by lazy { com.reminder.analytics.CompletionPatternAnalyzer() }
 
     override fun onCreate() {
         super.onCreate()

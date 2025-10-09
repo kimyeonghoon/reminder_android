@@ -217,4 +217,17 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
         }
         firebaseAnalytics.logEvent("category_suggested", bundle)
     }
+
+    /**
+     * 완료 패턴 분석 이벤트 로깅
+     *
+     * @param completionRate 완료율
+     */
+    fun logPatternAnalyzed(completionRate: Double) {
+        val bundle = Bundle().apply {
+            putDouble("completion_rate", completionRate)
+            putInt("completion_rate_percent", (completionRate * 100).toInt())
+        }
+        firebaseAnalytics.logEvent("pattern_analyzed", bundle)
+    }
 }
