@@ -6,6 +6,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.reminder.BuildConfig
 import com.reminder.auth.AuthManager
 import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.preferences.PreferencesRepository
@@ -50,6 +52,9 @@ class ReminderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // Firebase Crashlytics 초기화
+        setupCrashlytics()
+
         // NotificationChannel 생성
         notificationHelper.createNotificationChannel()
 
@@ -63,6 +68,29 @@ class ReminderApplication : Application() {
 
         // 위젯 업데이트 관찰
         setupWidgetUpdates()
+    }
+
+    /**
+     * Firebase Crashlytics 초기화 및 설정
+     */
+    private fun setupCrashlytics() {
+        val crashlytics = FirebaseCrashlytics.getInstance()
+
+        // 앱 버전 정보 설정
+        crashlytics.setCustomKey("app_version", BuildConfig.VERSION_NAME)
+        crashlytics.setCustomKey("version_code", BuildConfig.VERSION_CODE)
+
+        // Debug 모드에서는 Crashlytics 비활성화 (선택사항)
+        crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        // 전역 에러 핸들러 설정 (추가 로깅용)
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            crashlytics.log("Uncaught exception in thread: ${thread.name}")
+            crashlytics.recordException(throwable)
+            // 기본 핸들러 호출 (앱 크래시 처리)
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
     }
 
     private fun setupSyncWorker() {
