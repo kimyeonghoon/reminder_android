@@ -185,6 +185,18 @@ fun SettingsScreen(
 
             Divider()
 
+            // 알림 설정 섹션
+            NotificationSection(
+                soundEnabled = userPreferences.notificationSound,
+                vibrationEnabled = userPreferences.notificationVibration,
+                ledEnabled = userPreferences.notificationLed,
+                onSoundChange = { viewModel.updateNotificationSound(it) },
+                onVibrationChange = { viewModel.updateNotificationVibration(it) },
+                onLedChange = { viewModel.updateNotificationLed(it) }
+            )
+
+            Divider()
+
             // 백업/복원 섹션 (간편 모드에서는 숨기기)
             if (!userPreferences.simpleMode) {
                 BackupRestoreSection(
@@ -428,6 +440,121 @@ private fun getFontSizeLabel(fontSize: FontSize): String {
         FontSize.NORMAL -> "보통"
         FontSize.LARGE -> "크게"
         FontSize.EXTRA_LARGE -> "아주 크게"
+    }
+}
+
+@Composable
+fun NotificationSection(
+    soundEnabled: Boolean,
+    vibrationEnabled: Boolean,
+    ledEnabled: Boolean,
+    onSoundChange: (Boolean) -> Unit,
+    onVibrationChange: (Boolean) -> Unit,
+    onLedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "알림 설정",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        // 소리 설정
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "알림 소리",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "알림 수신 시 소리 재생",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = soundEnabled,
+                onCheckedChange = onSoundChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "알림 소리 ${if (soundEnabled) "켜짐" else "꺼짐"}"
+                }
+            )
+        }
+
+        // 진동 설정
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "진동",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "알림 수신 시 진동",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = vibrationEnabled,
+                onCheckedChange = onVibrationChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "진동 ${if (vibrationEnabled) "켜짐" else "꺼짐"}"
+                }
+            )
+        }
+
+        // LED 설정
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "LED 표시등",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "알림 수신 시 LED 깜박임",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = ledEnabled,
+                onCheckedChange = onLedChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "LED 표시등 ${if (ledEnabled) "켜짐" else "꺼짐"}"
+                }
+            )
+        }
     }
 }
 

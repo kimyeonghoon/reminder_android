@@ -52,4 +52,22 @@ class SettingsViewModel(
             preferencesRepository.updateSimpleMode(enabled)
         }
     }
+
+    fun updateNotificationSound(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateNotificationSound(enabled)
+        }
+    }
+
+    fun updateNotificationVibration(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateNotificationVibration(enabled)
+        }
+    }
+
+    fun updateNotificationLed(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateNotificationLed(enabled)
+        }
+    }
 }
