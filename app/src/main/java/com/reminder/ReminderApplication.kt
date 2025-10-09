@@ -19,6 +19,7 @@ import com.reminder.auth.AuthManager
 import com.reminder.backup.BackupManager
 import com.reminder.badge.BadgeManager
 import com.reminder.data.database.ReminderDatabase
+import com.reminder.snooze.SnoozeManager
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.remote.FirestoreDataSource
 import com.reminder.data.repository.FirebaseSyncRepository
@@ -61,6 +62,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val analyticsHelper by lazy { AnalyticsHelper(FirebaseAnalytics.getInstance(this)) }
     val crashlyticsHelper by lazy { CrashlyticsHelper(FirebaseCrashlytics.getInstance()) }
     val badgeManager by lazy { BadgeManager(this) }
+    val snoozeManager by lazy { SnoozeManager(database.reminderDao()) }
 
     override fun onCreate() {
         super.onCreate()

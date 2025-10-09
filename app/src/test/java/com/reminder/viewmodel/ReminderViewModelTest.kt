@@ -26,6 +26,7 @@ class ReminderViewModelTest {
     private lateinit var alarmScheduler: com.reminder.notification.AlarmScheduler
     private lateinit var database: com.reminder.data.database.ReminderDatabase
     private lateinit var analyticsHelper: com.reminder.analytics.AnalyticsHelper
+    private lateinit var snoozeManager: com.reminder.snooze.SnoozeManager
     private lateinit var viewModel: ReminderViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -36,13 +37,19 @@ class ReminderViewModelTest {
         alarmScheduler = mock()
         database = mock()
         analyticsHelper = mock()
+        snoozeManager = mock()
+
+        // Mock DAO and its methods
+        val reminderDao = mock<com.reminder.data.dao.ReminderDao>()
+        whenever(reminderDao.getSnoozedReminders()).thenReturn(flowOf(emptyList()))
+        whenever(database.reminderDao()).thenReturn(reminderDao)
 
         // Mock repository flows
         whenever(repository.allReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.activeReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.completedReminders).thenReturn(flowOf(emptyList()))
 
-        viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper)
+        viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper, snoozeManager)
     }
 
     @After
