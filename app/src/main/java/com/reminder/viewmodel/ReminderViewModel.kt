@@ -623,4 +623,50 @@ class ReminderViewModel(
 
         return locationManager.isWithinRadius(lat, lon, radius)
     }
+
+    // ==================== 웹 링크 관련 함수 ====================
+
+    /**
+     * URL이 유효한지 확인
+     */
+    fun isValidUrl(url: String?): Boolean {
+        return com.reminder.util.UrlValidator.isValidUrl(url)
+    }
+
+    /**
+     * URL 정규화 (http:// 또는 https:// 접두사 추가)
+     */
+    fun normalizeUrl(url: String): String {
+        return com.reminder.util.UrlValidator.normalizeUrl(url)
+    }
+
+    /**
+     * 리마인더에 웹 링크 추가
+     */
+    fun addWebLinkToReminder(reminder: ReminderEntity, webLink: String) {
+        viewModelScope.launch {
+            val normalizedUrl = normalizeUrl(webLink)
+            val updated = reminder.copy(
+                webLink = normalizedUrl,
+                updatedAt = LocalDateTime.now()
+            )
+            repository.updateReminder(updated)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logWebLinkAdded()
+        }
+    }
+
+    /**
+     * 리마인더에서 웹 링크 제거
+     */
+    fun removeWebLinkFromReminder(reminder: ReminderEntity) {
+        viewModelScope.launch {
+            val updated = reminder.copy(
+                webLink = null,
+                updatedAt = LocalDateTime.now()
+            )
+            repository.updateReminder(updated)
+        }
+    }
 }
