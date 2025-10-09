@@ -271,6 +271,48 @@ fun ThemeSection(
     }
 }
 
+/**
+ * 재사용 가능한 설정 스위치 아이템
+ */
+@Composable
+private fun SettingsSwitchItem(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.semantics {
+                contentDescription = "$title ${if (checked) "켜짐" else "꺼짐"}"
+            }
+        )
+    }
+}
+
 @Composable
 fun DynamicColorSection(
     dynamicColorEnabled: Boolean,
@@ -287,35 +329,12 @@ fun DynamicColorSection(
             color = MaterialTheme.colorScheme.primary
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "동적 컬러 (Material You)",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "시스템 배경화면 색상 사용",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Switch(
-                checked = dynamicColorEnabled,
-                onCheckedChange = onDynamicColorChange,
-                modifier = Modifier.semantics {
-                    contentDescription = "동적 컬러 사용 ${if (dynamicColorEnabled) "켜짐" else "꺼짐"}"
-                }
-            )
-        }
+        SettingsSwitchItem(
+            title = "동적 컬러 (Material You)",
+            description = "시스템 배경화면 색상 사용",
+            checked = dynamicColorEnabled,
+            onCheckedChange = onDynamicColorChange
+        )
 
         if (!dynamicColorEnabled) {
             Text(
@@ -400,35 +419,12 @@ fun SimpleModeSection(
             color = MaterialTheme.colorScheme.primary
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "간편 모드 사용",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "복잡한 기능 숨김, 더 큰 버튼",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Switch(
-                checked = simpleModeEnabled,
-                onCheckedChange = onSimpleModeChange,
-                modifier = Modifier.semantics {
-                    contentDescription = "간편 모드 ${if (simpleModeEnabled) "켜짐" else "꺼짐"}"
-                }
-            )
-        }
+        SettingsSwitchItem(
+            title = "간편 모드 사용",
+            description = "복잡한 기능 숨김, 더 큰 버튼",
+            checked = simpleModeEnabled,
+            onCheckedChange = onSimpleModeChange
+        )
     }
 }
 
@@ -463,97 +459,28 @@ fun NotificationSection(
         )
 
         // 소리 설정
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "알림 소리",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "알림 수신 시 소리 재생",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Switch(
-                checked = soundEnabled,
-                onCheckedChange = onSoundChange,
-                modifier = Modifier.semantics {
-                    contentDescription = "알림 소리 ${if (soundEnabled) "켜짐" else "꺼짐"}"
-                }
-            )
-        }
+        SettingsSwitchItem(
+            title = "알림 소리",
+            description = "알림 수신 시 소리 재생",
+            checked = soundEnabled,
+            onCheckedChange = onSoundChange
+        )
 
         // 진동 설정
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "진동",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "알림 수신 시 진동",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Switch(
-                checked = vibrationEnabled,
-                onCheckedChange = onVibrationChange,
-                modifier = Modifier.semantics {
-                    contentDescription = "진동 ${if (vibrationEnabled) "켜짐" else "꺼짐"}"
-                }
-            )
-        }
+        SettingsSwitchItem(
+            title = "진동",
+            description = "알림 수신 시 진동",
+            checked = vibrationEnabled,
+            onCheckedChange = onVibrationChange
+        )
 
         // LED 설정
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "LED 표시등",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "알림 수신 시 LED 깜박임",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Switch(
-                checked = ledEnabled,
-                onCheckedChange = onLedChange,
-                modifier = Modifier.semantics {
-                    contentDescription = "LED 표시등 ${if (ledEnabled) "켜짐" else "꺼짐"}"
-                }
-            )
-        }
+        SettingsSwitchItem(
+            title = "LED 표시등",
+            description = "알림 수신 시 LED 깜박임",
+            checked = ledEnabled,
+            onCheckedChange = onLedChange
+        )
     }
 }
 
