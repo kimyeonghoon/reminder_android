@@ -180,6 +180,13 @@ fun ReminderAppContent(
         composable("statistics") {
             StatisticsScreen(
                 viewModel = statisticsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onCompletionHistoryClick = { navController.navigate("completion_history") }
+            )
+        }
+        composable("completion_history") {
+            com.reminder.ui.screen.CompletionHistoryScreen(
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

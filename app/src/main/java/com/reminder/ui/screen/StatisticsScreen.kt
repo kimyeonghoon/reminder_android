@@ -29,6 +29,7 @@ import com.reminder.viewmodel.StatisticsViewModel
 fun StatisticsScreen(
     viewModel: StatisticsViewModel,
     onNavigateBack: () -> Unit,
+    onCompletionHistoryClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val statistics by viewModel.statistics.collectAsState()
@@ -56,6 +57,14 @@ fun StatisticsScreen(
         ) {
             // 전체 통계 카드
             OverallStatisticsCard(statistics = statistics)
+
+            // 완료 이력 달력 버튼
+            Button(
+                onClick = onCompletionHistoryClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("완료 이력 달력 보기")
+            }
 
             // 완료율 카드
             CompletionRateCard(statistics = statistics)
