@@ -38,6 +38,13 @@ val Pink40New = Color(0xFFD81B60)
 val PinkGrey40 = Color(0xFF7D4E5B)
 val LightPink40 = Color(0xFFE91E63)
 
+// High Contrast Mode Colors (더 강한 대비)
+val HighContrastDark = Color(0xFF000000)  // 순수 검정
+val HighContrastLight = Color(0xFFFFFFFF)  // 순수 흰색
+val HighContrastPrimary = Color(0xFF0066FF)  // 선명한 파랑
+val HighContrastSecondary = Color(0xFFFFAA00)  // 선명한 주황
+val HighContrastError = Color(0xFFFF0000)  // 선명한 빨강
+
 // Priority Colors
 val HighPriority = Color(0xFFEF5350)
 val MediumPriority = Color(0xFFFFA726)

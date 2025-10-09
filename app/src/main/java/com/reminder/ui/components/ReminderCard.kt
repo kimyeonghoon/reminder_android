@@ -20,6 +20,7 @@ import com.reminder.data.entity.ReminderEntity
 import com.reminder.ui.theme.HighPriority
 import com.reminder.ui.theme.LowPriority
 import com.reminder.ui.theme.MediumPriority
+import com.reminder.util.rememberHapticFeedback
 import java.time.format.DateTimeFormatter
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -39,9 +40,14 @@ fun ReminderCard(
     isSelectionMode: Boolean = false,
     onSelectionToggle: (() -> Unit)? = null
 ) {
+    val haptic = rememberHapticFeedback()
+
     // 불필요한 재구성 방지를 위해 람다를 remember로 캐싱
     val onCheckChange = remember(reminder.id) {
-        { checked: Boolean -> onCheckedChange(checked) }
+        { checked: Boolean ->
+            haptic.confirm()
+            onCheckedChange(checked)
+        }
     }
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -143,7 +149,10 @@ fun ReminderCard(
 
             if (!isSelectionMode) {
                 onDuplicate?.let { duplicateAction ->
-                    IconButton(onClick = duplicateAction) {
+                    IconButton(onClick = {
+                        haptic.click()
+                        duplicateAction()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ContentCopy,
                             contentDescription = "복제",
@@ -153,7 +162,10 @@ fun ReminderCard(
                 }
 
                 onShare?.let { shareAction ->
-                    IconButton(onClick = shareAction) {
+                    IconButton(onClick = {
+                        haptic.click()
+                        shareAction()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "공유",
@@ -162,7 +174,10 @@ fun ReminderCard(
                     }
                 }
 
-                IconButton(onClick = onDelete) {
+                IconButton(onClick = {
+                    haptic.reject()
+                    onDelete()
+                }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "삭제",

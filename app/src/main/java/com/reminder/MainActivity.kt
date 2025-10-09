@@ -120,6 +120,7 @@ fun ReminderApp() {
         darkTheme = darkTheme,
         themePreset = userPreferences.themePreset,
         dynamicColor = userPreferences.dynamicColor,
+        highContrastMode = userPreferences.highContrastMode,
         fontSize = userPreferences.fontSize
     ) {
         Surface(

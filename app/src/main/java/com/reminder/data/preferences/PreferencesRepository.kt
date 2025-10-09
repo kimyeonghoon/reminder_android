@@ -21,6 +21,7 @@ class PreferencesRepository(
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val THEME_PRESET = stringPreferencesKey("theme_preset")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val HIGH_CONTRAST_MODE = booleanPreferencesKey("high_contrast_mode")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FONT_SIZE = stringPreferencesKey("font_size")
         val SIMPLE_MODE = booleanPreferencesKey("simple_mode")
@@ -62,6 +63,7 @@ class PreferencesRepository(
             }
 
             val dynamicColor = preferences[PreferencesKeys.DYNAMIC_COLOR] ?: true
+            val highContrastMode = preferences[PreferencesKeys.HIGH_CONTRAST_MODE] ?: false
             val onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
             val simpleMode = preferences[PreferencesKeys.SIMPLE_MODE] ?: false
 
@@ -74,6 +76,7 @@ class PreferencesRepository(
                 themeMode = themeMode,
                 themePreset = themePreset,
                 dynamicColor = dynamicColor,
+                highContrastMode = highContrastMode,
                 onboardingCompleted = onboardingCompleted,
                 fontSize = fontSize,
                 simpleMode = simpleMode,
@@ -98,6 +101,12 @@ class PreferencesRepository(
     suspend fun updateDynamicColor(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.DYNAMIC_COLOR] = enabled
+        }
+    }
+
+    suspend fun updateHighContrastMode(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.HIGH_CONTRAST_MODE] = enabled
         }
     }
 

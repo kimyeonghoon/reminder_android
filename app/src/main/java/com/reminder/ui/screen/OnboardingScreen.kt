@@ -1,5 +1,7 @@
 package com.reminder.ui.screen
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,13 +11,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import com.reminder.util.rememberHapticFeedback
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 data class OnboardingPage(
     val icon: ImageVector,
@@ -58,6 +66,7 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
+    val haptic = rememberHapticFeedback()
 
     Box(
         modifier = Modifier
@@ -67,20 +76,36 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Pager
+            // Pager with page transition animations
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) { page ->
+                // 페이지 전환 애니메이션을 위한 offset 계산
+                val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                val scale = lerp(
+                    start = 0.85f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f)
+                )
+                val alpha = lerp(
+                    start = 0.5f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f)
+                )
+
                 OnboardingPageContent(
                     page = onboardingPages[page],
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scale(scale)
+                        .alpha(alpha)
                 )
             }
 
-            // Page Indicator
+            // Page Indicator with animation
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,15 +114,23 @@ fun OnboardingScreen(
             ) {
                 repeat(onboardingPages.size) { index ->
                     val isSelected = pagerState.currentPage == index
+                    val size by animateFloatAsState(
+                        targetValue = if (isSelected) 12f else 8f,
+                        animationSpec = tween(300),
+                        label = "indicator_size"
+                    )
+                    val alpha by animateFloatAsState(
+                        targetValue = if (isSelected) 1f else 0.3f,
+                        animationSpec = tween(300),
+                        label = "indicator_alpha"
+                    )
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
-                            .size(if (isSelected) 12.dp else 8.dp)
+                            .size(size.dp)
+                            .alpha(alpha)
                             .background(
-                                color = if (isSelected)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                color = MaterialTheme.colorScheme.primary,
                                 shape = MaterialTheme.shapes.small
                             )
                     )
@@ -114,7 +147,10 @@ fun OnboardingScreen(
             ) {
                 // Skip button (on all pages except last)
                 if (pagerState.currentPage < onboardingPages.size - 1) {
-                    TextButton(onClick = onFinished) {
+                    TextButton(onClick = {
+                        haptic.click()
+                        onFinished()
+                    }) {
                         Text("Skip")
                     }
                 } else {
@@ -124,6 +160,7 @@ fun OnboardingScreen(
                 // Next/Get Started button
                 Button(
                     onClick = {
+                        haptic.click()
                         if (pagerState.currentPage < onboardingPages.size - 1) {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
