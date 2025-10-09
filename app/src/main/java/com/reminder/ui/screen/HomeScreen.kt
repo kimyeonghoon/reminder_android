@@ -35,6 +35,7 @@ import com.reminder.data.entity.SortOption
 import com.reminder.ui.components.FilterChips
 import com.reminder.ui.components.ReminderCard
 import com.reminder.ui.components.SortDropdown
+import com.reminder.util.rememberHapticFeedback
 import com.reminder.viewmodel.ReminderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -48,6 +49,7 @@ fun HomeScreen(
     simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
+    val haptic = rememberHapticFeedback()
     val activeReminders by viewModel.activeReminders.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     var showSearchBar by remember { mutableStateOf(false) }
@@ -135,12 +137,14 @@ fun HomeScreen(
                     actions = {
                         IconButton(onClick = {
                             // 모두 선택
+                            haptic.click()
                             selectedReminders = sortedReminders.map { it.id }.toSet()
                         }) {
                             Icon(Icons.Default.SelectAll, contentDescription = "모두 선택")
                         }
                         IconButton(onClick = {
                             // 선택된 항목 완료
+                            haptic.confirm()
                             val toComplete = sortedReminders.filter { it.id in selectedReminders }
                             viewModel.completeReminders(toComplete)
                             isSelectionMode = false
@@ -150,6 +154,7 @@ fun HomeScreen(
                         }
                         IconButton(onClick = {
                             // 선택된 항목 삭제
+                            haptic.reject()
                             val toDelete = sortedReminders.filter { it.id in selectedReminders }
                             viewModel.deleteReminders(toDelete)
                             isSelectionMode = false
@@ -186,7 +191,10 @@ fun HomeScreen(
                 if (simpleMode) {
                     // 간편 모드에서는 큰 일반 FAB
                     FloatingActionButton(
-                        onClick = onAddClick,
+                        onClick = {
+                            haptic.click()
+                            onAddClick()
+                        },
                         modifier = Modifier.size(72.dp)
                     ) {
                         Icon(
@@ -198,7 +206,10 @@ fun HomeScreen(
                 } else {
                     // 일반 모드에서는 Extended FAB (스크롤에 반응)
                     ExtendedFloatingActionButton(
-                        onClick = onAddClick,
+                        onClick = {
+                            haptic.click()
+                            onAddClick()
+                        },
                         expanded = expandedFab,
                         icon = { Icon(Icons.Default.Add, contentDescription = null) },
                         text = { Text("리마인더 추가") }
@@ -309,6 +320,7 @@ fun HomeScreen(
                                             Modifier.combinedClickable(
                                                 onClick = {},
                                                 onLongClick = {
+                                                    haptic.longPress()
                                                     isSelectionMode = true
                                                     selectedReminders = setOf(reminder.id)
                                                 }

@@ -69,15 +69,50 @@ private val PinkLightColorScheme = lightColorScheme(
     tertiary = LightPink40
 )
 
+// High Contrast Color Schemes
+private val HighContrastDarkColorScheme = darkColorScheme(
+    primary = HighContrastPrimary,
+    onPrimary = HighContrastLight,
+    secondary = HighContrastSecondary,
+    onSecondary = HighContrastDark,
+    tertiary = HighContrastSecondary,
+    background = HighContrastDark,
+    onBackground = HighContrastLight,
+    surface = HighContrastDark,
+    onSurface = HighContrastLight,
+    error = HighContrastError,
+    onError = HighContrastLight
+)
+
+private val HighContrastLightColorScheme = lightColorScheme(
+    primary = HighContrastPrimary,
+    onPrimary = HighContrastLight,
+    secondary = HighContrastSecondary,
+    onSecondary = HighContrastDark,
+    tertiary = HighContrastSecondary,
+    background = HighContrastLight,
+    onBackground = HighContrastDark,
+    surface = HighContrastLight,
+    onSurface = HighContrastDark,
+    error = HighContrastError,
+    onError = HighContrastLight
+)
+
 @Composable
 fun ReminderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     themePreset: ThemePreset = ThemePreset.PURPLE,
     dynamicColor: Boolean = true,
+    highContrastMode: Boolean = false,
     fontSize: FontSize = FontSize.NORMAL,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
+        // 고대비 모드가 최우선
+        highContrastMode -> {
+            if (darkTheme) HighContrastDarkColorScheme else HighContrastLightColorScheme
+        }
+
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

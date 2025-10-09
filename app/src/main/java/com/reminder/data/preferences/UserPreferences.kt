@@ -7,6 +7,7 @@ data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val themePreset: ThemePreset = ThemePreset.PURPLE,  // 테마 프리셋 색상
     val dynamicColor: Boolean = true,  // Material You 동적 컬러 사용 여부
+    val highContrastMode: Boolean = false,  // 고대비 모드 (접근성)
     val onboardingCompleted: Boolean = false,  // 온보딩 완료 여부
     val fontSize: FontSize = FontSize.NORMAL,  // 글씨 크기
     val simpleMode: Boolean = false,  // 간편 모드
