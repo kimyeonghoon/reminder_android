@@ -3,6 +3,7 @@ package com.reminder.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,7 +31,8 @@ fun ReminderCard(
     onDelete: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    subTaskProgress: Pair<Int, Int>? = null // (완료, 전체)
+    subTaskProgress: Pair<Int, Int>? = null, // (완료, 전체)
+    onShare: (() -> Unit)? = null
 ) {
     // 불필요한 재구성 방지를 위해 람다를 remember로 캐싱
     val onCheckChange = remember(reminder.id) {
@@ -127,6 +129,16 @@ fun ReminderCard(
                             )
                         }
                     }
+                }
+            }
+
+            onShare?.let { shareAction ->
+                IconButton(onClick = shareAction) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "공유",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 

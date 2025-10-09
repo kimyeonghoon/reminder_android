@@ -5,9 +5,11 @@ import android.content.Intent
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,12 +39,15 @@ import com.reminder.ui.components.RecurrenceSelector
 import com.reminder.ui.components.SubTaskItem
 import com.reminder.ui.components.TimePickerField
 import com.reminder.viewmodel.ReminderViewModel
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun AddEditReminderScreen(
     viewModel: ReminderViewModel,
@@ -120,11 +125,20 @@ fun AddEditReminderScreen(
     var recurrenceEndDate by remember { mutableStateOf(reminder?.recurrenceEndDate) }
 
     // 서브태스크 관련 (편집 모드일 때만)
-    val subTasks = if (reminder != null) {
+    val subTasksFlow = if (reminder != null) {
         viewModel.getSubTasks(reminder.id).collectAsState(initial = emptyList())
     } else {
         remember { mutableStateOf(emptyList<SubTask>()) }
     }
+
+    // 드래그 앤 드롭을 위한 mutable list
+    var subTasks by remember { mutableStateOf(emptyList<SubTask>()) }
+
+    // Flow의 변경사항을 subTasks에 동기화
+    LaunchedEffect(subTasksFlow.value) {
+        subTasks = subTasksFlow.value
+    }
+
     var newSubTaskTitle by remember { mutableStateOf("") }
 
     // 이미지 관련 (편집 모드일 때만)
@@ -312,13 +326,49 @@ fun AddEditReminderScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // 서브태스크 리스트
-                subTasks.value.forEach { subTask ->
-                    SubTaskItem(
-                        subTask = subTask,
-                        onCheckedChange = { viewModel.toggleSubTaskCompletion(subTask) },
-                        onDelete = { viewModel.deleteSubTask(subTask) }
+                // 서브태스크 리스트 (드래그 앤 드롭 가능)
+                if (subTasks.isNotEmpty()) {
+                    val reorderableState = rememberReorderableLazyListState(
+                        onMove = { from, to ->
+                            subTasks = subTasks.toMutableList().apply {
+                                add(to.index, removeAt(from.index))
+                            }
+                            // 드래그 중 즉시 데이터베이스 업데이트
+                            viewModel.reorderSubTasks(subTasks)
+                        }
                     )
+
+                    LazyColumn(
+                        state = reorderableState.listState,
+                        modifier = Modifier
+                            .heightIn(max = 300.dp)
+                            .reorderable(reorderableState)
+                    ) {
+                        items(
+                            count = subTasks.size,
+                            key = { index -> subTasks[index].id }
+                        ) { index ->
+                            ReorderableItem(reorderableState, key = subTasks[index].id) { isDragging ->
+                                val subTask = subTasks[index]
+                                SubTaskItem(
+                                    subTask = subTask,
+                                    onCheckedChange = { viewModel.toggleSubTaskCompletion(subTask) },
+                                    onDelete = { viewModel.deleteSubTask(subTask) },
+                                    modifier = if (isDragging) {
+                                        Modifier.border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            shape = MaterialTheme.shapes.medium
+                                        )
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 // 새 서브태스크 추가

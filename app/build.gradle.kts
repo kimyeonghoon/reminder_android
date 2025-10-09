@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 12
-        versionName = "1.10.0"
+        versionCode = 13
+        versionName = "1.11.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -25,11 +25,16 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // 디버그 빌드에서도 R8 최적화 적용 (속도 개선)
+            isMinifyEnabled = false
         }
     }
 
@@ -79,6 +84,9 @@ dependencies {
 
     // Image Loading (Coil)
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Reorderable (Drag & Drop)
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
