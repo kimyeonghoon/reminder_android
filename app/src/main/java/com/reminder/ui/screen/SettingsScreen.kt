@@ -24,6 +24,7 @@ import com.reminder.viewmodel.SettingsViewModel
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onNavigateBack: () -> Unit,
+    onHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val userPreferences by viewModel.userPreferences.collectAsState()
@@ -78,6 +79,16 @@ fun SettingsScreen(
                 simpleModeEnabled = userPreferences.simpleMode,
                 onSimpleModeChange = { viewModel.updateSimpleMode(it) }
             )
+
+            Divider()
+
+            // 도움말
+            Button(
+                onClick = onHelpClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("도움말 보기")
+            }
         }
     }
 }

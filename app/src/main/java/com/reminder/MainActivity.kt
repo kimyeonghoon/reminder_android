@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
+import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
 import com.reminder.ui.screen.SettingsScreen
@@ -182,6 +183,12 @@ fun ReminderAppContent(
         composable("settings") {
             SettingsScreen(
                 viewModel = settingsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onHelpClick = { navController.navigate("help") }
+            )
+        }
+        composable("help") {
+            HelpScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
