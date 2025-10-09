@@ -1,12 +1,21 @@
 package com.reminder.ui.screen
 
+import android.Manifest
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
@@ -26,6 +35,7 @@ fun AddEditReminderScreen(
     reminder: ReminderEntity?,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     var title by remember { mutableStateOf(reminder?.title ?: "") }
     var description by remember { mutableStateOf(reminder?.description ?: "") }
     var category by remember { mutableStateOf(reminder?.category ?: "") }
@@ -33,6 +43,49 @@ fun AddEditReminderScreen(
     var selectedDate by remember { mutableStateOf(reminder?.dueDateTime?.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(reminder?.dueDateTime?.toLocalTime()) }
     var expanded by remember { mutableStateOf(false) }
+
+    // 음성 인식 권한 요청
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // 권한이 부여되면 음성 인식 시작
+        }
+    }
+
+    // 음성 인식 결과 처리
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val spokenText = result.data
+            ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            ?.get(0) ?: ""
+        if (spokenText.isNotBlank()) {
+            title = spokenText
+        }
+    }
+
+    // 음성 인식 시작 함수
+    val startVoiceRecognition: () -> Unit = {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RECORD_AUDIO
+        ) == PermissionChecker.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                )
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "할 일을 말씀해주세요")
+            }
+            speechRecognizerLauncher.launch(intent)
+        } else {
+            audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
 
     // 반복 설정
     var recurrencePattern by remember { mutableStateOf(reminder?.recurrencePattern ?: RecurrencePattern.NONE) }
@@ -70,13 +123,30 @@ fun AddEditReminderScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+
+                // 음성 입력 버튼 - 70대 사용자를 위해 큰 버튼
+                FilledIconButton(
+                    onClick = startVoiceRecognition,
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = "음성 입력",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = description,
