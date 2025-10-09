@@ -64,6 +64,31 @@ fun AddEditReminderScreen(
     var selectedTime by remember { mutableStateOf(reminder?.dueDateTime?.toLocalTime()) }
     var expanded by remember { mutableStateOf(false) }
 
+    // v1.22.0: 위치 관련
+    var locationLatitude by remember { mutableStateOf(reminder?.locationLatitude?.toString() ?: "") }
+    var locationLongitude by remember { mutableStateOf(reminder?.locationLongitude?.toString() ?: "") }
+    var locationName by remember { mutableStateOf(reminder?.locationName ?: "") }
+    var locationRadius by remember { mutableStateOf(reminder?.locationRadius?.toString() ?: "100") }
+
+    // v1.23.0: 웹 링크
+    var webLink by remember { mutableStateOf(reminder?.webLink ?: "") }
+
+    // v1.24.0: TTS 자동 읽기
+    var readAloud by remember { mutableStateOf(reminder?.readAloud ?: false) }
+
+    // v1.25.0: 카테고리 제안
+    var categorySuggestions by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    // v1.26.0: 최적 시간 제안
+    var showOptimalTimeSuggestion by remember { mutableStateOf(false) }
+
+    // 카테고리 자동 제안 (title이나 description 변경 시)
+    LaunchedEffect(title, description) {
+        if (title.isNotBlank() || description.isNotBlank()) {
+            categorySuggestions = viewModel.suggestCategories(title, description)
+        }
+    }
+
     // 음성 인식 권한 요청
     val audioPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -252,6 +277,21 @@ fun AddEditReminderScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
+
+                // v1.25.0: 카테고리 자동 제안 칩
+                if (categorySuggestions.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(categorySuggestions) { suggestion ->
+                            SuggestionChip(
+                                onClick = { category = suggestion },
+                                label = { Text(suggestion) }
+                            )
+                        }
+                    }
+                }
             }
 
             ExposedDropdownMenuBox(
@@ -294,6 +334,103 @@ fun AddEditReminderScreen(
                 selectedTime = selectedTime,
                 onTimeSelected = { selectedTime = it }
             )
+
+            // v1.26.0: 최적 시간 제안 (간편 모드 제외)
+            if (!simpleMode && selectedDate != null) {
+                var optimalTime by remember { mutableStateOf<LocalTime?>(null) }
+
+                LaunchedEffect(selectedDate) {
+                    val optimalDateTime = viewModel.suggestOptimalTime(selectedDate!!)
+                    optimalTime = optimalDateTime.toLocalTime()
+                }
+
+                if (optimalTime != null) {
+                    OutlinedButton(
+                        onClick = { selectedTime = optimalTime },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("💡 추천 시간: ${optimalTime?.hour}:${optimalTime?.minute?.toString()?.padStart(2, '0')}")
+                    }
+                }
+            }
+
+            // v1.23.0: 웹 링크 입력 (간편 모드 제외)
+            if (!simpleMode) {
+                OutlinedTextField(
+                    value = webLink,
+                    onValueChange = { webLink = it },
+                    label = { Text("🔗 웹 링크 (선택사항)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("https://example.com") }
+                )
+            }
+
+            // v1.24.0: TTS 자동 읽기 토글 (간편 모드 제외)
+            if (!simpleMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Text("🔊 알림 시 자동 읽기")
+                    Switch(
+                        checked = readAloud,
+                        onCheckedChange = { readAloud = it }
+                    )
+                }
+            }
+
+            // v1.22.0: 위치 입력 (간편 모드 제외)
+            if (!simpleMode) {
+                Divider()
+                Text(
+                    text = "📍 위치 기반 알림 (선택사항)",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                OutlinedTextField(
+                    value = locationName,
+                    onValueChange = { locationName = it },
+                    label = { Text("위치 이름") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("예: 집, 회사") }
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = locationLatitude,
+                        onValueChange = { locationLatitude = it },
+                        label = { Text("위도") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        placeholder = { Text("37.5665") }
+                    )
+
+                    OutlinedTextField(
+                        value = locationLongitude,
+                        onValueChange = { locationLongitude = it },
+                        label = { Text("경도") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        placeholder = { Text("126.9780") }
+                    )
+                }
+
+                OutlinedTextField(
+                    value = locationRadius,
+                    onValueChange = { locationRadius = it },
+                    label = { Text("반경 (미터)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("100") }
+                )
+            }
 
             // 간편 모드에서는 반복 일정 숨기기
             if (!simpleMode) {
@@ -507,6 +644,11 @@ fun AddEditReminderScreen(
                         val daysOfWeekString = recurrenceDaysOfWeek
                             ?.joinToString(",") { it.name }
 
+                        // v1.22.0: 위치 데이터 파싱
+                        val lat = locationLatitude.toDoubleOrNull()
+                        val lon = locationLongitude.toDoubleOrNull()
+                        val radius = locationRadius.toFloatOrNull()
+
                         if (reminder == null) {
                             viewModel.addReminder(
                                 title = title,
@@ -520,20 +662,28 @@ fun AddEditReminderScreen(
                                 recurrenceEndDate = recurrenceEndDate
                             )
                         } else {
-                            viewModel.updateReminder(
-                                reminder.copy(
-                                    title = title,
-                                    description = description,
-                                    priority = priority,
-                                    category = category,
-                                    dueDateTime = dueDateTime,
-                                    updatedAt = LocalDateTime.now(),
-                                    recurrencePattern = recurrencePattern,
-                                    recurrenceInterval = recurrenceInterval,
-                                    recurrenceDaysOfWeek = daysOfWeekString,
-                                    recurrenceEndDate = recurrenceEndDate
-                                )
+                            var updatedReminder = reminder.copy(
+                                title = title,
+                                description = description,
+                                priority = priority,
+                                category = category,
+                                dueDateTime = dueDateTime,
+                                updatedAt = LocalDateTime.now(),
+                                recurrencePattern = recurrencePattern,
+                                recurrenceInterval = recurrenceInterval,
+                                recurrenceDaysOfWeek = daysOfWeekString,
+                                recurrenceEndDate = recurrenceEndDate,
+                                // v1.22.0: 위치 필드
+                                locationLatitude = lat,
+                                locationLongitude = lon,
+                                locationName = locationName.ifBlank { null },
+                                locationRadius = radius,
+                                // v1.23.0: 웹 링크
+                                webLink = webLink.ifBlank { null },
+                                // v1.24.0: TTS 자동 읽기
+                                readAloud = readAloud
                             )
+                            viewModel.updateReminder(updatedReminder)
                         }
                         onNavigateBack()
                     }

@@ -30,6 +30,7 @@ fun StatisticsScreen(
     viewModel: StatisticsViewModel,
     onNavigateBack: () -> Unit,
     onCompletionHistoryClick: () -> Unit = {},
+    onPatternAnalysisClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val statistics by viewModel.statistics.collectAsState()
@@ -63,7 +64,15 @@ fun StatisticsScreen(
                 onClick = onCompletionHistoryClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("완료 이력 달력 보기")
+                Text("📅 완료 이력 달력 보기")
+            }
+
+            // v1.26.0: 완료 패턴 분석 버튼
+            OutlinedButton(
+                onClick = onPatternAnalysisClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("📊 완료 패턴 분석 보기")
             }
 
             // 완료율 카드
