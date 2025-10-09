@@ -24,6 +24,7 @@ data class ReminderEntity(
     val dueDateTime: LocalDateTime? = null,
     val priority: Priority = Priority.MEDIUM,
     val category: String = "",
+    val tags: String = "", // 콤마로 구분된 태그 (예: "work,urgent,meeting")
     val isCompleted: Boolean = false,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
