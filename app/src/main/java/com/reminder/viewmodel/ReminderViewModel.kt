@@ -124,7 +124,15 @@ class ReminderViewModel(
         return reminders.filter {
             it.title.contains(query, ignoreCase = true) ||
                     it.description.contains(query, ignoreCase = true) ||
-                    it.category.contains(query, ignoreCase = true)
+                    it.category.contains(query, ignoreCase = true) ||
+                    it.tags.contains(query, ignoreCase = true)
+        }
+    }
+
+    fun filterByTag(reminders: List<ReminderEntity>, tag: String): List<ReminderEntity> {
+        if (tag.isBlank()) return reminders
+        return reminders.filter {
+            it.tags.split(",").any { it.trim().equals(tag, ignoreCase = true) }
         }
     }
 
