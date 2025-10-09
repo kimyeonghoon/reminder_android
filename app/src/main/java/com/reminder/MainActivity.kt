@@ -112,7 +112,8 @@ fun ReminderApp() {
 
     ReminderTheme(
         darkTheme = darkTheme,
-        dynamicColor = userPreferences.dynamicColor
+        dynamicColor = userPreferences.dynamicColor,
+        fontSize = userPreferences.fontSize
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),

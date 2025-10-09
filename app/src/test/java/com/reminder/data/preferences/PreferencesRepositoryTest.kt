@@ -53,4 +53,39 @@ class PreferencesRepositoryTest {
         assertEquals(ThemeMode.SYSTEM, updated.themeMode)
         assertFalse(updated.dynamicColor)
     }
+
+    @Test
+    fun `FontSize의 모든 값이 정의되어 있다`() {
+        // When
+        val fontSizes = FontSize.values()
+
+        // Then
+        assertEquals(4, fontSizes.size)
+        assertTrue(fontSizes.contains(FontSize.SMALL))
+        assertTrue(fontSizes.contains(FontSize.NORMAL))
+        assertTrue(fontSizes.contains(FontSize.LARGE))
+        assertTrue(fontSizes.contains(FontSize.EXTRA_LARGE))
+    }
+
+    @Test
+    fun `UserPreferences 초기 fontSize는 NORMAL이다`() {
+        // Given & When
+        val preferences = UserPreferences()
+
+        // Then
+        assertEquals(FontSize.NORMAL, preferences.fontSize)
+    }
+
+    @Test
+    fun `UserPreferences copy로 fontSize를 변경할 수 있다`() {
+        // Given
+        val preferences = UserPreferences()
+
+        // When
+        val updated = preferences.copy(fontSize = FontSize.LARGE)
+
+        // Then
+        assertEquals(FontSize.LARGE, updated.fontSize)
+        assertEquals(ThemeMode.SYSTEM, updated.themeMode)
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.viewmodel.SettingsViewModel
 
@@ -60,6 +61,14 @@ fun SettingsScreen(
             DynamicColorSection(
                 dynamicColorEnabled = userPreferences.dynamicColor,
                 onDynamicColorChange = { viewModel.updateDynamicColor(it) }
+            )
+
+            Divider()
+
+            // 글씨 크기 설정
+            FontSizeSection(
+                selectedFontSize = userPreferences.fontSize,
+                onFontSizeChange = { viewModel.updateFontSize(it) }
             )
         }
     }
@@ -170,10 +179,67 @@ fun DynamicColorSection(
 }
 
 @Composable
+fun FontSizeSection(
+    selectedFontSize: FontSize,
+    onFontSizeChange: (FontSize) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "글씨 크기",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.selectableGroup()
+        ) {
+            FontSize.values().forEach { fontSize ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = selectedFontSize == fontSize,
+                            onClick = { onFontSizeChange(fontSize) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedFontSize == fontSize,
+                        onClick = null
+                    )
+                    Text(
+                        text = getFontSizeLabel(fontSize),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun getThemeModeLabel(themeMode: ThemeMode): String {
     return when (themeMode) {
         ThemeMode.LIGHT -> "라이트 모드"
         ThemeMode.DARK -> "다크 모드"
         ThemeMode.SYSTEM -> "시스템 설정 따르기"
+    }
+}
+
+@Composable
+private fun getFontSizeLabel(fontSize: FontSize): String {
+    return when (fontSize) {
+        FontSize.SMALL -> "작게"
+        FontSize.NORMAL -> "보통"
+        FontSize.LARGE -> "크게"
+        FontSize.EXTRA_LARGE -> "아주 크게"
     }
 }
