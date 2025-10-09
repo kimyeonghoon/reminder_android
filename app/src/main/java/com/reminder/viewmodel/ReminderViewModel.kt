@@ -272,4 +272,36 @@ class ReminderViewModel(
             database.reminderImageDao().delete(image)
         }
     }
+
+    // ==================== 완료 이력 관련 함수 ====================
+
+    /**
+     * 특정 날짜에 완료된 리마인더 조회
+     */
+    suspend fun getCompletedRemindersByDate(date: LocalDateTime): List<ReminderEntity> {
+        return repository.getCompletedRemindersByDate(date)
+    }
+
+    /**
+     * 날짜 범위 내 완료된 리마인더 조회
+     */
+    suspend fun getCompletedRemindersInRange(
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): List<ReminderEntity> {
+        return repository.getCompletedRemindersInRange(startDate, endDate)
+    }
+
+    /**
+     * 월별 완료 개수 맵 생성 (날짜 -> 완료 개수)
+     */
+    suspend fun getCompletionCountByDay(
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Map<LocalDateTime, Int> {
+        val reminders = getCompletedRemindersInRange(startDate, endDate)
+        return reminders
+            .groupBy { it.updatedAt.toLocalDate().atStartOfDay() }
+            .mapValues { it.value.size }
+    }
 }

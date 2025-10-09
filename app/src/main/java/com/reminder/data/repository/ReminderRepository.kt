@@ -71,4 +71,16 @@ class ReminderRepository(
     fun syncFromRemote(): Flow<List<ReminderEntity>>? {
         return syncRepository?.syncFromRemote()
     }
+
+    // 완료 이력 메서드
+    suspend fun getCompletedRemindersByDate(date: java.time.LocalDateTime): List<ReminderEntity> {
+        return reminderDao.getCompletedRemindersByDate(date)
+    }
+
+    suspend fun getCompletedRemindersInRange(
+        startDate: java.time.LocalDateTime,
+        endDate: java.time.LocalDateTime
+    ): List<ReminderEntity> {
+        return reminderDao.getCompletedRemindersInRange(startDate, endDate)
+    }
 }
