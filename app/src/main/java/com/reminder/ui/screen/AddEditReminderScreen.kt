@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
@@ -19,8 +20,10 @@ import androidx.core.content.PermissionChecker
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.data.entity.SubTask
 import com.reminder.ui.components.DatePickerField
 import com.reminder.ui.components.RecurrenceSelector
+import com.reminder.ui.components.SubTaskItem
 import com.reminder.ui.components.TimePickerField
 import com.reminder.viewmodel.ReminderViewModel
 import java.time.DayOfWeek
@@ -104,6 +107,14 @@ fun AddEditReminderScreen(
         )
     }
     var recurrenceEndDate by remember { mutableStateOf(reminder?.recurrenceEndDate) }
+
+    // 서브태스크 관련 (편집 모드일 때만)
+    val subTasks = if (reminder != null) {
+        viewModel.getSubTasks(reminder.id).collectAsState(initial = emptyList())
+    } else {
+        remember { mutableStateOf(emptyList<SubTask>()) }
+    }
+    var newSubTaskTitle by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -229,6 +240,56 @@ fun AddEditReminderScreen(
                         null
                     }
                 )
+            }
+
+            // 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
+            if (reminder != null && !simpleMode) {
+                Divider()
+
+                Text(
+                    text = "서브태스크",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // 서브태스크 리스트
+                subTasks.value.forEach { subTask ->
+                    SubTaskItem(
+                        subTask = subTask,
+                        onCheckedChange = { viewModel.toggleSubTaskCompletion(subTask) },
+                        onDelete = { viewModel.deleteSubTask(subTask) }
+                    )
+                }
+
+                // 새 서브태스크 추가
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = newSubTaskTitle,
+                        onValueChange = { newSubTaskTitle = it },
+                        label = { Text("새 서브태스크") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+
+                    FilledIconButton(
+                        onClick = {
+                            if (newSubTaskTitle.isNotBlank()) {
+                                viewModel.addSubTask(reminder.id, newSubTaskTitle)
+                                newSubTaskTitle = ""
+                            }
+                        },
+                        enabled = newSubTaskTitle.isNotBlank(),
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "서브태스크 추가"
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
