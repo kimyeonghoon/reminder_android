@@ -22,6 +22,7 @@ class PreferencesRepository(
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FONT_SIZE = stringPreferencesKey("font_size")
+        val SIMPLE_MODE = booleanPreferencesKey("simple_mode")
     }
 
     val userPreferences: Flow<UserPreferences> = dataStore.data
@@ -49,12 +50,14 @@ class PreferencesRepository(
 
             val dynamicColor = preferences[PreferencesKeys.DYNAMIC_COLOR] ?: true
             val onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
+            val simpleMode = preferences[PreferencesKeys.SIMPLE_MODE] ?: false
 
             UserPreferences(
                 themeMode = themeMode,
                 dynamicColor = dynamicColor,
                 onboardingCompleted = onboardingCompleted,
-                fontSize = fontSize
+                fontSize = fontSize,
+                simpleMode = simpleMode
             )
         }
 
@@ -79,6 +82,12 @@ class PreferencesRepository(
     suspend fun updateFontSize(fontSize: FontSize) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.FONT_SIZE] = fontSize.name
+        }
+    }
+
+    suspend fun updateSimpleMode(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SIMPLE_MODE] = enabled
         }
     }
 

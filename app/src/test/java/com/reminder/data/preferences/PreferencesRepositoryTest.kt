@@ -88,4 +88,26 @@ class PreferencesRepositoryTest {
         assertEquals(FontSize.LARGE, updated.fontSize)
         assertEquals(ThemeMode.SYSTEM, updated.themeMode)
     }
+
+    @Test
+    fun `UserPreferences 초기 simpleMode는 false이다`() {
+        // Given & When
+        val preferences = UserPreferences()
+
+        // Then
+        assertFalse(preferences.simpleMode)
+    }
+
+    @Test
+    fun `UserPreferences copy로 simpleMode를 변경할 수 있다`() {
+        // Given
+        val preferences = UserPreferences()
+
+        // When
+        val updated = preferences.copy(simpleMode = true)
+
+        // Then
+        assertTrue(updated.simpleMode)
+        assertEquals(ThemeMode.SYSTEM, updated.themeMode)
+    }
 }

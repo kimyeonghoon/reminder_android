@@ -46,4 +46,10 @@ class SettingsViewModel(
             preferencesRepository.updateFontSize(fontSize)
         }
     }
+
+    fun updateSimpleMode(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateSimpleMode(enabled)
+        }
+    }
 }

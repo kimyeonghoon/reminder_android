@@ -70,6 +70,14 @@ fun SettingsScreen(
                 selectedFontSize = userPreferences.fontSize,
                 onFontSizeChange = { viewModel.updateFontSize(it) }
             )
+
+            Divider()
+
+            // 간편 모드 설정
+            SimpleModeSection(
+                simpleModeEnabled = userPreferences.simpleMode,
+                onSimpleModeChange = { viewModel.updateSimpleMode(it) }
+            )
         }
     }
 }
@@ -231,6 +239,54 @@ private fun getThemeModeLabel(themeMode: ThemeMode): String {
         ThemeMode.LIGHT -> "라이트 모드"
         ThemeMode.DARK -> "다크 모드"
         ThemeMode.SYSTEM -> "시스템 설정 따르기"
+    }
+}
+
+@Composable
+fun SimpleModeSection(
+    simpleModeEnabled: Boolean,
+    onSimpleModeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "간편 모드",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "간편 모드 사용",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "복잡한 기능 숨김, 더 큰 버튼",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = simpleModeEnabled,
+                onCheckedChange = onSimpleModeChange,
+                modifier = Modifier.semantics {
+                    contentDescription = "간편 모드 ${if (simpleModeEnabled) "켜짐" else "꺼짐"}"
+                }
+            )
+        }
     }
 }
 
