@@ -25,6 +25,7 @@ class ReminderViewModelTest {
     private lateinit var repository: ReminderRepository
     private lateinit var alarmScheduler: com.reminder.notification.AlarmScheduler
     private lateinit var database: com.reminder.data.database.ReminderDatabase
+    private lateinit var analyticsHelper: com.reminder.analytics.AnalyticsHelper
     private lateinit var viewModel: ReminderViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -34,13 +35,14 @@ class ReminderViewModelTest {
         repository = mock()
         alarmScheduler = mock()
         database = mock()
+        analyticsHelper = mock()
 
         // Mock repository flows
         whenever(repository.allReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.activeReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.completedReminders).thenReturn(flowOf(emptyList()))
 
-        viewModel = ReminderViewModel(repository, alarmScheduler, database)
+        viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper)
     }
 
     @After
