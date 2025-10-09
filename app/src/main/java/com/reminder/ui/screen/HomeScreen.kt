@@ -3,13 +3,18 @@ package com.reminder.ui.screen
 import androidx.compose.animation.core.tween
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -43,6 +48,20 @@ fun HomeScreen(
     var selectedPriorityFilter by remember { mutableStateOf(FilterPriority.ALL) }
     var selectedDateFilter by remember { mutableStateOf(FilterDate.ALL) }
     var selectedSortOption by remember { mutableStateOf(SortOption.BY_DATE_ASC) }
+
+    // 선택 모드 상태
+    var isSelectionMode by remember { mutableStateOf(false) }
+    var selectedReminders by remember { mutableStateOf<Set<Long>>(emptySet()) }
+
+    // Apply filters and sorting with derivedStateOf to avoid unnecessary recompositions
+    val sortedReminders by remember {
+        derivedStateOf {
+            val searchFiltered = viewModel.getFilteredReminders(activeReminders, searchQuery)
+            val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
+            val dateFiltered = viewModel.filterByDate(priorityFiltered, selectedDateFilter)
+            viewModel.sortReminders(dateFiltered, selectedSortOption)
+        }
+    }
 
     // 리마인더 공유 함수
     val shareReminder: (ReminderEntity) -> Unit = { reminder ->
@@ -86,6 +105,44 @@ fun HomeScreen(
                     placeholder = { Text("Search reminders...") },
                     modifier = Modifier.fillMaxWidth()
                 ) {}
+            } else if (isSelectionMode) {
+                TopAppBar(
+                    title = { Text("${selectedReminders.size}개 선택됨") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            isSelectionMode = false
+                            selectedReminders = emptySet()
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "선택 취소")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            // 모두 선택
+                            selectedReminders = sortedReminders.map { it.id }.toSet()
+                        }) {
+                            Icon(Icons.Default.SelectAll, contentDescription = "모두 선택")
+                        }
+                        IconButton(onClick = {
+                            // 선택된 항목 완료
+                            val toComplete = sortedReminders.filter { it.id in selectedReminders }
+                            viewModel.completeReminders(toComplete)
+                            isSelectionMode = false
+                            selectedReminders = emptySet()
+                        }) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = "완료")
+                        }
+                        IconButton(onClick = {
+                            // 선택된 항목 삭제
+                            val toDelete = sortedReminders.filter { it.id in selectedReminders }
+                            viewModel.deleteReminders(toDelete)
+                            isSelectionMode = false
+                            selectedReminders = emptySet()
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "삭제")
+                        }
+                    }
+                )
             } else {
                 TopAppBar(
                     title = { Text("Reminder") },
@@ -109,30 +166,22 @@ fun HomeScreen(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                // 간편 모드에서는 버튼을 더 크게
-                modifier = if (simpleMode) Modifier.size(72.dp) else Modifier
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "리마인더 추가",
-                    // 간편 모드에서는 아이콘도 더 크게
-                    modifier = if (simpleMode) Modifier.size(36.dp) else Modifier
-                )
+            if (!isSelectionMode) {
+                FloatingActionButton(
+                    onClick = onAddClick,
+                    // 간편 모드에서는 버튼을 더 크게
+                    modifier = if (simpleMode) Modifier.size(72.dp) else Modifier
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "리마인더 추가",
+                        // 간편 모드에서는 아이콘도 더 크게
+                        modifier = if (simpleMode) Modifier.size(36.dp) else Modifier
+                    )
+                }
             }
         }
     ) { paddingValues ->
-        // Apply filters and sorting with derivedStateOf to avoid unnecessary recompositions
-        val sortedReminders by remember {
-            derivedStateOf {
-                val searchFiltered = viewModel.getFilteredReminders(activeReminders, searchQuery)
-                val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
-                val dateFiltered = viewModel.filterByDate(priorityFiltered, selectedDateFilter)
-                viewModel.sortReminders(dateFiltered, selectedSortOption)
-            }
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -200,12 +249,47 @@ fun HomeScreen(
                             reminder = reminder,
                             onCheckedChange = { viewModel.toggleReminderCompletion(reminder) },
                             onDelete = { viewModel.deleteReminder(reminder) },
-                            onClick = { onReminderClick(reminder) },
-                            modifier = Modifier.animateItemPlacement(
-                                animationSpec = tween(durationMillis = 300)
-                            ),
+                            onClick = {
+                                if (isSelectionMode) {
+                                    // 선택 모드에서는 선택 토글
+                                    selectedReminders = if (reminder.id in selectedReminders) {
+                                        selectedReminders - reminder.id
+                                    } else {
+                                        selectedReminders + reminder.id
+                                    }
+                                } else {
+                                    onReminderClick(reminder)
+                                }
+                            },
+                            modifier = Modifier
+                                .animateItemPlacement(
+                                    animationSpec = tween(durationMillis = 300)
+                                )
+                                .then(
+                                    if (!simpleMode) {
+                                        Modifier.combinedClickable(
+                                            onClick = {},
+                                            onLongClick = {
+                                                isSelectionMode = true
+                                                selectedReminders = setOf(reminder.id)
+                                            }
+                                        )
+                                    } else {
+                                        Modifier
+                                    }
+                                ),
                             subTaskProgress = subTaskProgressMap[reminder.id],
-                            onShare = { shareReminder(reminder) }
+                            onShare = { shareReminder(reminder) },
+                            onDuplicate = { viewModel.duplicateReminder(reminder) },
+                            isSelected = reminder.id in selectedReminders,
+                            isSelectionMode = isSelectionMode,
+                            onSelectionToggle = {
+                                selectedReminders = if (reminder.id in selectedReminders) {
+                                    selectedReminders - reminder.id
+                                } else {
+                                    selectedReminders + reminder.id
+                                }
+                            }
                         )
                     }
                 }

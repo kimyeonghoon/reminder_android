@@ -15,8 +15,8 @@ import com.reminder.data.entity.ReminderImage
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class],
-    version = 6,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class],
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -24,6 +24,7 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
     abstract fun subTaskDao(): SubTaskDao
     abstract fun reminderImageDao(): ReminderImageDao
+    abstract fun reminderTemplateDao(): com.reminder.data.dao.ReminderTemplateDao
 
     companion object {
         @Volatile
@@ -126,6 +127,29 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 리마인더 템플릿 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS reminder_templates (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        titleTemplate TEXT NOT NULL,
+                        descriptionTemplate TEXT NOT NULL,
+                        defaultPriority INTEGER NOT NULL,
+                        defaultCategory TEXT NOT NULL,
+                        defaultRecurrencePattern TEXT NOT NULL,
+                        defaultRecurrenceInterval INTEGER NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        updatedAt TEXT NOT NULL
+                    )
+                """.trimIndent())
+
+                // 템플릿 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminder_templates_name ON reminder_templates(name)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -133,7 +157,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance

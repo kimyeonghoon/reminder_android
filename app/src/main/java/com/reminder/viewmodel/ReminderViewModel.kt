@@ -317,4 +317,141 @@ class ReminderViewModel(
             .groupBy { it.updatedAt.toLocalDate().atStartOfDay() }
             .mapValues { it.value.size }
     }
+
+    // ==================== 템플릿 관련 함수 ====================
+
+    /**
+     * 모든 템플릿 조회
+     */
+    fun getAllTemplates() = database.reminderTemplateDao().getAllTemplates()
+
+    /**
+     * 템플릿 추가
+     */
+    fun addTemplate(
+        name: String,
+        titleTemplate: String,
+        descriptionTemplate: String = "",
+        defaultPriority: Priority = Priority.MEDIUM,
+        defaultCategory: String = "",
+        defaultRecurrencePattern: com.reminder.data.entity.RecurrencePattern = com.reminder.data.entity.RecurrencePattern.NONE,
+        defaultRecurrenceInterval: Int = 1
+    ) {
+        viewModelScope.launch {
+            val template = com.reminder.data.entity.ReminderTemplate(
+                name = name,
+                titleTemplate = titleTemplate,
+                descriptionTemplate = descriptionTemplate,
+                defaultPriority = defaultPriority,
+                defaultCategory = defaultCategory,
+                defaultRecurrencePattern = defaultRecurrencePattern,
+                defaultRecurrenceInterval = defaultRecurrenceInterval
+            )
+            database.reminderTemplateDao().insert(template)
+        }
+    }
+
+    /**
+     * 템플릿에서 리마인더 생성
+     */
+    fun createReminderFromTemplate(template: com.reminder.data.entity.ReminderTemplate, dueDateTime: LocalDateTime? = null) {
+        viewModelScope.launch {
+            val reminder = ReminderEntity(
+                title = template.titleTemplate,
+                description = template.descriptionTemplate,
+                dueDateTime = dueDateTime,
+                priority = template.defaultPriority,
+                category = template.defaultCategory,
+                recurrencePattern = template.defaultRecurrencePattern,
+                recurrenceInterval = template.defaultRecurrenceInterval
+            )
+            val reminderId = repository.insertReminder(reminder)
+
+            // 알람 스케줄링
+            if (dueDateTime != null) {
+                alarmScheduler.schedule(reminder.copy(id = reminderId))
+            }
+        }
+    }
+
+    /**
+     * 템플릿 삭제
+     */
+    fun deleteTemplate(template: com.reminder.data.entity.ReminderTemplate) {
+        viewModelScope.launch {
+            database.reminderTemplateDao().delete(template)
+        }
+    }
+
+    /**
+     * 현재 리마인더를 템플릿으로 저장
+     */
+    fun saveAsTemplate(
+        reminder: ReminderEntity,
+        templateName: String
+    ) {
+        viewModelScope.launch {
+            val template = com.reminder.data.entity.ReminderTemplate(
+                name = templateName,
+                titleTemplate = reminder.title,
+                descriptionTemplate = reminder.description,
+                defaultPriority = reminder.priority,
+                defaultCategory = reminder.category,
+                defaultRecurrencePattern = reminder.recurrencePattern,
+                defaultRecurrenceInterval = reminder.recurrenceInterval
+            )
+            database.reminderTemplateDao().insert(template)
+        }
+    }
+
+    // ==================== 배치 작업 관련 함수 ====================
+
+    /**
+     * 여러 리마인더 삭제
+     */
+    fun deleteReminders(reminders: List<ReminderEntity>) {
+        viewModelScope.launch {
+            reminders.forEach { reminder ->
+                repository.deleteReminder(reminder)
+                alarmScheduler.cancel(reminder.id)
+            }
+        }
+    }
+
+    /**
+     * 여러 리마인더 완료 처리
+     */
+    fun completeReminders(reminders: List<ReminderEntity>) {
+        viewModelScope.launch {
+            reminders.forEach { reminder ->
+                if (!reminder.isCompleted) {
+                    repository.toggleReminderCompletion(reminder)
+                    alarmScheduler.cancel(reminder.id)
+                }
+            }
+        }
+    }
+
+    // ==================== 복제 관련 함수 ====================
+
+    /**
+     * 리마인더 복제
+     */
+    fun duplicateReminder(reminder: ReminderEntity) {
+        viewModelScope.launch {
+            val duplicated = reminder.copy(
+                id = 0, // 새 ID 생성
+                title = "${reminder.title} (복사본)",
+                isCompleted = false,
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now()
+            )
+            val newId = repository.insertReminder(duplicated)
+
+            // 알람 스케줄링
+            if (duplicated.dueDateTime != null) {
+                alarmScheduler.schedule(duplicated.copy(id = newId))
+            }
+        }
+    }
 }
