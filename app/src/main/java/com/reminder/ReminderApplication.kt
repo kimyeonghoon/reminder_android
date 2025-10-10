@@ -96,8 +96,8 @@ class ReminderApplication : Application(), ImageLoaderFactory {
         // Firebase Crashlytics 초기화
         setupCrashlytics()
 
-        // NotificationChannel 생성
-        notificationHelper.createNotificationChannel()
+        // v1.29.0: 모든 알림 채널 생성 (우선순위별 세분화)
+        notificationHelper.createAllNotificationChannels()
 
         // Firebase 익명 로그인
         applicationScope.launch {
