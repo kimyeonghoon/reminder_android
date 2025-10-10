@@ -39,6 +39,7 @@ import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
 import com.reminder.ui.screen.PatternAnalysisScreen
+import com.reminder.ui.screen.PomodoroScreen
 import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
@@ -49,6 +50,8 @@ import com.reminder.viewmodel.CalendarSyncViewModel
 import com.reminder.viewmodel.CalendarSyncViewModelFactory
 import com.reminder.viewmodel.HabitViewModel
 import com.reminder.viewmodel.HabitViewModelFactory
+import com.reminder.viewmodel.PomodoroViewModel
+import com.reminder.viewmodel.PomodoroViewModelFactory
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
 import com.reminder.viewmodel.SettingsViewModel
@@ -67,7 +70,7 @@ class MainActivity : ComponentActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     // v1.30.0: 현재 언어 추적 (재생성 여부 판단용)
-    private var currentLanguage: Language? = null
+    internal var currentLanguage: Language? = null
 
     // 알림 권한 요청 런처 (Android 13+)
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -205,7 +208,7 @@ fun ReminderAppContent(
     )
 
     val statisticsViewModel: StatisticsViewModel = viewModel(
-        factory = StatisticsViewModelFactory(app.repository)
+        factory = StatisticsViewModelFactory(app.repository, app.database.goalDao())
     )
 
     // v1.40.1: CalendarSyncViewModel 추가
@@ -225,6 +228,11 @@ fun ReminderAppContent(
     // v1.44.0: HabitViewModel 추가
     val habitViewModel: HabitViewModel = viewModel(
         factory = HabitViewModelFactory(app.habitManager)
+    )
+
+    // v1.46.0: PomodoroViewModel 추가
+    val pomodoroViewModel: PomodoroViewModel = viewModel(
+        factory = PomodoroViewModelFactory(app.pomodoroManager)
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
@@ -405,7 +413,8 @@ fun ReminderAppContent(
                 onHelpClick = { navController.navigate("help") },
                 onCalendarSyncClick = { navController.navigate("calendar_sync") },
                 onArchiveClick = { navController.navigate("archive") },
-                onHabitTrackerClick = { navController.navigate("habit_tracker") }
+                onHabitTrackerClick = { navController.navigate("habit_tracker") },
+                onPomodoroClick = { navController.navigate("pomodoro") }
             )
         }
         composable(
@@ -567,6 +576,39 @@ fun ReminderAppContent(
         ) {
             HabitTrackerScreen(
                 viewModel = habitViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        // v1.46.0: PomodoroScreen 라우트
+        composable(
+            "pomodoro",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            PomodoroScreen(
+                viewModel = pomodoroViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

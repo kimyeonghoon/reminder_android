@@ -44,6 +44,7 @@ fun SettingsScreen(
     onCalendarSyncClick: () -> Unit = {},
     onArchiveClick: () -> Unit = {},
     onHabitTrackerClick: () -> Unit = {},
+    onPomodoroClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -272,6 +273,14 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("습관 추적")
+            }
+
+            // v1.45.0: 포모도로 타이머
+            OutlinedButton(
+                onClick = onPomodoroClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("포모도로 타이머")
             }
 
             // 도움말
