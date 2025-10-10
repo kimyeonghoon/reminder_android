@@ -201,6 +201,74 @@ class StatisticsViewModelTest {
         assertNull(distribution[""])
     }
 
+    @Test
+    fun `최근 7일간 완료된 리마인더 개수를 계산한다`() = runTest {
+        // Given
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            // 오늘 완료된 리마인더 2개
+            createReminder(id = 1, isCompleted = true, updatedAt = now),
+            createReminder(id = 2, isCompleted = true, updatedAt = now.minusHours(2)),
+            // 2일 전 완료된 리마인더 1개
+            createReminder(id = 3, isCompleted = true, updatedAt = now.minusDays(2)),
+            // 5일 전 완료된 리마인더 3개
+            createReminder(id = 4, isCompleted = true, updatedAt = now.minusDays(5)),
+            createReminder(id = 5, isCompleted = true, updatedAt = now.minusDays(5).minusHours(3)),
+            createReminder(id = 6, isCompleted = true, updatedAt = now.minusDays(5).minusHours(10)),
+            // 미완료 리마인더 (카운트 안됨)
+            createReminder(id = 7, isCompleted = false, updatedAt = now),
+            // 8일 전 완료 (범위 밖)
+            createReminder(id = 8, isCompleted = true, updatedAt = now.minusDays(8))
+        )
+        val testRepository = mock(ReminderRepository::class.java)
+        `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
+
+        // When
+        val testViewModel = StatisticsViewModel(testRepository)
+
+        // Then
+        val weeklyCompleted = testViewModel.statistics.value.weeklyCompleted
+        assertEquals(7, weeklyCompleted.size)
+        assertEquals(2, weeklyCompleted[0]) // 오늘
+        assertEquals(0, weeklyCompleted[1]) // 어제
+        assertEquals(1, weeklyCompleted[2]) // 2일 전
+        assertEquals(0, weeklyCompleted[3]) // 3일 전
+        assertEquals(0, weeklyCompleted[4]) // 4일 전
+        assertEquals(3, weeklyCompleted[5]) // 5일 전
+        assertEquals(0, weeklyCompleted[6]) // 6일 전
+    }
+
+    @Test
+    fun `최근 30일간 완료된 리마인더 개수를 계산한다`() = runTest {
+        // Given
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            // 오늘 완료 1개
+            createReminder(id = 1, isCompleted = true, updatedAt = now),
+            // 10일 전 완료 2개
+            createReminder(id = 2, isCompleted = true, updatedAt = now.minusDays(10)),
+            createReminder(id = 3, isCompleted = true, updatedAt = now.minusDays(10).minusHours(5)),
+            // 29일 전 완료 1개 (범위 내 마지막 날)
+            createReminder(id = 4, isCompleted = true, updatedAt = now.minusDays(29)),
+            // 31일 전 완료 (범위 밖)
+            createReminder(id = 5, isCompleted = true, updatedAt = now.minusDays(31))
+        )
+        val testRepository = mock(ReminderRepository::class.java)
+        `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
+
+        // When
+        val testViewModel = StatisticsViewModel(testRepository)
+
+        // Then
+        val monthlyCompleted = testViewModel.statistics.value.monthlyCompleted
+        assertEquals(30, monthlyCompleted.size)
+        assertEquals(1, monthlyCompleted[0])  // 오늘
+        assertEquals(2, monthlyCompleted[10]) // 10일 전
+        assertEquals(1, monthlyCompleted[29]) // 29일 전
+        // 31일 전은 범위 밖이므로 포함 안됨
+        assertEquals(4, monthlyCompleted.sum()) // 총 4개만 포함
+    }
+
     // Helper function
     private fun createReminder(
         id: Long,
