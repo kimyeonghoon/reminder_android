@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.SelectAll
@@ -33,6 +34,7 @@ import com.reminder.data.entity.FilterPriority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.SortOption
 import com.reminder.ui.components.FilterChips
+import com.reminder.ui.components.FilterPresetChips
 import com.reminder.ui.components.ReminderCard
 import com.reminder.ui.components.SortDropdown
 import com.reminder.util.rememberHapticFeedback
@@ -57,6 +59,10 @@ fun HomeScreen(
     var selectedDateFilter by remember { mutableStateOf(FilterDate.ALL) }
     var selectedSortOption by remember { mutableStateOf(SortOption.BY_DATE_ASC) }
 
+    // v1.32.0: 고급 필터 시스템
+    val currentFilter by viewModel.currentFilter.collectAsState()
+    var showFilterBottomSheet by remember { mutableStateOf(false) }
+
     // 선택 모드 상태
     var isSelectionMode by remember { mutableStateOf(false) }
     var selectedReminders by remember { mutableStateOf<Set<Long>>(emptySet()) }
@@ -75,9 +81,17 @@ fun HomeScreen(
     val sortedReminders by remember {
         derivedStateOf {
             val searchFiltered = viewModel.getFilteredReminders(activeReminders, searchQuery)
-            val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
-            val dateFiltered = viewModel.filterByDate(priorityFiltered, selectedDateFilter)
-            viewModel.sortReminders(dateFiltered, selectedSortOption)
+
+            // v1.32.0: 고급 필터 적용
+            val advancedFiltered = if (currentFilter != null) {
+                viewModel.getFilteredRemindersWithFilter(searchFiltered)
+            } else {
+                // 기존 필터 적용 (하위 호환성)
+                val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
+                viewModel.filterByDate(priorityFiltered, selectedDateFilter)
+            }
+
+            viewModel.sortReminders(advancedFiltered, selectedSortOption)
         }
     }
 
@@ -173,6 +187,10 @@ fun HomeScreen(
                             IconButton(onClick = onStatisticsClick) {
                                 Icon(Icons.Default.BarChart, contentDescription = "통계")
                             }
+                            // v1.32.0: 고급 필터 버튼
+                            IconButton(onClick = { showFilterBottomSheet = true }) {
+                                Icon(Icons.Default.FilterList, contentDescription = "필터")
+                            }
                         }
                         IconButton(onClick = onSettingsClick) {
                             Icon(Icons.Default.Settings, contentDescription = "설정")
@@ -225,16 +243,33 @@ fun HomeScreen(
         ) {
             // 간편 모드에서는 필터와 정렬 숨기기
             if (!simpleMode) {
-                // Filter and Sort UI
-                FilterChips(
-                    selectedPriorityFilter = selectedPriorityFilter,
-                    selectedDateFilter = selectedDateFilter,
-                    onPriorityFilterChange = { selectedPriorityFilter = it },
-                    onDateFilterChange = { selectedDateFilter = it },
-                    modifier = Modifier.padding(vertical = 8.dp)
+                // v1.32.0: 필터 프리셋 칩 (새로운 필터 시스템)
+                FilterPresetChips(
+                    currentFilter = currentFilter,
+                    onPresetClick = { presetId ->
+                        haptic.click()
+                        viewModel.applyFilterPreset(presetId)
+                    },
+                    onClearFilter = {
+                        haptic.click()
+                        viewModel.clearFilter()
+                    }
                 )
 
                 HorizontalDivider()
+
+                // 기존 필터 칩 (고급 필터가 없을 때만 표시)
+                if (currentFilter == null) {
+                    FilterChips(
+                        selectedPriorityFilter = selectedPriorityFilter,
+                        selectedDateFilter = selectedDateFilter,
+                        onPriorityFilterChange = { selectedPriorityFilter = it },
+                        onDateFilterChange = { selectedDateFilter = it },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    HorizontalDivider()
+                }
 
                 SortDropdown(
                     selectedSortOption = selectedSortOption,
@@ -347,5 +382,17 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    // v1.32.0: 고급 필터 BottomSheet
+    if (showFilterBottomSheet) {
+        FilterBottomSheet(
+            currentFilter = currentFilter,
+            onApplyFilter = { filter ->
+                haptic.confirm()
+                viewModel.applyFilter(filter)
+            },
+            onDismiss = { showFilterBottomSheet = false }
+        )
     }
 }

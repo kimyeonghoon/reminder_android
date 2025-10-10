@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 34
-        versionName = "1.31.0"
+        versionCode = 35
+        versionName = "1.32.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -119,6 +119,9 @@ dependencies {
 
     // DataStore (Updated)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Gson (for filter serialization)
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")

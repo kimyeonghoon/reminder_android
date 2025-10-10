@@ -121,11 +121,37 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
      *
      * @param filterType 필터 유형 (priority, category, etc.)
      */
-    fun logFilterApplied(filterType: String) {
+    fun logFilterApplied(filterType: String = "custom") {
         val bundle = Bundle().apply {
             putString("filter_type", filterType)
         }
         firebaseAnalytics.logEvent("filter_applied", bundle)
+    }
+
+    /**
+     * v1.32.0: 필터 초기화 이벤트 로깅
+     */
+    fun logFilterCleared() {
+        firebaseAnalytics.logEvent("filter_cleared", Bundle())
+    }
+
+    /**
+     * v1.32.0: 필터 저장 이벤트 로깅
+     */
+    fun logFilterSaved() {
+        firebaseAnalytics.logEvent("filter_saved", Bundle())
+    }
+
+    /**
+     * v1.32.0: 필터 프리셋 사용 이벤트 로깅
+     *
+     * @param presetId 프리셋 ID
+     */
+    fun logPresetUsed(presetId: String) {
+        val bundle = Bundle().apply {
+            putString("preset_id", presetId)
+        }
+        firebaseAnalytics.logEvent("preset_used", bundle)
     }
 
     /**

@@ -9,14 +9,16 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.reminder.data.dao.ReminderDao
 import com.reminder.data.dao.ReminderImageDao
+import com.reminder.data.dao.SavedFilterDao
 import com.reminder.data.dao.SubTaskDao
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.ReminderImage
+import com.reminder.data.entity.SavedFilterEntity
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class],
-    version = 12,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class],
+    version = 13,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,6 +27,7 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun subTaskDao(): SubTaskDao
     abstract fun reminderImageDao(): ReminderImageDao
     abstract fun reminderTemplateDao(): com.reminder.data.dao.ReminderTemplateDao
+    abstract fun savedFilterDao(): SavedFilterDao
 
     companion object {
         @Volatile
@@ -188,6 +191,26 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 저장된 필터 (스마트 컬렉션) 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS saved_filters (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        icon TEXT NOT NULL DEFAULT 'filter_list',
+                        filterJson TEXT NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        `order` INTEGER NOT NULL DEFAULT 0
+                    )
+                """.trimIndent())
+
+                // 저장된 필터 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_saved_filters_order ON saved_filters(`order`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_saved_filters_createdAt ON saved_filters(createdAt)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -195,7 +218,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance

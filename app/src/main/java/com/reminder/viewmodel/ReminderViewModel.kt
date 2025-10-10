@@ -850,4 +850,116 @@ class ReminderViewModel(
         val pattern = analyzeCompletionPattern()
         return completionPatternAnalyzer.getCompletionProbability(pattern, day)
     }
+
+    // ==================== 고급 필터 시스템 (v1.32.0) ====================
+
+    private val filterEngine = com.reminder.filter.FilterEngine()
+
+    /**
+     * 현재 적용된 필터
+     */
+    private val _currentFilter = MutableStateFlow<com.reminder.filter.ReminderFilter?>(null)
+    val currentFilter: StateFlow<com.reminder.filter.ReminderFilter?> = _currentFilter.asStateFlow()
+
+    /**
+     * 저장된 필터 목록 조회
+     */
+    val savedFilters = database.savedFilterDao().getAllSavedFilters()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /**
+     * 필터를 적용하여 필터링된 리마인더 목록 반환
+     */
+    fun applyFilter(filter: com.reminder.filter.ReminderFilter) {
+        _currentFilter.value = filter
+
+        // Analytics 이벤트 로깅
+        analyticsHelper.logFilterApplied()
+    }
+
+    /**
+     * 필터 초기화
+     */
+    fun clearFilter() {
+        _currentFilter.value = null
+
+        // Analytics 이벤트 로깅
+        analyticsHelper.logFilterCleared()
+    }
+
+    /**
+     * 현재 필터가 적용된 리마인더 목록 반환
+     */
+    fun getFilteredRemindersWithFilter(reminders: List<ReminderEntity>): List<ReminderEntity> {
+        val filter = _currentFilter.value ?: return reminders
+        return filterEngine.applyFilter(reminders, filter)
+    }
+
+    /**
+     * 필터 프리셋 적용
+     */
+    fun applyFilterPreset(presetId: String) {
+        val preset = com.reminder.filter.FilterPresets.getPresetById(presetId)
+        if (preset != null) {
+            applyFilter(preset.filter)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logPresetUsed(presetId)
+        }
+    }
+
+    /**
+     * 필터를 저장된 필터로 저장
+     */
+    fun saveFilter(name: String, icon: String, filter: com.reminder.filter.ReminderFilter) {
+        viewModelScope.launch {
+            val filterJson = serializeFilter(filter)
+            val savedFilter = com.reminder.data.entity.SavedFilterEntity(
+                name = name,
+                icon = icon,
+                filterJson = filterJson
+            )
+            database.savedFilterDao().insertSavedFilter(savedFilter)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logFilterSaved()
+        }
+    }
+
+    /**
+     * 저장된 필터 삭제
+     */
+    fun deleteSavedFilter(filter: com.reminder.data.entity.SavedFilterEntity) {
+        viewModelScope.launch {
+            database.savedFilterDao().deleteSavedFilter(filter)
+        }
+    }
+
+    /**
+     * 저장된 필터 적용
+     */
+    fun applySavedFilter(savedFilter: com.reminder.data.entity.SavedFilterEntity) {
+        val filter = deserializeFilter(savedFilter.filterJson)
+        if (filter != null) {
+            applyFilter(filter)
+        }
+    }
+
+    /**
+     * ReminderFilter를 JSON으로 직렬화
+     */
+    private fun serializeFilter(filter: com.reminder.filter.ReminderFilter): String {
+        return com.google.gson.Gson().toJson(filter)
+    }
+
+    /**
+     * JSON을 ReminderFilter로 역직렬화
+     */
+    private fun deserializeFilter(json: String): com.reminder.filter.ReminderFilter? {
+        return try {
+            com.google.gson.Gson().fromJson(json, com.reminder.filter.ReminderFilter::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
