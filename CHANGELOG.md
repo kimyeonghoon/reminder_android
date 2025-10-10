@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2025-10-10
+
+### Added
+- 📊 **통계 차트 시각화 강화** - 주간/월간 완료 트렌드 그래프 추가
+  - `TrendChart.kt` 신규 컴포넌트 작성
+    - MPAndroidChart LineChart를 Compose로 wrapping
+    - 부드러운 곡선 라인 차트 (Cubic Bezier)
+    - 다크 모드 자동 지원
+    - 애니메이션 효과 및 터치 인터랙션
+    - Material 3 테마 색상 적용
+  - `WeeklyTrendCard`: 최근 7일 완료 트렌드 시각화
+    - 일별 완료 개수를 라인 차트로 표시
+    - "오늘", "1일 전", ..., "6일 전" 라벨
+  - `MonthlyTrendCard`: 최근 30일 완료 트렌드 시각화
+    - 5일 간격으로 날짜 라벨 표시
+    - 장기 트렌드 패턴 파악 가능
+  - 데이터 없을 때 안내 메시지 자동 표시
+
+### Changed
+- 🧠 **StatisticsViewModel 강화**
+  - `calculateDailyCompletions()` 메서드 추가
+    - 최근 N일간 일별 완료 개수 자동 계산
+    - `updatedAt` 기준으로 날짜 차이 계산 (ChronoUnit.DAYS)
+    - 범위 내 리마인더만 카운트
+  - `weeklyCompleted`, `monthlyCompleted` 필드 자동 계산 및 반환
+- 🔢 버전 업데이트: `versionCode = 31`, `versionName = "1.28.0"`
+
+### Technical Details
+- **Files Modified**: 4개
+  - `app/build.gradle.kts` (버전)
+  - `app/src/main/java/com/reminder/viewmodel/StatisticsViewModel.kt` (트렌드 계산)
+  - `app/src/main/java/com/reminder/ui/components/TrendChart.kt` (신규)
+  - `app/src/main/java/com/reminder/ui/screen/StatisticsScreen.kt` (차트 통합)
+  - `app/src/test/java/com/reminder/viewmodel/StatisticsViewModelTest.kt` (테스트 추가)
+- **TDD 방식 구현**: Red-Green-Refactor 사이클 완수
+  - Red: 주간/월간 트렌드 테스트 2개 추가
+  - Green: calculateDailyCompletions() 구현
+- **Chart Library**: MPAndroidChart v3.1.0
+- **Lines Changed**: +310
+
+### Quality Improvements
+- TDD 기반 안정적 구현
+- 시각화를 통한 사용자 경험 개선
+- 장기 트렌드 분석 가능
+
 ## [1.27.1] - 2025-10-10
 
 ### Added
