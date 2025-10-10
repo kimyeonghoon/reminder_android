@@ -5,6 +5,69 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0] - 2025-10-10
+
+### Added
+- 🌐 **다국어 지원 (Internationalization)** - 한국어, 영어, 중국어 3개 언어 지원
+  - `Language.kt` enum 추가 (SYSTEM, KOREAN, ENGLISH, CHINESE)
+    - `toLocale()`: Language → Locale 변환
+    - `fromCode()`: 언어 코드 → Language 변환
+  - `LocaleHelper.kt` 유틸리티 클래스 구현
+    - `updateLocale()`: Context에 언어 설정 적용
+    - `getCurrentLocale()`: 현재 언어 가져오기
+    - `getLanguageFromContext()`: Context → Language 변환
+  - **리소스 파일 3개 생성**
+    - `values/strings.xml`: 한국어 (165개 문자열)
+    - `values-en/strings.xml`: English (165개 문자열)
+    - `values-zh/strings.xml`: 中文 (165개 문자열)
+  - **설정 화면에 언어 선택 UI 추가**
+    - 라디오 버튼 방식 (시스템 기본값 / 한국어 / English / 中文)
+    - 언어 변경 시 Activity 자동 재생성으로 즉시 반영
+  - **SettingsViewModel 강화**
+    - `updateLanguage()` 메서드 추가
+    - Firebase Analytics 언어 변경 이벤트 로깅
+  - **AnalyticsHelper 확장**
+    - `logLanguageChanged()` 메서드 추가
+
+### Changed
+- 🏗️ **ReminderApplication 업데이트**
+  - `attachBaseContext()` override로 앱 시작 시 저장된 언어 적용
+  - Firebase Analytics에 언어 사용자 속성 추가
+- 📱 **MainActivity 업데이트**
+  - `attachBaseContext()` override로 Activity 언어 설정 적용
+  - `LaunchedEffect`로 언어 변경 감지 및 자동 재생성
+  - `currentLanguage` 필드로 언어 변경 추적
+- 💾 **PreferencesRepository 확장**
+  - `language` 필드 추가 (DataStore)
+  - `updateLanguage()` 메서드 구현
+  - UserPreferences에 `language: Language` 필드 추가
+- 🔢 버전 업데이트: `versionCode = 33`, `versionName = "1.30.0"`
+
+### Technical Details
+- **Files Created**: 4개
+  - `app/src/main/java/com/reminder/util/LocaleHelper.kt` (신규)
+  - `app/src/main/res/values-en/strings.xml` (신규)
+  - `app/src/main/res/values-zh/strings.xml` (신규)
+  - `app/src/main/java/com/reminder/data/preferences/Language.kt` (UserPreferences.kt에 포함)
+- **Files Modified**: 8개
+  - `app/build.gradle.kts` (버전)
+  - `app/src/main/java/com/reminder/data/preferences/UserPreferences.kt` (Language enum 추가)
+  - `app/src/main/java/com/reminder/data/preferences/PreferencesRepository.kt` (language 필드)
+  - `app/src/main/java/com/reminder/viewmodel/SettingsViewModel.kt` (updateLanguage)
+  - `app/src/main/java/com/reminder/analytics/AnalyticsHelper.kt` (logLanguageChanged)
+  - `app/src/main/java/com/reminder/ui/screen/SettingsScreen.kt` (언어 UI)
+  - `app/src/main/java/com/reminder/ReminderApplication.kt` (attachBaseContext)
+  - `app/src/main/java/com/reminder/MainActivity.kt` (언어 변경 리스너)
+  - `app/src/main/res/values/strings.xml` (기존 하드코딩 문자열 리소스화)
+- **Lines Changed**: +800 (approx.)
+- **Supported Languages**: 3개 (Korean, English, Simplified Chinese)
+
+### Quality Improvements
+- 국제화를 통한 글로벌 사용자 접근성 향상
+- 앱 재시작 없이 언어 변경 즉시 적용
+- 체계적인 리소스 관리 (하드코딩 제거)
+- Firebase Analytics로 언어 사용 패턴 추적
+
 ## [1.29.0] - 2025-10-10
 
 ### Added

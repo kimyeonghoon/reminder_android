@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 应用名称 -->
+    <string name="app_name">待办事项管理</string>
+
+    <!-- 通用 -->
+    <string name="common_confirm">确认</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_save">保存</string>
+    <string name="common_delete">删除</string>
+    <string name="common_add">添加</string>
+    <string name="common_edit">编辑</string>
+    <string name="common_search">搜索</string>
+    <string name="common_filter">筛选</string>
+    <string name="common_sort">排序</string>
+    <string name="common_settings">设置</string>
+    <string name="common_back">返回</string>
+    <string name="common_close">关闭</string>
+    <string name="common_loading">加载中...</string>
+    <string name="common_error">发生错误</string>
+    <string name="common_retry">重试</string>
+
+    <!-- 主屏幕 -->
+    <string name="home_title">待办事项列表</string>
+    <string name="home_no_reminders">暂无事项</string>
+    <string name="home_add_reminder">添加事项</string>
+    <string name="home_search_hint">搜索...</string>
+    <string name="home_filter_all">全部</string>
+    <string name="home_filter_active">进行中</string>
+    <string name="home_filter_completed">已完成</string>
+    <string name="home_sort_due_date">按截止日期</string>
+    <string name="home_sort_priority">按优先级</string>
+    <string name="home_sort_created">按创建日期</string>
+
+    <!-- 添加/编辑屏幕 -->
+    <string name="add_edit_title_add">添加事项</string>
+    <string name="add_edit_title_edit">编辑事项</string>
+    <string name="add_edit_field_title">标题</string>
+    <string name="add_edit_field_description">描述</string>
+    <string name="add_edit_field_due_date">截止日期</string>
+    <string name="add_edit_field_due_time">截止时间</string>
+    <string name="add_edit_field_priority">优先级</string>
+    <string name="add_edit_field_category">类别</string>
+    <string name="add_edit_field_repeat">重复</string>
+    <string name="add_edit_field_location">位置</string>
+    <string name="add_edit_field_web_link">网页链接</string>
+    <string name="add_edit_field_image">图片</string>
+    <string name="add_edit_tts_enabled">语音朗读</string>
+    <string name="add_edit_voice_input">语音输入</string>
+    <string name="add_edit_category_suggestion">推荐类别</string>
+    <string name="add_edit_optimal_time">最佳时间建议</string>
+
+    <!-- 优先级 -->
+    <string name="priority_high">高</string>
+    <string name="priority_medium">中</string>
+    <string name="priority_low">低</string>
+
+    <!-- 重复 -->
+    <string name="repeat_none">无</string>
+    <string name="repeat_daily">每天</string>
+    <string name="repeat_weekly">每周</string>
+    <string name="repeat_monthly">每月</string>
+    <string name="repeat_yearly">每年</string>
+
+    <!-- 设置屏幕 -->
+    <string name="settings_title">设置</string>
+    <string name="settings_appearance">显示设置</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_font_size">字体大小</string>
+    <string name="settings_simple_mode">简易模式</string>
+    <string name="settings_simple_mode_description">为70岁以上用户简化的界面</string>
+    <string name="settings_notification">通知</string>
+    <string name="settings_notification_sound">声音</string>
+    <string name="settings_notification_vibration">振动</string>
+    <string name="settings_notification_led">LED</string>
+    <string name="settings_backup">备份/恢复</string>
+    <string name="settings_backup_now">立即备份</string>
+    <string name="settings_restore">恢复</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本</string>
+    <string name="settings_help">帮助</string>
+
+    <!-- 语言 -->
+    <string name="language_korean">한국어</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_select_title">选择语言</string>
+    <string name="language_change_message">语言将被更改</string>
+
+    <!-- 主题 -->
+    <string name="theme_system">系统默认</string>
+    <string name="theme_light">浅色模式</string>
+    <string name="theme_dark">深色模式</string>
+
+    <!-- 字体大小 -->
+    <string name="font_size_small">小</string>
+    <string name="font_size_medium">中</string>
+    <string name="font_size_large">大</string>
+    <string name="font_size_xlarge">特大</string>
+
+    <!-- 统计屏幕 -->
+    <string name="statistics_title">统计</string>
+    <string name="statistics_total">总计</string>
+    <string name="statistics_completed">已完成</string>
+    <string name="statistics_active">进行中</string>
+    <string name="statistics_completion_rate">完成率</string>
+    <string name="statistics_weekly_trend">周趋势</string>
+    <string name="statistics_monthly_trend">月趋势</string>
+    <string name="statistics_pattern_analysis">完成模式分析</string>
+    <string name="statistics_no_data">无数据</string>
+
+    <!-- 模式分析 -->
+    <string name="pattern_analysis_title">完成模式分析</string>
+    <string name="pattern_analysis_hourly">每小时完成率</string>
+    <string name="pattern_analysis_daily">每日完成率</string>
+    <string name="pattern_analysis_avg_time">平均完成时间</string>
+    <string name="pattern_analysis_productive_time">最高效时间段</string>
+
+    <!-- 完成历史 -->
+    <string name="completion_history_title">完成历史</string>
+    <string name="completion_history_calendar">日历视图</string>
+
+    <!-- 帮助 -->
+    <string name="help_title">帮助</string>
+    <string name="help_getting_started">入门</string>
+    <string name="help_features">主要功能</string>
+    <string name="help_faq">常见问题</string>
+
+    <!-- 小部件 -->
+    <string name="widget_refresh">刷新</string>
+    <string name="widget_no_reminders">暂无事项</string>
+    <string name="widget_description">待办事项小部件</string>
+    <string name="widget_complete">完成</string>
+
+    <!-- 快速备忘录小部件 -->
+    <string name="quick_note_widget_title">快速备忘录</string>
+    <string name="quick_note_widget_description">快速添加事项</string>
+    <string name="add_quick_note">添加事项</string>
+
+    <!-- 延迟 -->
+    <string name="snooze_5min">5分钟后</string>
+    <string name="snooze_10min">10分钟后</string>
+    <string name="snooze_30min">30分钟后</string>
+    <string name="snooze_1hour">1小时后</string>
+    <string name="snooze_tomorrow">明天</string>
+
+    <!-- 辅助功能 -->
+    <string name="accessibility_checkbox">完成状态复选框</string>
+    <string name="accessibility_delete">删除事项</string>
+    <string name="accessibility_priority">优先级：</string>
+    <string name="accessibility_add_reminder">添加事项</string>
+
+    <!-- 错误消息 -->
+    <string name="error_title_empty">请输入标题</string>
+    <string name="error_network">请检查网络连接</string>
+    <string name="error_permission">需要权限</string>
+    <string name="error_unknown">发生未知错误</string>
+
+    <!-- 成功消息 -->
+    <string name="success_saved">保存成功</string>
+    <string name="success_deleted">删除成功</string>
+    <string name="success_backup">备份完成</string>
+    <string name="success_restore">恢复完成</string>
+</resources>

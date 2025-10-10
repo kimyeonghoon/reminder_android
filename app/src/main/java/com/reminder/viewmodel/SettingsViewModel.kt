@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reminder.analytics.AnalyticsHelper
 import com.reminder.data.preferences.FontSize
+import com.reminder.data.preferences.Language
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.data.preferences.ThemePreset
@@ -25,6 +26,18 @@ class SettingsViewModel(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = UserPreferences()
             )
+
+    /**
+     * v1.30.0: 언어 설정 업데이트
+     */
+    fun updateLanguage(language: Language) {
+        viewModelScope.launch {
+            preferencesRepository.updateLanguage(language)
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logLanguageChanged(language.code)
+        }
+    }
 
     fun updateThemeMode(themeMode: ThemeMode) {
         viewModelScope.launch {

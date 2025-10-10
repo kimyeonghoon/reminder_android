@@ -153,6 +153,18 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
     }
 
     /**
+     * v1.30.0: 언어 변경 이벤트 로깅
+     *
+     * @param languageCode 언어 코드 (system, ko, en, zh)
+     */
+    fun logLanguageChanged(languageCode: String) {
+        val bundle = Bundle().apply {
+            putString("language_code", languageCode)
+        }
+        firebaseAnalytics.logEvent("language_changed", bundle)
+    }
+
+    /**
      * 알림 설정 변경 이벤트 로깅
      *
      * @param settingKey 설정 키

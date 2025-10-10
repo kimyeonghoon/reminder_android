@@ -1,9 +1,12 @@
 package com.reminder.data.preferences
 
+import java.util.Locale
+
 /**
  * 사용자 설정 데이터 모델
  */
 data class UserPreferences(
+    val language: Language = Language.SYSTEM,  // v1.30.0: 언어 설정
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val themePreset: ThemePreset = ThemePreset.PURPLE,  // 테마 프리셋 색상
     val dynamicColor: Boolean = true,  // Material You 동적 컬러 사용 여부
@@ -20,3 +23,28 @@ data class UserPreferences(
     // 배지 설정
     val badgeEnabled: Boolean = true  // 앱 아이콘 배지 표시
 )
+
+/**
+ * v1.30.0: 언어 설정 enum
+ */
+enum class Language(val code: String, val displayName: String) {
+    SYSTEM("system", "System Default"),
+    KOREAN("ko", "한국어"),
+    ENGLISH("en", "English"),
+    CHINESE("zh", "中文");
+
+    fun toLocale(): Locale? {
+        return when (this) {
+            SYSTEM -> null  // 시스템 기본값 사용
+            KOREAN -> Locale.KOREAN
+            ENGLISH -> Locale.ENGLISH
+            CHINESE -> Locale.CHINESE
+        }
+    }
+
+    companion object {
+        fun fromCode(code: String): Language {
+            return values().find { it.code == code } ?: SYSTEM
+        }
+    }
+}

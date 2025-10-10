@@ -28,16 +28,20 @@ import com.reminder.notification.AlarmScheduler
 import com.reminder.notification.NotificationHelper
 import com.reminder.sync.SyncManager
 import com.reminder.sync.SyncWorker
+import com.reminder.util.LocaleHelper
 import com.reminder.widget.ReminderWidgetProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import android.util.Log
+import android.content.Context
 
 class ReminderApplication : Application(), ImageLoaderFactory {
     /**
@@ -89,6 +93,25 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val ttsHelper by lazy { com.reminder.tts.TtsHelper(this) }
     val categorySuggestionHelper by lazy { com.reminder.ml.CategorySuggestionHelper() }
     val completionPatternAnalyzer by lazy { com.reminder.analytics.CompletionPatternAnalyzer() }
+
+    /**
+     * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
+     */
+    override fun attachBaseContext(base: Context?) {
+        if (base == null) {
+            super.attachBaseContext(base)
+            return
+        }
+
+        // DataStore에서 언어 설정 읽기 (동기적으로)
+        val preferences = runBlocking {
+            PreferencesRepository.create(base).userPreferences.first()
+        }
+
+        // 저장된 언어로 Context 업데이트
+        val updatedContext = LocaleHelper.updateLocale(base, preferences.language)
+        super.attachBaseContext(updatedContext)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -201,6 +224,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
                 // Firebase Analytics 사용자 속성 설정
                 FirebaseAnalytics.getInstance(this@ReminderApplication).apply {
+                    setUserProperty("language", preferences.language.code)  // v1.30.0
                     setUserProperty("theme_mode", preferences.themeMode.name)
                     setUserProperty("simple_mode", preferences.simpleMode.toString())
                     setUserProperty("font_size", preferences.fontSize.name)

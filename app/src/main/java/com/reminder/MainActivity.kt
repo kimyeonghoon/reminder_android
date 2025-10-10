@@ -1,6 +1,7 @@
 package com.reminder
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -27,6 +28,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.data.preferences.Language
+import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.HelpScreen
@@ -36,6 +39,7 @@ import com.reminder.ui.screen.PatternAnalysisScreen
 import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
+import com.reminder.util.LocaleHelper
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
 import com.reminder.viewmodel.SettingsViewModel
@@ -45,11 +49,16 @@ import com.reminder.viewmodel.StatisticsViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    // v1.30.0: 현재 언어 추적 (재생성 여부 판단용)
+    private var currentLanguage: Language? = null
 
     // 알림 권한 요청 런처 (Android 13+)
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -58,6 +67,27 @@ class MainActivity : ComponentActivity() {
         if (!isGranted) {
             // 권한 거부 시 설정으로 이동하도록 안내할 수 있음
         }
+    }
+
+    /**
+     * v1.30.0: Activity 시작 시 저장된 언어 설정 적용
+     */
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase == null) {
+            super.attachBaseContext(newBase)
+            return
+        }
+
+        // DataStore에서 언어 설정 읽기 (동기적으로)
+        val preferences = runBlocking {
+            PreferencesRepository.create(newBase).userPreferences.first()
+        }
+
+        currentLanguage = preferences.language
+
+        // 저장된 언어로 Context 업데이트
+        val updatedContext = LocaleHelper.updateLocale(newBase, preferences.language)
+        super.attachBaseContext(updatedContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +131,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReminderApp() {
     val navController = rememberNavController()
-    val app = (navController.context as MainActivity).application as ReminderApplication
+    val activity = navController.context as MainActivity
+    val app = activity.application as ReminderApplication
     val scope = rememberCoroutineScope()
 
     val settingsViewModel: SettingsViewModel = viewModel(
@@ -109,6 +140,15 @@ fun ReminderApp() {
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
+
+    // v1.30.0: 언어 변경 감지 및 Activity 재생성
+    LaunchedEffect(userPreferences.language) {
+        if (activity.currentLanguage != null &&
+            activity.currentLanguage != userPreferences.language) {
+            // 언어가 변경되었으므로 Activity 재생성
+            activity.recreate()
+        }
+    }
 
     // 테마 모드에 따라 다크 테마 여부 결정
     val darkTheme = when (userPreferences.themeMode) {

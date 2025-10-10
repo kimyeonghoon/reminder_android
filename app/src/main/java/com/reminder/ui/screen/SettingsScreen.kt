@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.reminder.backup.BackupManager
 import com.reminder.data.preferences.FontSize
+import com.reminder.data.preferences.Language
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
@@ -149,6 +150,14 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // v1.30.0: 언어 설정 섹션
+            LanguageSection(
+                selectedLanguage = userPreferences.language,
+                onLanguageChange = { viewModel.updateLanguage(it) }
+            )
+
+            HorizontalDivider()
+
             // 테마 설정 섹션
             ThemeSection(
                 selectedThemeMode = userPreferences.themeMode,
@@ -227,6 +236,56 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("도움말 보기")
+            }
+        }
+    }
+}
+
+/**
+ * v1.30.0: 언어 선택 섹션
+ */
+@Composable
+fun LanguageSection(
+    selectedLanguage: Language,
+    onLanguageChange: (Language) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "언어 / Language",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.selectableGroup()
+        ) {
+            Language.values().forEach { language ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = selectedLanguage == language,
+                            onClick = { onLanguageChange(language) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedLanguage == language,
+                        onClick = null
+                    )
+                    Text(
+                        text = getLanguageLabel(language),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
             }
         }
     }
@@ -399,6 +458,16 @@ fun FontSizeSection(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun getLanguageLabel(language: Language): String {
+    return when (language) {
+        Language.SYSTEM -> "시스템 기본값 (System Default)"
+        Language.KOREAN -> "한국어 (Korean)"
+        Language.ENGLISH -> "English"
+        Language.CHINESE -> "中文 (Chinese)"
     }
 }
 

@@ -18,6 +18,7 @@ class PreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
     private object PreferencesKeys {
+        val LANGUAGE = stringPreferencesKey("language")  // v1.30.0
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val THEME_PRESET = stringPreferencesKey("theme_preset")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
@@ -44,6 +45,10 @@ class PreferencesRepository(
             }
         }
         .map { preferences ->
+            // v1.30.0: 언어 설정
+            val languageCode = preferences[PreferencesKeys.LANGUAGE] ?: Language.SYSTEM.code
+            val language = Language.fromCode(languageCode)
+
             val themeModeString = preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name
             val themeMode = try {
                 ThemeMode.valueOf(themeModeString)
@@ -79,6 +84,7 @@ class PreferencesRepository(
             val badgeEnabled = preferences[PreferencesKeys.BADGE_ENABLED] ?: true
 
             UserPreferences(
+                language = language,
                 themeMode = themeMode,
                 themePreset = themePreset,
                 dynamicColor = dynamicColor,
@@ -156,6 +162,12 @@ class PreferencesRepository(
     suspend fun updateBadgeEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.BADGE_ENABLED] = enabled
+        }
+    }
+
+    suspend fun updateLanguage(language: Language) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LANGUAGE] = language.code
         }
     }
 

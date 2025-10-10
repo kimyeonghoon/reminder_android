@@ -1,6 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 앱 이름 -->
     <string name="app_name">할 일 관리</string>
+
+    <!-- 공통 -->
+    <string name="common_confirm">확인</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_save">저장</string>
+    <string name="common_delete">삭제</string>
+    <string name="common_add">추가</string>
+    <string name="common_edit">편집</string>
+    <string name="common_search">검색</string>
+    <string name="common_filter">필터</string>
+    <string name="common_sort">정렬</string>
+    <string name="common_settings">설정</string>
+    <string name="common_back">뒤로</string>
+    <string name="common_close">닫기</string>
+    <string name="common_loading">로딩 중...</string>
+    <string name="common_error">오류 발생</string>
+    <string name="common_retry">재시도</string>
+
+    <!-- 홈 화면 -->
+    <string name="home_title">할 일 목록</string>
+    <string name="home_no_reminders">할 일이 없습니다</string>
+    <string name="home_add_reminder">할 일 추가</string>
+    <string name="home_search_hint">검색...</string>
+    <string name="home_filter_all">전체</string>
+    <string name="home_filter_active">진행중</string>
+    <string name="home_filter_completed">완료</string>
+    <string name="home_sort_due_date">마감일순</string>
+    <string name="home_sort_priority">우선순위순</string>
+    <string name="home_sort_created">생성일순</string>
+
+    <!-- 추가/편집 화면 -->
+    <string name="add_edit_title_add">할 일 추가</string>
+    <string name="add_edit_title_edit">할 일 편집</string>
+    <string name="add_edit_field_title">제목</string>
+    <string name="add_edit_field_description">설명</string>
+    <string name="add_edit_field_due_date">마감일</string>
+    <string name="add_edit_field_due_time">마감 시간</string>
+    <string name="add_edit_field_priority">우선순위</string>
+    <string name="add_edit_field_category">카테고리</string>
+    <string name="add_edit_field_repeat">반복</string>
+    <string name="add_edit_field_location">위치</string>
+    <string name="add_edit_field_web_link">웹 링크</string>
+    <string name="add_edit_field_image">이미지</string>
+    <string name="add_edit_tts_enabled">음성 읽기</string>
+    <string name="add_edit_voice_input">음성 입력</string>
+    <string name="add_edit_category_suggestion">추천 카테고리</string>
+    <string name="add_edit_optimal_time">최적 시간 제안</string>
+
+    <!-- 우선순위 -->
+    <string name="priority_high">높음</string>
+    <string name="priority_medium">중간</string>
+    <string name="priority_low">낮음</string>
+
+    <!-- 반복 -->
+    <string name="repeat_none">없음</string>
+    <string name="repeat_daily">매일</string>
+    <string name="repeat_weekly">매주</string>
+    <string name="repeat_monthly">매월</string>
+    <string name="repeat_yearly">매년</string>
+
+    <!-- 설정 화면 -->
+    <string name="settings_title">설정</string>
+    <string name="settings_appearance">화면 설정</string>
+    <string name="settings_language">언어</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_font_size">글씨 크기</string>
+    <string name="settings_simple_mode">간편 모드</string>
+    <string name="settings_simple_mode_description">70세+ 사용자를 위한 단순화된 인터페이스</string>
+    <string name="settings_notification">알림</string>
+    <string name="settings_notification_sound">알림음</string>
+    <string name="settings_notification_vibration">진동</string>
+    <string name="settings_notification_led">LED</string>
+    <string name="settings_backup">백업/복원</string>
+    <string name="settings_backup_now">지금 백업</string>
+    <string name="settings_restore">복원</string>
+    <string name="settings_about">앱 정보</string>
+    <string name="settings_version">버전</string>
+    <string name="settings_help">도움말</string>
+
+    <!-- 언어 -->
+    <string name="language_korean">한국어</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_select_title">언어 선택</string>
+    <string name="language_change_message">언어가 변경됩니다</string>
+
+    <!-- 테마 -->
+    <string name="theme_system">시스템 설정</string>
+    <string name="theme_light">라이트 모드</string>
+    <string name="theme_dark">다크 모드</string>
+
+    <!-- 글씨 크기 -->
+    <string name="font_size_small">작게</string>
+    <string name="font_size_medium">보통</string>
+    <string name="font_size_large">크게</string>
+    <string name="font_size_xlarge">아주 크게</string>
+
+    <!-- 통계 화면 -->
+    <string name="statistics_title">통계</string>
+    <string name="statistics_total">전체</string>
+    <string name="statistics_completed">완료</string>
+    <string name="statistics_active">진행중</string>
+    <string name="statistics_completion_rate">완료율</string>
+    <string name="statistics_weekly_trend">주간 트렌드</string>
+    <string name="statistics_monthly_trend">월간 트렌드</string>
+    <string name="statistics_pattern_analysis">완료 패턴 분석</string>
+    <string name="statistics_no_data">데이터 없음</string>
+
+    <!-- 완료 패턴 분석 -->
+    <string name="pattern_analysis_title">완료 패턴 분석</string>
+    <string name="pattern_analysis_hourly">시간대별 완료율</string>
+    <string name="pattern_analysis_daily">요일별 완료율</string>
+    <string name="pattern_analysis_avg_time">평균 완료 시간</string>
+    <string name="pattern_analysis_productive_time">생산적인 시간대</string>
+
+    <!-- 완료 이력 -->
+    <string name="completion_history_title">완료 이력</string>
+    <string name="completion_history_calendar">달력 보기</string>
+
+    <!-- 도움말 -->
+    <string name="help_title">도움말</string>
+    <string name="help_getting_started">시작하기</string>
+    <string name="help_features">주요 기능</string>
+    <string name="help_faq">자주 묻는 질문</string>
 
     <!-- 위젯 관련 -->
     <string name="widget_refresh">새로고침</string>
@@ -12,4 +137,29 @@
     <string name="quick_note_widget_title">빠른 메모</string>
     <string name="quick_note_widget_description">빠르게 할 일 추가</string>
     <string name="add_quick_note">할 일 추가</string>
+
+    <!-- 스누즈 -->
+    <string name="snooze_5min">5분 후</string>
+    <string name="snooze_10min">10분 후</string>
+    <string name="snooze_30min">30분 후</string>
+    <string name="snooze_1hour">1시간 후</string>
+    <string name="snooze_tomorrow">내일</string>
+
+    <!-- 접근성 -->
+    <string name="accessibility_checkbox">완료 여부 체크박스</string>
+    <string name="accessibility_delete">할 일 삭제</string>
+    <string name="accessibility_priority">우선순위:</string>
+    <string name="accessibility_add_reminder">할 일 추가</string>
+
+    <!-- 에러 메시지 -->
+    <string name="error_title_empty">제목을 입력해주세요</string>
+    <string name="error_network">네트워크 연결을 확인해주세요</string>
+    <string name="error_permission">권한이 필요합니다</string>
+    <string name="error_unknown">알 수 없는 오류가 발생했습니다</string>
+
+    <!-- 성공 메시지 -->
+    <string name="success_saved">저장되었습니다</string>
+    <string name="success_deleted">삭제되었습니다</string>
+    <string name="success_backup">백업이 완료되었습니다</string>
+    <string name="success_restore">복원이 완료되었습니다</string>
 </resources>
