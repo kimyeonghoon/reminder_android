@@ -154,10 +154,20 @@ class ReminderWidgetProvider : AppWidgetProvider() {
     }
 
     override fun onEnabled(context: Context) {
-        // 첫 위젯이 생성될 때
+        // v1.34.0: 첫 위젯이 생성될 때 주기적 업데이트 예약
+        WidgetUpdateWorker.schedulePeriodicUpdate(context)
     }
 
     override fun onDisabled(context: Context) {
-        // 마지막 위젯이 제거될 때
+        // v1.34.0: 마지막 위젯이 제거될 때 주기적 업데이트 취소
+        WidgetUpdateWorker.cancelPeriodicUpdate(context)
+    }
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        // v1.34.0: 위젯 삭제 시 설정도 함께 삭제
+        val widgetPreferences = WidgetPreferences(context)
+        appWidgetIds.forEach { widgetId ->
+            widgetPreferences.deleteWidgetConfig(widgetId)
+        }
     }
 }
