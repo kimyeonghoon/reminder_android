@@ -5,6 +5,73 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.29.0] - 2025-10-10
+
+### Added
+- 🔔 **FCM 푸시 알림 고도화** - Firebase Cloud Messaging 기반 리치 알림 시스템
+  - `ReminderMessagingService.kt` 신규 구현
+    - FCM 메시지 수신 및 처리
+    - 데이터 메시지 파싱 (reminderId, title, description, priority, imageUri 등)
+    - 알림 메시지 fallback 지원
+    - 새로운 FCM 토큰 수신 처리
+  - `ReminderNotificationChannel.kt` 신규 enum 추가
+    - 우선순위별 3개 채널 정의 (HIGH, MEDIUM, LOW)
+    - 채널별 중요도 설정 (IMPORTANCE_HIGH/DEFAULT/LOW)
+    - Priority enum 자동 변환 지원
+  - **알림 채널 세분화** (Android 8.0+)
+    - 높은 우선순위: 알림음 + 진동 + 헤드업 알림
+    - 중간 우선순위: 알림음만
+    - 낮은 우선순위: 소리/진동 없음 (상태바만)
+  - **리치 알림 (BigPictureStyle)**
+    - `buildRichNotification()` 메서드 추가
+    - 이미지 첨부 시 큰 이미지 알림 표시
+    - URI로부터 Bitmap 자동 로드
+  - **액션 버튼 알림**
+    - `buildNotificationWithActions()` 메서드 추가
+    - "완료" 버튼 (완료 처리)
+    - "1시간 후" 버튼 (스누즈)
+    - PendingIntent 기반 액션 처리
+
+### Changed
+- 🔧 **NotificationHelper 강화**
+  - `createAllNotificationChannels()` 메서드 추가
+    - 3개 채널을 한 번에 생성
+    - 사용자 설정(소리/진동/LED) 자동 반영
+    - 낮은 우선순위는 소리/진동 비활성화
+  - `buildNotification()` 메서드 수정
+    - 우선순위별로 다른 채널 ID 자동 선택
+    - ReminderNotificationChannel.fromPriority() 활용
+  - Helper 메서드 추가
+    - `createActionPendingIntent()`: 액션 버튼용 PendingIntent
+    - `loadBitmapFromUri()`: URI→Bitmap 변환
+- 🏗️ **ReminderApplication 업데이트**
+  - `createAllNotificationChannels()` 호출로 변경 (기존 단일 채널에서 확장)
+- 📱 **AndroidManifest 업데이트**
+  - ReminderMessagingService 등록
+  - FCM intent-filter 추가 (com.google.firebase.MESSAGING_EVENT)
+- 🔢 버전 업데이트: `versionCode = 32`, `versionName = "1.29.0"`
+
+### Technical Details
+- **Files Modified**: 6개
+  - `app/build.gradle.kts` (FCM 의존성, 버전)
+  - `app/src/main/java/com/reminder/notification/ReminderNotificationChannel.kt` (신규)
+  - `app/src/main/java/com/reminder/fcm/ReminderMessagingService.kt` (신규)
+  - `app/src/main/java/com/reminder/notification/NotificationHelper.kt` (확장)
+  - `app/src/main/java/com/reminder/ReminderApplication.kt` (채널 초기화)
+  - `app/src/main/AndroidManifest.xml` (서비스 등록)
+  - `app/src/androidTest/java/com/reminder/notification/NotificationHelperTest.kt` (테스트 추가)
+- **TDD 방식 구현**: Red-Green-Refactor 사이클
+  - Red: 5개 새 테스트 작성 (세분화 채널, 리치 알림, 액션 버튼)
+  - Green: NotificationHelper 메서드 3개 구현
+- **Dependencies**: firebase-messaging-ktx (BOM 33.7.0)
+- **Lines Changed**: +350 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현
+- 우선순위별 알림 체계화
+- FCM 통합으로 원격 알림 가능
+- 사용자 경험 개선 (이미지, 액션 버튼)
+
 ## [1.28.0] - 2025-10-10
 
 ### Added
