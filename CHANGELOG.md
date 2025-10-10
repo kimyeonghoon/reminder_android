@@ -5,6 +5,97 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.43.0] - 2025-10-10
+
+### Added
+- 📁 **Archive System** - 완료된 리마인더 자동 아카이브로 메인 화면 정리
+  - **ArchiveManager**: 아카이브 비즈니스 로직 (TDD Green)
+    - `archiveReminder()`: 리마인더 아카이브 처리
+    - `unarchiveReminder()`: 아카이브 복원
+    - `autoArchiveOldCompletedReminders(daysThreshold)`: N일 이상 완료된 리마인더 자동 아카이브 (기본 30일)
+    - `getArchivedReminders()`: 아카이브 목록 조회 (Flow)
+    - `deleteArchivedReminder()`: 아카이브 영구 삭제
+    - `deleteAllArchived()`: 전체 아카이브 일괄 삭제
+  - **ArchiveViewModel**: 아카이브 화면 상태 관리
+    - 아카이브 목록 StateFlow
+    - 로딩/에러/성공 메시지 상태 관리
+    - 모든 작업에 try-catch 에러 처리
+  - **ArchiveScreen**: 아카이브 관리 UI
+    - 아카이브 리마인더 목록 (취소선 + 우선순위)
+    - 각 항목별 복원/삭제 버튼
+    - 자동 아카이브 실행 FAB (30일 기준)
+    - 전체 삭제 FAB (확인 다이얼로그)
+    - 빈 상태 메시지 (아카이브 아이콘 + 안내 문구)
+  - **다국어 지원**: 한국어, 영어, 중국어 문자열 추가 (12개)
+    - archive_title, archive_no_items, archive_restore, archive_delete
+    - archive_delete_all, archive_auto_run, archive_auto_run_message
+    - archive_delete_confirm, archive_delete_all_confirm
+    - archive_restored, archive_deleted, archive_auto_success
+  - **ArchiveManagerTest**: TDD Red 단위 테스트 7개
+    - archiveReminder 테스트
+    - unarchiveReminder 테스트
+    - autoArchiveOldCompletedReminders 테스트 (30일 기준)
+    - 이미 아카이브된 항목 건너뛰기 테스트
+    - getArchivedReminders 테스트
+    - deleteArchivedReminder 테스트
+    - deleteAllArchived 테스트
+
+### Changed
+- 🗄️ **Database Migration**: v19 → v20
+  - `reminders` 테이블에 `isArchived INTEGER NOT NULL DEFAULT 0` 컬럼 추가
+  - `index_reminders_isArchived` 인덱스 추가
+  - `index_reminders_isCompleted_isArchived` 복합 인덱스 추가
+- 📊 **ReminderEntity 확장**
+  - `isArchived: Boolean = false` 필드 추가
+  - `Index(value = ["isArchived"])` 인덱스 추가
+  - `Index(value = ["isCompleted", "isArchived"])` 복합 인덱스 추가
+- 🔄 **ReminderDao 확장**
+  - `getArchivedReminders()`: Flow<List<ReminderEntity>> 쿼리 추가
+  - `getAllCompletedReminders()`: Flow<List<ReminderEntity>> 쿼리 추가
+  - `updateArchiveStatus()`: 아카이브 상태 업데이트 쿼리 추가
+- 🏗️ **ReminderApplication 확장**
+  - `archiveManager` lazy 프로퍼티 추가
+- 🧭 **Navigation 추가**
+  - `archive` 라우트 추가 (슬라이드 애니메이션)
+  - ArchiveViewModel 의존성 주입
+- ⚙️ **SettingsScreen 업데이트**
+  - "아카이브 관리" 버튼 추가 (캘린더 동기화 아래)
+  - `onArchiveClick` 콜백 파라미터 추가
+- 🔢 버전 업데이트: `versionCode = 46`, `versionName = "1.43.0"`
+
+### Technical Details
+- **Files Created**: 4개
+  - `ArchiveManager.kt` (비즈니스 로직, 6개 메서드)
+  - `ArchiveManagerTest.kt` (TDD Red, 7개 테스트)
+  - `ArchiveViewModel.kt` (ViewModel, 5개 StateFlow, 5개 메서드)
+  - `ArchiveViewModelFactory.kt` (Factory)
+  - `ArchiveScreen.kt` (UI 전체 구현, 3개 Composable)
+- **Files Modified**: 11개
+  - `ReminderEntity.kt` (isArchived 필드, 인덱스)
+  - `ReminderDatabase.kt` (MIGRATION_19_20)
+  - `ReminderDao.kt` (3개 쿼리 추가)
+  - `ReminderApplication.kt` (archiveManager)
+  - `MainActivity.kt` (라우트 + ViewModel)
+  - `SettingsScreen.kt` (버튼 추가)
+  - `build.gradle.kts` (버전)
+  - `strings.xml` (한/영/중 3개 언어, 12개 문자열)
+  - `CHANGELOG.md`, `CLAUDE.md`
+- **Lines Changed**: +450 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현 (7개 테스트 선행 작성)
+- 메인 화면 정리로 사용자 경험 개선
+- 완료 항목 자동 정리 기능으로 편의성 향상
+- Material 3 디자인 일관성 유지
+- 다이얼로그 확인으로 실수 방지
+
+### Usage
+1. 설정 화면 → "아카이브 관리" 버튼
+2. 아카이브 목록 확인
+3. 개별 항목: 복원 또는 영구 삭제
+4. FAB (아카이브 아이콘): 30일 이상 완료 항목 자동 아카이브
+5. FAB (삭제 아이콘): 전체 아카이브 일괄 삭제
+
 ## [1.42.0] - 2025-10-10
 
 ### Added

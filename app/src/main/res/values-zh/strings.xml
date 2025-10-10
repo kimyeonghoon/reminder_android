@@ -168,4 +168,18 @@
     <string name="tile_subtitle_quick_add">快速添加</string>
     <string name="quick_add_title">快速添加事项</string>
     <string name="quick_add_hint">例如：买牛奶</string>
+
+    <!-- Archive (v1.43.0) -->
+    <string name="archive_title">归档</string>
+    <string name="archive_no_items">没有归档的事项</string>
+    <string name="archive_restore">恢复</string>
+    <string name="archive_delete">永久删除</string>
+    <string name="archive_delete_all">全部删除</string>
+    <string name="archive_auto_run">运行自动归档</string>
+    <string name="archive_auto_run_message">归档30天前完成的事项？</string>
+    <string name="archive_delete_confirm">确定要永久删除吗？此操作无法撤销。</string>
+    <string name="archive_delete_all_confirm">确定要永久删除所有归档吗？此操作无法撤销。</string>
+    <string name="archive_restored">事项已恢复</string>
+    <string name="archive_deleted">事项已永久删除</string>
+    <string name="archive_auto_success">%d个事项已归档</string>
 </resources>

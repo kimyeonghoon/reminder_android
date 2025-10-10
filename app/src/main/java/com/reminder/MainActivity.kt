@@ -32,6 +32,7 @@ import com.reminder.data.preferences.Language
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
+import com.reminder.ui.screen.ArchiveScreen
 import com.reminder.ui.screen.CalendarSyncScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
@@ -41,6 +42,8 @@ import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
 import com.reminder.util.LocaleHelper
+import com.reminder.viewmodel.ArchiveViewModel
+import com.reminder.viewmodel.ArchiveViewModelFactory
 import com.reminder.viewmodel.CalendarSyncViewModel
 import com.reminder.viewmodel.CalendarSyncViewModelFactory
 import com.reminder.viewmodel.ReminderViewModel
@@ -209,6 +212,11 @@ fun ReminderAppContent(
             app.deviceCalendarProvider,
             app.database.reminderDao()
         )
+    )
+
+    // v1.43.0: ArchiveViewModel 추가
+    val archiveViewModel: ArchiveViewModel = viewModel(
+        factory = ArchiveViewModelFactory(app.archiveManager)
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
@@ -387,7 +395,8 @@ fun ReminderAppContent(
                 backupManager = app.backupManager,
                 onNavigateBack = { navController.popBackStack() },
                 onHelpClick = { navController.navigate("help") },
-                onCalendarSyncClick = { navController.navigate("calendar_sync") }
+                onCalendarSyncClick = { navController.navigate("calendar_sync") },
+                onArchiveClick = { navController.navigate("archive") }
             )
         }
         composable(
@@ -483,6 +492,39 @@ fun ReminderAppContent(
         ) {
             CalendarSyncScreen(
                 viewModel = calendarSyncViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        // v1.43.0: ArchiveScreen 라우트
+        composable(
+            "archive",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            ArchiveScreen(
+                viewModel = archiveViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

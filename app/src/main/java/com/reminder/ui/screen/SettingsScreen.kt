@@ -42,6 +42,7 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onHelpClick: () -> Unit = {},
     onCalendarSyncClick: () -> Unit = {},
+    onArchiveClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -254,6 +255,14 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("캘린더 동기화")
+            }
+
+            // v1.43.0: 아카이브
+            OutlinedButton(
+                onClick = onArchiveClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("아카이브 관리")
             }
 
             // 도움말

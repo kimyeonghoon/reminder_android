@@ -11,11 +11,13 @@ import java.time.LocalDateTime
     tableName = "reminders",
     indices = [
         Index(value = ["isCompleted"]),
+        Index(value = ["isArchived"]),  // v1.43.0: 아카이브 인덱스
         Index(value = ["dueDateTime"]),
         Index(value = ["priority"]),
         Index(value = ["category"]),
         Index(value = ["updatedAt"]),
-        Index(value = ["isCompleted", "dueDateTime"])  // 복합 인덱스 (가장 자주 사용되는 쿼리)
+        Index(value = ["isCompleted", "dueDateTime"]),  // 복합 인덱스 (가장 자주 사용되는 쿼리)
+        Index(value = ["isCompleted", "isArchived"])     // v1.43.0: 완료+아카이브 복합 인덱스
     ]
 )
 data class ReminderEntity(
@@ -28,6 +30,7 @@ data class ReminderEntity(
     val category: String = "",
     val tags: String = "", // 콤마로 구분된 태그 (예: "work,urgent,meeting")
     val isCompleted: Boolean = false,
+    val isArchived: Boolean = false,     // v1.43.0: 아카이브 여부 (완료 후 일정 기간 지나면 자동 아카이브)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 

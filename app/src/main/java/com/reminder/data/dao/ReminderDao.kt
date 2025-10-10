@@ -79,4 +79,14 @@ interface ReminderDao {
 
     @Query("SELECT * FROM reminders WHERE snoozeUntil IS NOT NULL AND isCompleted = 0 ORDER BY snoozeUntil ASC")
     fun getSnoozedReminders(): Flow<List<ReminderEntity>>
+
+    // v1.43.0: Archive methods
+    @Query("SELECT * FROM reminders WHERE isArchived = 1 ORDER BY updatedAt DESC")
+    fun getArchivedReminders(): Flow<List<ReminderEntity>>
+
+    @Query("SELECT * FROM reminders WHERE isCompleted = 1")
+    fun getAllCompletedReminders(): Flow<List<ReminderEntity>>
+
+    @Query("UPDATE reminders SET isArchived = :isArchived, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun updateArchiveStatus(id: Long, isArchived: Boolean, updatedAt: java.time.LocalDateTime)
 }

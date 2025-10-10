@@ -168,4 +168,18 @@
     <string name="tile_subtitle_quick_add">Quick Add</string>
     <string name="quick_add_title">Quick Add Reminder</string>
     <string name="quick_add_hint">e.g., Buy milk</string>
+
+    <!-- Archive (v1.43.0) -->
+    <string name="archive_title">Archive</string>
+    <string name="archive_no_items">No archived reminders</string>
+    <string name="archive_restore">Restore</string>
+    <string name="archive_delete">Delete Permanently</string>
+    <string name="archive_delete_all">Delete All</string>
+    <string name="archive_auto_run">Run Auto-Archive</string>
+    <string name="archive_auto_run_message">Archive reminders completed over 30 days ago?</string>
+    <string name="archive_delete_confirm">Permanently delete this reminder? This action cannot be undone.</string>
+    <string name="archive_delete_all_confirm">Permanently delete all archived reminders? This action cannot be undone.</string>
+    <string name="archive_restored">Reminder has been restored</string>
+    <string name="archive_deleted">Reminder has been permanently deleted</string>
+    <string name="archive_auto_success">%d reminder(s) archived</string>
 </resources>

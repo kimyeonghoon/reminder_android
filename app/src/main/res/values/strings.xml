@@ -168,4 +168,18 @@
     <string name="tile_subtitle_quick_add">빠른 추가</string>
     <string name="quick_add_title">빠른 리마인더 추가</string>
     <string name="quick_add_hint">예: 우유 사기</string>
+
+    <!-- Archive (v1.43.0) -->
+    <string name="archive_title">아카이브</string>
+    <string name="archive_no_items">아카이브된 리마인더가 없습니다</string>
+    <string name="archive_restore">복원</string>
+    <string name="archive_delete">영구 삭제</string>
+    <string name="archive_delete_all">모두 삭제</string>
+    <string name="archive_auto_run">자동 아카이브 실행</string>
+    <string name="archive_auto_run_message">30일 이상 완료된 리마인더를 아카이브하시겠습니까?</string>
+    <string name="archive_delete_confirm">정말 영구 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.</string>
+    <string name="archive_delete_all_confirm">모든 아카이브를 영구 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.</string>
+    <string name="archive_restored">리마인더가 복원되었습니다</string>
+    <string name="archive_deleted">리마인더가 영구 삭제되었습니다</string>
+    <string name="archive_auto_success">%d개의 리마인더가 아카이브되었습니다</string>
 </resources>
