@@ -34,6 +34,7 @@ import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.ArchiveScreen
 import com.reminder.ui.screen.CalendarSyncScreen
+import com.reminder.ui.screen.HabitTrackerScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
@@ -46,6 +47,8 @@ import com.reminder.viewmodel.ArchiveViewModel
 import com.reminder.viewmodel.ArchiveViewModelFactory
 import com.reminder.viewmodel.CalendarSyncViewModel
 import com.reminder.viewmodel.CalendarSyncViewModelFactory
+import com.reminder.viewmodel.HabitViewModel
+import com.reminder.viewmodel.HabitViewModelFactory
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
 import com.reminder.viewmodel.SettingsViewModel
@@ -217,6 +220,11 @@ fun ReminderAppContent(
     // v1.43.0: ArchiveViewModel 추가
     val archiveViewModel: ArchiveViewModel = viewModel(
         factory = ArchiveViewModelFactory(app.archiveManager)
+    )
+
+    // v1.44.0: HabitViewModel 추가
+    val habitViewModel: HabitViewModel = viewModel(
+        factory = HabitViewModelFactory(app.habitManager)
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
@@ -396,7 +404,8 @@ fun ReminderAppContent(
                 onNavigateBack = { navController.popBackStack() },
                 onHelpClick = { navController.navigate("help") },
                 onCalendarSyncClick = { navController.navigate("calendar_sync") },
-                onArchiveClick = { navController.navigate("archive") }
+                onArchiveClick = { navController.navigate("archive") },
+                onHabitTrackerClick = { navController.navigate("habit_tracker") }
             )
         }
         composable(
@@ -525,6 +534,39 @@ fun ReminderAppContent(
         ) {
             ArchiveScreen(
                 viewModel = archiveViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        // v1.44.0: HabitTrackerScreen 라우트
+        composable(
+            "habit_tracker",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            HabitTrackerScreen(
+                viewModel = habitViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

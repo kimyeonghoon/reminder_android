@@ -5,6 +5,111 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.44.0] - 2025-10-10
+
+### Added
+- ✅ **Habit Tracker** - 매일 반복하는 습관 추적 및 Streak 관리 시스템
+  - **HabitManager**: 습관 추적 비즈니스 로직 (TDD Green)
+    - `createHabit()`: 습관 생성
+    - `completeHabit()`: 습관 완료 체크
+    - `uncompleteHabit()`: 습관 완료 체크 해제
+    - `isHabitCompletedToday()`: 오늘 완료 여부 확인
+    - `calculateStreak()`: 연속 달성 일수 계산 (오늘 완료 필수)
+    - `getCompletionRate()`: 기간 내 완료율 계산 (%)
+    - `deleteHabit()`: 습관 삭제 (완료 기록도 함께 삭제)
+  - **HabitViewModel**: 습관 추적 화면 상태 관리
+    - 습관 목록 StateFlow
+    - 완료 상태 및 Streak 자동 계산 StateFlow
+    - 로딩/에러/성공 메시지 상태 관리
+    - 습관 추가/삭제/완료 토글 메서드
+  - **HabitTrackerScreen**: 습관 추적 UI
+    - 습관 목록 (체크박스, 이름, 설명, Streak 표시)
+    - 완료 시 Primary Container 색상으로 강조
+    - Streak 표시 (🔥 불꽃 아이콘 + "N일 연속 달성")
+    - 주당 빈도 표시 (주 N회)
+    - 습관 추가 FAB (이름, 설명, 주당 목표 횟수)
+    - 개별 삭제 버튼 (확인 다이얼로그)
+    - 빈 상태 메시지 (Task 아이콘 + 안내 문구)
+  - **다국어 지원**: 한국어, 영어, 중국어 문자열 추가 (12개)
+    - habit_tracker_title, habit_add, habit_name, habit_description
+    - habit_frequency_label, habit_frequency, habit_streak
+    - habit_delete, habit_delete_confirm
+    - habit_no_items, habit_no_items_hint
+  - **HabitManagerTest**: TDD Red 단위 테스트 12개
+    - createHabit 테스트
+    - completeHabit/uncompleteHabit 테스트
+    - isHabitCompletedToday 테스트 (완료/미완료)
+    - calculateStreak 테스트 (연속 일수, 오늘 미완료 시 0)
+    - getCompletionRate 테스트 (백분율 계산)
+    - deleteHabit 테스트 (습관 + 완료 기록 삭제)
+    - getAllHabits 테스트
+
+### Changed
+- 🗄️ **Database Migration**: v20 → v21
+  - `habits` 테이블 생성 (7개 컬럼, 2개 인덱스)
+    - id, name, description, frequency, isActive, createdAt, updatedAt
+  - `habit_completions` 테이블 생성 (복합 Primary Key, 3개 인덱스)
+    - habitId, completedDate (복합키)
+    - CASCADE 삭제 (습관 삭제 시 완료 기록도 함께 삭제)
+- 📊 **HabitEntity**: 습관 엔티티
+  - `name: String` (습관 이름, 필수)
+  - `description: String` (설명, 선택)
+  - `frequency: Int` (주당 목표 횟수, 기본값 7 = 매일)
+  - `isActive: Boolean` (활성 상태)
+  - `Index(value = ["isActive"])` 인덱스
+  - `Index(value = ["createdAt"])` 인덱스
+- 📊 **HabitCompletion**: 습관 완료 기록 엔티티
+  - `habitId: Long`, `completedDate: LocalDate` (복합 Primary Key)
+  - ForeignKey(onDelete = CASCADE)
+  - 3개 복합 인덱스
+- 🔄 **HabitDao 추가**
+  - CRUD 쿼리 (insert, update, delete, getById, getAll)
+  - 완료 기록 쿼리 (insert, delete, getCompletion, getCompletionDates)
+  - 통계 쿼리 (getCompletionCountInPeriod, getTotalCompletionCount, getCompletionsInPeriod)
+- 🏗️ **ReminderApplication 확장**
+  - `habitManager` lazy 프로퍼티 추가
+- 🧭 **Navigation 추가**
+  - `habit_tracker` 라우트 추가 (슬라이드 애니메이션)
+  - HabitViewModel 의존성 주입
+- ⚙️ **SettingsScreen 업데이트**
+  - "습관 추적" 버튼 추가 (아카이브 관리 아래)
+  - `onHabitTrackerClick` 콜백 파라미터 추가
+- 🔢 버전 업데이트: `versionCode = 47`, `versionName = "1.44.0"`
+
+### Technical Details
+- **Files Created**: 8개
+  - `HabitEntity.kt` (엔티티)
+  - `HabitCompletion.kt` (엔티티)
+  - `HabitDao.kt` (DAO, 15개 메서드)
+  - `HabitManager.kt` (비즈니스 로직, 11개 메서드)
+  - `HabitManagerTest.kt` (TDD Red, 12개 테스트)
+  - `HabitViewModel.kt` (ViewModel, 6개 StateFlow, 7개 메서드)
+  - `HabitViewModelFactory.kt` (Factory)
+  - `HabitTrackerScreen.kt` (UI 전체 구현, 4개 Composable)
+- **Files Modified**: 11개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_20_21)
+  - `ReminderApplication.kt` (habitManager)
+  - `MainActivity.kt` (라우트 + ViewModel)
+  - `SettingsScreen.kt` (버튼 추가)
+  - `build.gradle.kts` (버전)
+  - `strings.xml` (한/영/중 3개 언어, 12개 문자열)
+  - `CHANGELOG.md`, `CLAUDE.md`
+- **Lines Changed**: +1100 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현 (12개 테스트 선행 작성)
+- Streak 시스템으로 동기부여 강화
+- 주당 빈도 설정으로 유연한 목표 관리
+- Material 3 디자인 일관성 유지
+- 다이얼로그 확인으로 실수 방지
+
+### Usage
+1. 설정 화면 → "습관 추적" 버튼
+2. FAB (+) → 습관 추가 (이름, 설명, 주당 목표 횟수)
+3. 매일 체크박스 클릭으로 완료 표시
+4. Streak (연속 달성 일수) 자동 계산 및 표시
+5. 개별 삭제 버튼으로 습관 제거
+
 ## [1.43.0] - 2025-10-10
 
 ### Added

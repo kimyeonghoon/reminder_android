@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.reminder.data.dao.CalendarSyncConfigDao
 import com.reminder.data.dao.ConflictLogDao
 import com.reminder.data.dao.GoalDao
+import com.reminder.data.dao.HabitDao
 import com.reminder.data.dao.MLTrainingDataDao
 import com.reminder.data.dao.PendingActionDao
 import com.reminder.data.dao.RecurrenceExceptionDao
@@ -21,6 +22,8 @@ import com.reminder.data.dao.SubTaskDao
 import com.reminder.data.entity.CalendarSyncConfig
 import com.reminder.data.entity.ConflictLogEntity
 import com.reminder.data.entity.GoalEntity
+import com.reminder.data.entity.HabitCompletion
+import com.reminder.data.entity.HabitEntity
 import com.reminder.data.entity.MLTrainingDataEntity
 import com.reminder.data.entity.PendingActionEntity
 import com.reminder.data.entity.RecurrenceExceptionEntity
@@ -31,8 +34,8 @@ import com.reminder.data.entity.SavedFilterEntity
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class, ReminderAttachment::class, CalendarSyncConfig::class],
-    version = 20,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class, ReminderAttachment::class, CalendarSyncConfig::class, HabitEntity::class, HabitCompletion::class],
+    version = 21,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -49,6 +52,7 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun conflictLogDao(): ConflictLogDao
     abstract fun reminderAttachmentDao(): ReminderAttachmentDao
     abstract fun calendarSyncConfigDao(): CalendarSyncConfigDao
+    abstract fun habitDao(): HabitDao // v1.44.0
 
     companion object {
         @Volatile
@@ -404,6 +408,42 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_20_21 = object : Migration(20, 21) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // v1.44.0: 습관 추적 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS habits (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        frequency INTEGER NOT NULL,
+                        isActive INTEGER NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        updatedAt TEXT NOT NULL
+                    )
+                """.trimIndent())
+
+                // 습관 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_habits_isActive ON habits(isActive)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_habits_createdAt ON habits(createdAt)")
+
+                // v1.44.0: 습관 완료 기록 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS habit_completions (
+                        habitId INTEGER NOT NULL,
+                        completedDate TEXT NOT NULL,
+                        PRIMARY KEY(habitId, completedDate),
+                        FOREIGN KEY(habitId) REFERENCES habits(id) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+
+                // 습관 완료 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_habit_completions_habitId ON habit_completions(habitId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_habit_completions_completedDate ON habit_completions(completedDate)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_habit_completions_habitId_completedDate ON habit_completions(habitId, completedDate)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -411,7 +451,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance

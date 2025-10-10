@@ -43,6 +43,7 @@ fun SettingsScreen(
     onHelpClick: () -> Unit = {},
     onCalendarSyncClick: () -> Unit = {},
     onArchiveClick: () -> Unit = {},
+    onHabitTrackerClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -263,6 +264,14 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("아카이브 관리")
+            }
+
+            // v1.44.0: 습관 추적
+            OutlinedButton(
+                onClick = onHabitTrackerClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("습관 추적")
             }
 
             // 도움말

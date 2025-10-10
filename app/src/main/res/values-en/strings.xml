@@ -182,4 +182,17 @@
     <string name="archive_restored">Reminder has been restored</string>
     <string name="archive_deleted">Reminder has been permanently deleted</string>
     <string name="archive_auto_success">%d reminder(s) archived</string>
+
+    <!-- Habit Tracker (v1.44.0) -->
+    <string name="habit_tracker_title">Habit Tracker</string>
+    <string name="habit_add">Add Habit</string>
+    <string name="habit_name">Habit Name</string>
+    <string name="habit_description">Description (Optional)</string>
+    <string name="habit_frequency_label">Weekly Goal</string>
+    <string name="habit_frequency">%d times/week</string>
+    <string name="habit_streak">%d day streak</string>
+    <string name="habit_delete">Delete Habit</string>
+    <string name="habit_delete_confirm">Delete \'%s\' habit? All records will be deleted.</string>
+    <string name="habit_no_items">No habits registered</string>
+    <string name="habit_no_items_hint">Tap + button to add your first habit</string>
 </resources>

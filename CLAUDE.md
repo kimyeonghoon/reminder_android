@@ -51,8 +51,9 @@
 - ✅ v1.40.1 - 캘린더 동기화 UI (권한 요청, 캘린더 목록, 동기화 화면)
 - ✅ v1.42.0 - Quick Settings Tile (알림창 빠른 추가, 네이티브 Android 기능)
 - ✅ v1.43.0 - Archive System (완료된 리마인더 자동 아카이브, 메인 화면 정리)
+- ✅ v1.44.0 - Habit Tracker (매일 반복하는 습관 추적 및 Streak 관리 시스템)
 
-**🎉 현재 버전: v1.43.0 (versionCode 46, DB v20)**
+**🎉 현재 버전: v1.44.0 (versionCode 47, DB v21)**
 
 ---
 

@@ -182,4 +182,17 @@
     <string name="archive_restored">事项已恢复</string>
     <string name="archive_deleted">事项已永久删除</string>
     <string name="archive_auto_success">%d个事项已归档</string>
+
+    <!-- Habit Tracker (v1.44.0) -->
+    <string name="habit_tracker_title">习惯追踪</string>
+    <string name="habit_add">添加习惯</string>
+    <string name="habit_name">习惯名称</string>
+    <string name="habit_description">描述（可选）</string>
+    <string name="habit_frequency_label">每周目标</string>
+    <string name="habit_frequency">每周%d次</string>
+    <string name="habit_streak">连续%d天</string>
+    <string name="habit_delete">删除习惯</string>
+    <string name="habit_delete_confirm">删除\'%s\'习惯？所有记录将一起删除。</string>
+    <string name="habit_no_items">暂无已登记习惯</string>
+    <string name="habit_no_items_hint">点击+按钮添加第一个习惯</string>
 </resources>
