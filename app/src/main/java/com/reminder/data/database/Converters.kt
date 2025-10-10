@@ -10,6 +10,7 @@ import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ResolutionStrategy
+import com.reminder.data.entity.SyncDirection
 import com.reminder.recurrence.RecurrenceEnd
 import com.reminder.recurrence.RecurrenceRule
 import java.time.LocalDate
@@ -187,6 +188,21 @@ class Converters {
             FileType.valueOf(value)
         } catch (e: Exception) {
             FileType.OTHER
+        }
+    }
+
+    // v1.40.0: SyncDirection converters
+    @TypeConverter
+    fun fromSyncDirection(value: SyncDirection): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toSyncDirection(value: String): SyncDirection {
+        return try {
+            SyncDirection.valueOf(value)
+        } catch (e: Exception) {
+            SyncDirection.TWO_WAY
         }
     }
 }

@@ -5,6 +5,61 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.40.0] - 2025-10-10
+
+### Added
+- 📅 **캘린더 통합** - 기기 캘린더와 리마인더 동기화
+  - **CalendarSyncConfig 엔티티**: 캘린더 동기화 설정
+    - 동기화 방향: ONE_WAY (단방향), TWO_WAY (양방향)
+    - 캘린더별 활성화/비활성화
+    - 마지막 동기화 시간 추적
+  - **DeviceCalendarProvider**: CalendarContract API 통합
+    - 기기 캘린더 목록 조회 (ID, 이름, 계정, 색상)
+    - 리마인더를 캘린더 이벤트로 추가
+    - 캘린더 이벤트 업데이트/삭제
+    - 캘린더 권한 확인 (READ_CALENDAR, WRITE_CALENDAR)
+  - **CalendarSyncManager**: 동기화 오케스트레이션
+    - 단일 리마인더 동기화
+    - 전체 리마인더 일괄 동기화
+    - 캘린더별 동기화 설정 관리
+    - 동기화 시간 자동 업데이트
+  - **CalendarSyncConfigDao**: 동기화 설정 DAO (7개 쿼리 메서드)
+    - 모든 캘린더 설정 조회
+    - 활성화된 캘린더만 필터링
+    - 캘린더 ID로 설정 조회
+    - 설정 추가/업데이트/삭제
+
+### Changed
+- 🗄️ **Database Migration**: v18 → v19
+  - `calendar_sync_config` 테이블 생성 (8개 컬럼, 2개 인덱스)
+  - SyncDirection enum (ONE_WAY, TWO_WAY)
+- 🔄 **Converters 확장**
+  - SyncDirection enum 컨버터 추가
+- 🔢 버전 업데이트: `versionCode = 43`, `versionName = "1.40.0"`
+
+### Technical Details
+- **Files Created**: 4개
+  - `CalendarSyncConfig.kt` (엔티티 + SyncDirection enum)
+  - `CalendarSyncConfigDao.kt` (DAO, 7개 메서드)
+  - `DeviceCalendarProvider.kt` (CalendarContract 통합 + DeviceCalendar 클래스)
+  - `CalendarSyncManager.kt` (동기화 매니저)
+- **Files Modified**: 3개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_18_19)
+  - `Converters.kt` (SyncDirection 컨버터)
+  - `build.gradle.kts` (버전), `CLAUDE.md`, `CHANGELOG.md`
+- **Lines Changed**: +350 (approx.)
+
+### Quality Improvements
+- Android CalendarContract API 표준 준수
+- 단방향/양방향 동기화 유연성 제공
+- 캘린더별 세분화된 동기화 제어
+- 권한 체크 안전성
+
+### Future Work (v1.40.1 예정)
+- CalendarSyncScreen UI 구현 (캘린더 목록, 활성화/비활성화 토글)
+- 동기화 충돌 해결 UI
+- 백그라운드 자동 동기화 (WorkManager)
+
 ## [1.39.0] - 2025-10-10
 
 ### Added

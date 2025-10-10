@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.reminder.data.dao.CalendarSyncConfigDao
 import com.reminder.data.dao.ConflictLogDao
 import com.reminder.data.dao.GoalDao
 import com.reminder.data.dao.MLTrainingDataDao
@@ -17,6 +18,7 @@ import com.reminder.data.dao.ReminderDao
 import com.reminder.data.dao.ReminderImageDao
 import com.reminder.data.dao.SavedFilterDao
 import com.reminder.data.dao.SubTaskDao
+import com.reminder.data.entity.CalendarSyncConfig
 import com.reminder.data.entity.ConflictLogEntity
 import com.reminder.data.entity.GoalEntity
 import com.reminder.data.entity.MLTrainingDataEntity
@@ -29,8 +31,8 @@ import com.reminder.data.entity.SavedFilterEntity
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class, ReminderAttachment::class],
-    version = 18,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class, ReminderAttachment::class, CalendarSyncConfig::class],
+    version = 19,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -46,6 +48,7 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun pendingActionDao(): PendingActionDao
     abstract fun conflictLogDao(): ConflictLogDao
     abstract fun reminderAttachmentDao(): ReminderAttachmentDao
+    abstract fun calendarSyncConfigDao(): CalendarSyncConfigDao
 
     companion object {
         @Volatile
@@ -367,6 +370,29 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_18_19 = object : Migration(18, 19) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // v1.40.0: 캘린더 동기화 설정 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS calendar_sync_config (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        calendarId TEXT NOT NULL,
+                        calendarName TEXT NOT NULL,
+                        accountName TEXT NOT NULL,
+                        isSyncEnabled INTEGER NOT NULL,
+                        syncDirection TEXT NOT NULL,
+                        calendarColor INTEGER NOT NULL,
+                        lastSyncedAt TEXT,
+                        createdAt TEXT NOT NULL
+                    )
+                """.trimIndent())
+
+                // 캘린더 동기화 설정 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_calendar_sync_config_calendarId ON calendar_sync_config(calendarId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_calendar_sync_config_isSyncEnabled ON calendar_sync_config(isSyncEnabled)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -374,7 +400,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance
