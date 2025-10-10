@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.reminder.data.entity.ActionType
 import com.reminder.data.entity.ChosenDataSource
+import com.reminder.data.entity.FileType
 import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
@@ -171,6 +172,21 @@ class Converters {
             ChosenDataSource.valueOf(value)
         } catch (e: Exception) {
             ChosenDataSource.REMOTE
+        }
+    }
+
+    // v1.39.0: FileType converters
+    @TypeConverter
+    fun fromFileType(value: FileType): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toFileType(value: String): FileType {
+        return try {
+            FileType.valueOf(value)
+        } catch (e: Exception) {
+            FileType.OTHER
         }
     }
 }

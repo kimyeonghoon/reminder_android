@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.39.0] - 2025-10-10
+
+### Added
+- 📎 **첨부파일 시스템 고도화** - 다양한 파일 형식 지원 및 관리
+  - **ReminderAttachment 엔티티**: 확장된 첨부파일 시스템
+    - 파일 타입 지원: IMAGE, PDF, DOC, XLS, TXT, OTHER
+    - 파일 크기 제한: 10MB
+    - 로컬 저장 + 클라우드 백업 준비
+  - **FileAttachmentManager**: 파일 첨부 관리자
+    - URI 기반 파일 첨부
+    - 앱 내부 저장소로 자동 복사
+    - 파일 크기 검증 (10MB 제한)
+    - MIME 타입 자동 감지
+  - **ReminderAttachmentDao**: 첨부파일 DAO (14개 쿼리 메서드)
+    - 리마인더별 첨부파일 조회
+    - 파일 타입별 필터링
+    - 총 용량 계산
+    - 업로드 상태 관리
+  - **TextRecognizer**: OCR 텍스트 인식 (구조 제공)
+    - ML Kit Text Recognition 준비
+    - 이미지/PDF에서 텍스트 추출 기반
+
+### Changed
+- 🗄️ **Database Migration**: v17 → v18
+  - `reminder_attachments` 테이블 생성 (11개 컬럼, 2개 인덱스)
+  - FileType enum (IMAGE, PDF, DOC, XLS, TXT, OTHER)
+  - extractedText 필드 (OCR 텍스트 저장)
+- 🔄 **Converters 확장**
+  - FileType enum 컨버터 추가
+- 🔢 버전 업데이트: `versionCode = 42`, `versionName = "1.39.0"`
+
+### Technical Details
+- **Files Created**: 4개
+  - `ReminderAttachment.kt` (엔티티 + 유틸 함수)
+  - `ReminderAttachmentDao.kt` (DAO, 14개 메서드)
+  - `FileAttachmentManager.kt` (첨부 관리자)
+  - `TextRecognizer.kt` (OCR 기본 구조)
+- **Files Modified**: 3개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_17_18)
+  - `Converters.kt` (FileType 컨버터)
+  - `build.gradle.kts` (버전), `CLAUDE.md`, `CHANGELOG.md`
+- **Lines Changed**: +600 (approx.)
+
+### Quality Improvements
+- 다양한 파일 형식 지원으로 실용성 증대
+- 파일 크기 제한으로 스토리지 관리
+- OCR 준비로 향후 스마트 기능 확장 가능
+- 체계적인 파일 관리 시스템 구축
+
 ## [1.38.0] - 2025-10-10
 
 ### Added
