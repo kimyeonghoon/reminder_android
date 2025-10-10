@@ -43,7 +43,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun insertPendingAction_shouldReturnId() = runTest {
+    fun `대기 작업을 삽입하고 ID를 반환한다`() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -59,7 +59,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun getAllPendingActions_shouldReturnAllActions() = runTest {
+    fun `모든 대기 작업을 조회한다`() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -83,7 +83,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun getPendingActionsByReminderId_shouldReturnActionsForSpecificReminder() = runTest {
+    fun `특정 리마인더의 대기 작업을 조회한다`() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -113,7 +113,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun getPendingActionsForRetry_shouldReturnOnlyActionsWithLowRetryCount() = runTest {
+    fun `재시도 횟수가 낮은 작업만 조회한다`() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -139,7 +139,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun updatePendingAction_shouldUpdateFields() = runTest {
+    fun `대기 작업의 필드를 업데이트한다`() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -166,7 +166,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun deletePendingAction_shouldRemoveAction() = runTest {
+    fun `대기 작업을 삭제한다`() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -184,7 +184,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun deleteAllPendingActions_shouldRemoveAllActions() = runTest {
+    fun `모든 대기 작업을 삭제한다`() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -202,7 +202,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun deletePendingActionsByReminderId_shouldRemoveActionsForSpecificReminder() = runTest {
+    fun `특정 리마인더의 대기 작업을 삭제한다`() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -224,7 +224,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun getPendingActionsCount_shouldReturnCorrectCount() = runTest {
+    fun `대기 작업 수를 정확하게 반환한다`() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -241,7 +241,7 @@ class PendingActionDaoTest {
     }
 
     @Test
-    fun actionTypesAreStoredCorrectly() = runTest {
+    fun `작업 타입이 올바르게 저장된다`() = runTest {
         // Given
         val insertAction = PendingActionEntity(
             reminderId = 1L,

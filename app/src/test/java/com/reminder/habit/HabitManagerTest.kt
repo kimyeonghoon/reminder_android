@@ -32,7 +32,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `createHabit should insert habit and return id`() = runTest {
+    fun `습관을 생성할 수 있다`() = runTest {
         // Given
         val habit = createTestHabit(id = 1, name = "물 마시기")
         whenever(habitDao.insertHabit(habit)).thenReturn(1L)
@@ -46,7 +46,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `completeHabit should mark habit as completed for today`() = runTest {
+    fun `오늘 습관을 완료 처리할 수 있다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -60,7 +60,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `uncompleteHabit should remove completion for today`() = runTest {
+    fun `오늘 습관 완료를 취소할 수 있다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -73,7 +73,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `isHabitCompletedToday should return true when completed`() = runTest {
+    fun `완료한 습관은 true를 반환한다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -88,7 +88,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `isHabitCompletedToday should return false when not completed`() = runTest {
+    fun `완료하지 않은 습관은 false를 반환한다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -102,7 +102,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `calculateStreak should return 0 when never completed`() = runTest {
+    fun `완료 기록이 없으면 연속 일수는 0이다`() = runTest {
         // Given
         val habitId = 1L
         whenever(habitDao.getCompletionDates(habitId)).thenReturn(emptyList())
@@ -115,7 +115,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `calculateStreak should return consecutive days count`() = runTest {
+    fun `연속 완료 일수를 계산한다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -135,7 +135,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `calculateStreak should not count today if not completed`() = runTest {
+    fun `오늘 완료하지 않으면 연속 일수에 포함하지 않는다`() = runTest {
         // Given
         val habitId = 1L
         val today = LocalDate.now()
@@ -154,7 +154,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `getCompletionRate should return percentage for period`() = runTest {
+    fun `기간별 완료율을 계산한다`() = runTest {
         // Given
         val habitId = 1L
         val startDate = LocalDate.now().minusDays(9) // 10일 기간
@@ -172,7 +172,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `getCompletionRate should return 0 for zero days period`() = runTest {
+    fun `기간이 0일이면 완료율은 0이다`() = runTest {
         // Given
         val habitId = 1L
         val date = LocalDate.now()
@@ -187,7 +187,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `deleteHabit should remove habit and all completions`() = runTest {
+    fun `습관과 모든 완료 기록을 삭제한다`() = runTest {
         // Given
         val habitId = 1L
 
@@ -200,7 +200,7 @@ class HabitManagerTest {
     }
 
     @Test
-    fun `getAllHabits should return all habits`() = runTest {
+    fun `모든 습관을 조회할 수 있다`() = runTest {
         // Given
         val habits = listOf(
             createTestHabit(id = 1, name = "운동"),

@@ -35,7 +35,7 @@ class ReminderTileServiceTest {
      * 테스트 1: ReminderTileService가 시스템에 등록되어 있는지 확인
      */
     @Test
-    fun tileService_isRegisteredInManifest() {
+    fun `타일 서비스가 Manifest에 등록되어 있다`() {
         val packageManager = context.packageManager
         val serviceInfo = packageManager.getServiceInfo(
             componentName,
@@ -54,7 +54,7 @@ class ReminderTileServiceTest {
      * 테스트 2: TileService 권한이 올바르게 설정되어 있는지 확인
      */
     @Test
-    fun tileService_hasBindTilePermission() {
+    fun `타일 서비스가 BIND_QUICK_SETTINGS_TILE 권한을 가진다`() {
         val packageManager = context.packageManager
         val serviceInfo = packageManager.getServiceInfo(
             componentName,
@@ -72,7 +72,7 @@ class ReminderTileServiceTest {
      * 테스트 3: TileService가 활성화되어 있는지 확인
      */
     @Test
-    fun tileService_isEnabled() {
+    fun `타일 서비스가 활성화되어 있다`() {
         val packageManager = context.packageManager
         val componentEnabledSetting = packageManager.getComponentEnabledSetting(componentName)
 
@@ -87,7 +87,7 @@ class ReminderTileServiceTest {
      * 테스트 4: TileService가 올바른 메타데이터를 가지고 있는지 확인
      */
     @Test
-    fun tileService_hasCorrectMetadata() {
+    fun `타일 서비스가 올바른 메타데이터를 가진다`() {
         val packageManager = context.packageManager
         val serviceInfo = packageManager.getServiceInfo(
             componentName,
@@ -102,7 +102,7 @@ class ReminderTileServiceTest {
      * 테스트 5: ComponentName이 올바른 패키지를 가리키는지 확인
      */
     @Test
-    fun componentName_hasCorrectPackage() {
+    fun `ComponentName이 올바른 패키지를 가진다`() {
         assertEquals(
             "Package should be com.reminder",
             "com.reminder",

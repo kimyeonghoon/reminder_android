@@ -30,7 +30,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `startSession should create new focus session`() = runTest {
+    fun `집중 세션을 시작할 수 있다`() = runTest {
         // Given
         val reminderId = 1L
         val sessionType = SessionType.FOCUS
@@ -44,7 +44,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `startSession without reminderId should create standalone session`() = runTest {
+    fun `리마인더 없이 독립 세션을 시작할 수 있다`() = runTest {
         // Given
         val sessionType = SessionType.FOCUS
 
@@ -57,7 +57,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `completeSession should mark session as completed`() = runTest {
+    fun `세션을 완료 처리할 수 있다`() = runTest {
         // Given
         val sessionId = 1L
         val session = PomodoroSession(
@@ -82,7 +82,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `cancelSession should delete session`() = runTest {
+    fun `세션을 취소할 수 있다`() = runTest {
         // Given
         val sessionId = 1L
 
@@ -94,7 +94,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getTotalCompletedSessions should return count`() = runTest {
+    fun `전체 완료 세션 수를 조회할 수 있다`() = runTest {
         // Given
         val expectedCount = 42
         whenever(pomodoroSessionDao.getCompletedSessionsCount()).thenReturn(expectedCount)
@@ -107,7 +107,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getTodayCompletedSessions should return today count`() = runTest {
+    fun `오늘 완료한 세션 수를 조회할 수 있다`() = runTest {
         // Given
         val today = LocalDate.now()
         val expectedCount = 5
@@ -121,7 +121,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getSessionsForReminder should return all sessions`() = runTest {
+    fun `리마인더의 모든 세션을 조회할 수 있다`() = runTest {
         // Given
         val reminderId = 1L
         val sessions = listOf(
@@ -147,7 +147,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getFocusSessionDuration should return 25 minutes`() {
+    fun `집중 세션 시간이 25분이다`() {
         // When
         val duration = pomodoroManager.getFocusSessionDuration()
 
@@ -156,7 +156,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getShortBreakDuration should return 5 minutes`() {
+    fun `짧은 휴식 시간이 5분이다`() {
         // When
         val duration = pomodoroManager.getShortBreakDuration()
 
@@ -165,7 +165,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getLongBreakDuration should return 15 minutes`() {
+    fun `긴 휴식 시간이 15분이다`() {
         // When
         val duration = pomodoroManager.getLongBreakDuration()
 
@@ -174,7 +174,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getTotalFocusMinutes should calculate correctly`() = runTest {
+    fun `전체 집중 시간을 올바르게 계산한다`() = runTest {
         // Given
         val completedSessions = 10
         whenever(pomodoroSessionDao.getCompletedFocusSessionsCount()).thenReturn(completedSessions)
@@ -187,7 +187,7 @@ class PomodoroManagerTest {
     }
 
     @Test
-    fun `getStreakDays should calculate consecutive days`() = runTest {
+    fun `연속 완료 일수를 계산한다`() = runTest {
         // Given
         val dates = listOf(
             LocalDate.now(),

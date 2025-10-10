@@ -32,7 +32,7 @@ class ArchiveManagerTest {
      * 테스트 1: 리마인더를 아카이브할 수 있다
      */
     @Test
-    fun `archiveReminder should mark reminder as archived`() = runTest {
+    fun `리마인더를 아카이브할 수 있다`() = runTest {
         // Given
         val reminder = createTestReminder(id = 1)
 
@@ -49,7 +49,7 @@ class ArchiveManagerTest {
      * 테스트 2: 아카이브된 리마인더를 복원할 수 있다
      */
     @Test
-    fun `unarchiveReminder should restore archived reminder`() = runTest {
+    fun `아카이브된 리마인더를 복원할 수 있다`() = runTest {
         // Given
         val archivedReminder = createTestReminder(id = 1, isArchived = true)
 
@@ -66,7 +66,7 @@ class ArchiveManagerTest {
      * 테스트 3: N일 이상 완료된 리마인더를 자동 아카이브할 수 있다
      */
     @Test
-    fun `autoArchiveOldCompletedReminders should archive reminders completed N days ago`() = runTest {
+    fun `N일 이상 완료된 리마인더를 자동 아카이브한다`() = runTest {
         // Given
         val now = LocalDateTime.now()
         val old = now.minusDays(35) // 35일 전 완료
@@ -92,7 +92,7 @@ class ArchiveManagerTest {
      * 테스트 4: 이미 아카이브된 리마인더는 다시 아카이브하지 않는다
      */
     @Test
-    fun `autoArchiveOldCompletedReminders should skip already archived reminders`() = runTest {
+    fun `이미 아카이브된 리마인더는 건너뛴다`() = runTest {
         // Given
         val now = LocalDateTime.now()
         val old = now.minusDays(35)
@@ -119,7 +119,7 @@ class ArchiveManagerTest {
      * 테스트 5: 아카이브된 리마인더 목록을 조회할 수 있다
      */
     @Test
-    fun `getArchivedReminders should return only archived reminders`() = runTest {
+    fun `아카이브된 리마인더 목록을 조회할 수 있다`() = runTest {
         // Given
         val archived1 = createTestReminder(id = 1, isArchived = true)
         val archived2 = createTestReminder(id = 2, isArchived = true)
@@ -139,7 +139,7 @@ class ArchiveManagerTest {
      * 테스트 6: 아카이브된 리마인더를 영구 삭제할 수 있다
      */
     @Test
-    fun `deleteArchivedReminder should permanently delete reminder`() = runTest {
+    fun `아카이브된 리마인더를 영구 삭제할 수 있다`() = runTest {
         // Given
         val archived = createTestReminder(id = 1, isArchived = true)
 
@@ -154,7 +154,7 @@ class ArchiveManagerTest {
      * 테스트 7: 모든 아카이브를 일괄 삭제할 수 있다
      */
     @Test
-    fun `deleteAllArchived should delete all archived reminders`() = runTest {
+    fun `모든 아카이브를 일괄 삭제할 수 있다`() = runTest {
         // Given
         val archived1 = createTestReminder(id = 1, isArchived = true)
         val archived2 = createTestReminder(id = 2, isArchived = true)
