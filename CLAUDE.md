@@ -49,8 +49,9 @@
 - ✅ v1.39.0 - 첨부파일 시스템 고도화 (PDF, DOC, XLS, TXT, OCR)
 - ✅ v1.40.0 - 캘린더 통합 (CalendarContract API, 단방향/양방향 동기화)
 - ✅ v1.40.1 - 캘린더 동기화 UI (권한 요청, 캘린더 목록, 동기화 화면)
+- ✅ v1.42.0 - Quick Settings Tile (알림창 빠른 추가, 네이티브 Android 기능)
 
-**🎉 현재 버전: v1.40.1 (versionCode 44, DB v19)**
+**🎉 현재 버전: v1.42.0 (versionCode 45, DB v19)**
 
 ---
 

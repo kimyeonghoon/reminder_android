@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.42.0] - 2025-10-10
+
+### Added
+- ⚡ **Quick Settings Tile** - Android 알림창에서 빠른 리마인더 추가
+  - **ReminderTileService**: Quick Settings Tile 서비스
+    - 타일 클릭 시 QuickAddActivity 실행
+    - Material You 아이콘 사용
+    - 부제목 표시 (Android 10+)
+    - 다크 모드 자동 대응
+  - **QuickAddActivity**: 빠른 추가 다이얼로그 Activity
+    - 제목 입력 필드
+    - 우선순위 선택 칩 (낮음/중간/높음)
+    - 다이얼로그 형식의 투명 Activity
+    - 최소한의 입력으로 빠른 추가
+  - **다국어 지원**: 한국어, 영어, 중국어 문자열 추가
+    - tile_label_add_reminder
+    - tile_subtitle_quick_add
+    - quick_add_title
+    - quick_add_hint
+
+### Changed
+- 🔢 버전 업데이트: `versionCode = 45`, `versionName = "1.42.0"`
+- 📱 AndroidManifest에 QuickAddActivity 및 ReminderTileService 등록
+- 📅 캘린더 권한 추가 (READ_CALENDAR, WRITE_CALENDAR)
+
+### Technical Details
+- **Files Created**: 4개
+  - `ReminderTileService.kt` (TileService 구현)
+  - `QuickAddActivity.kt` (다이얼로그 Activity + QuickAddDialog Composable)
+  - `ic_add_reminder_24.xml` (타일 아이콘)
+  - `ReminderTileServiceTest.kt` (통합 테스트 5개)
+- **Files Modified**: 5개
+  - `AndroidManifest.xml` (서비스 및 Activity 등록)
+  - `build.gradle.kts` (버전)
+  - `strings.xml` (한/영/중 3개 언어)
+  - `CHANGELOG.md`, `CLAUDE.md`
+- **Lines Changed**: +350 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현
+- 사용자 접근성 대폭 향상 (알림창에서 즉시 추가)
+- 네이티브 Android 기능 활용
+- Material 3 디자인 일관성 유지
+
+### Usage
+1. 알림창 열기 → Quick Settings 편집
+2. "리마인더 추가" 타일 추가
+3. 타일 클릭 → 빠른 추가 다이얼로그
+4. 제목 입력 → 우선순위 선택 → 추가
+
 ## [1.40.1] - 2025-10-10
 
 ### Added

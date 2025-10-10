@@ -162,4 +162,10 @@
     <string name="success_deleted">删除成功</string>
     <string name="success_backup">备份完成</string>
     <string name="success_restore">恢复完成</string>
+
+    <!-- Quick Settings Tile (v1.42.0) -->
+    <string name="tile_label_add_reminder">添加事项</string>
+    <string name="tile_subtitle_quick_add">快速添加</string>
+    <string name="quick_add_title">快速添加事项</string>
+    <string name="quick_add_hint">例如：买牛奶</string>
 </resources>

@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
     <application
         android:name=".ReminderApplication"
@@ -37,6 +39,14 @@
 
         <activity
             android:name=".widget.QuickNoteActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Reminder"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <!-- v1.42.0: Quick Settings Tile - Quick Add Activity -->
+        <activity
+            android:name=".tile.QuickAddActivity"
             android:exported="true"
             android:theme="@style/Theme.Reminder"
             android:excludeFromRecents="true"
@@ -90,6 +100,18 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- v1.42.0: Quick Settings Tile Service -->
+        <service
+            android:name=".tile.ReminderTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_add_reminder_24"
+            android:label="@string/tile_label_add_reminder"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
     </application>

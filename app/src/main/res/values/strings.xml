@@ -162,4 +162,10 @@
     <string name="success_deleted">삭제되었습니다</string>
     <string name="success_backup">백업이 완료되었습니다</string>
     <string name="success_restore">복원이 완료되었습니다</string>
+
+    <!-- Quick Settings Tile (v1.42.0) -->
+    <string name="tile_label_add_reminder">리마인더 추가</string>
+    <string name="tile_subtitle_quick_add">빠른 추가</string>
+    <string name="quick_add_title">빠른 리마인더 추가</string>
+    <string name="quick_add_hint">예: 우유 사기</string>
 </resources>

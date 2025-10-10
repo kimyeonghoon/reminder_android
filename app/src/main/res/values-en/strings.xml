@@ -162,4 +162,10 @@
     <string name="success_deleted">Deleted successfully</string>
     <string name="success_backup">Backup completed</string>
     <string name="success_restore">Restore completed</string>
+
+    <!-- Quick Settings Tile (v1.42.0) -->
+    <string name="tile_label_add_reminder">Add Reminder</string>
+    <string name="tile_subtitle_quick_add">Quick Add</string>
+    <string name="quick_add_title">Quick Add Reminder</string>
+    <string name="quick_add_hint">e.g., Buy milk</string>
 </resources>
