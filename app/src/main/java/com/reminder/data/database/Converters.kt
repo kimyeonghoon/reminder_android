@@ -3,9 +3,12 @@ package com.reminder.data.database
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.reminder.data.entity.ActionType
+import com.reminder.data.entity.ChosenDataSource
 import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
+import com.reminder.data.entity.ResolutionStrategy
 import com.reminder.recurrence.RecurrenceEnd
 import com.reminder.recurrence.RecurrenceRule
 import java.time.LocalDate
@@ -123,6 +126,51 @@ class Converters {
             MLDataType.valueOf(value)
         } catch (e: Exception) {
             MLDataType.PRIORITY
+        }
+    }
+
+    // v1.38.0: ActionType converters
+    @TypeConverter
+    fun fromActionType(value: ActionType): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toActionType(value: String): ActionType {
+        return try {
+            ActionType.valueOf(value)
+        } catch (e: Exception) {
+            ActionType.UPDATE
+        }
+    }
+
+    // v1.38.0: ResolutionStrategy converters
+    @TypeConverter
+    fun fromResolutionStrategy(value: ResolutionStrategy): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toResolutionStrategy(value: String): ResolutionStrategy {
+        return try {
+            ResolutionStrategy.valueOf(value)
+        } catch (e: Exception) {
+            ResolutionStrategy.LAST_WRITE_WINS
+        }
+    }
+
+    // v1.38.0: ChosenDataSource converters
+    @TypeConverter
+    fun fromChosenDataSource(value: ChosenDataSource): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toChosenDataSource(value: String): ChosenDataSource {
+        return try {
+            ChosenDataSource.valueOf(value)
+        } catch (e: Exception) {
+            ChosenDataSource.REMOTE
         }
     }
 }

@@ -7,15 +7,19 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.reminder.data.dao.ConflictLogDao
 import com.reminder.data.dao.GoalDao
 import com.reminder.data.dao.MLTrainingDataDao
+import com.reminder.data.dao.PendingActionDao
 import com.reminder.data.dao.RecurrenceExceptionDao
 import com.reminder.data.dao.ReminderDao
 import com.reminder.data.dao.ReminderImageDao
 import com.reminder.data.dao.SavedFilterDao
 import com.reminder.data.dao.SubTaskDao
+import com.reminder.data.entity.ConflictLogEntity
 import com.reminder.data.entity.GoalEntity
 import com.reminder.data.entity.MLTrainingDataEntity
+import com.reminder.data.entity.PendingActionEntity
 import com.reminder.data.entity.RecurrenceExceptionEntity
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.ReminderImage
@@ -23,8 +27,8 @@ import com.reminder.data.entity.SavedFilterEntity
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class],
-    version = 16,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class],
+    version = 17,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +41,8 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun goalDao(): GoalDao
     abstract fun recurrenceExceptionDao(): RecurrenceExceptionDao
     abstract fun mlTrainingDataDao(): MLTrainingDataDao
+    abstract fun pendingActionDao(): PendingActionDao
+    abstract fun conflictLogDao(): ConflictLogDao
 
     companion object {
         @Volatile
@@ -290,6 +296,48 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_16_17 = object : Migration(16, 17) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // v1.38.0: 오프라인 작업 큐 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS pending_actions (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        reminderId INTEGER NOT NULL,
+                        actionType TEXT NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        retryCount INTEGER NOT NULL,
+                        lastRetryAt TEXT,
+                        errorMessage TEXT
+                    )
+                """.trimIndent())
+
+                // 오프라인 작업 큐 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_pending_actions_reminderId ON pending_actions(reminderId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_pending_actions_createdAt ON pending_actions(createdAt)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_pending_actions_retryCount ON pending_actions(retryCount)")
+
+                // v1.38.0: 충돌 로그 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS conflict_logs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        reminderId INTEGER NOT NULL,
+                        conflictedAt TEXT NOT NULL,
+                        resolutionStrategy TEXT NOT NULL,
+                        localData TEXT NOT NULL,
+                        remoteData TEXT NOT NULL,
+                        chosenData TEXT NOT NULL,
+                        isResolved INTEGER NOT NULL,
+                        resolvedAt TEXT
+                    )
+                """.trimIndent())
+
+                // 충돌 로그 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_conflict_logs_reminderId ON conflict_logs(reminderId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_conflict_logs_isResolved ON conflict_logs(isResolved)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_conflict_logs_conflictedAt ON conflict_logs(conflictedAt)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -297,7 +345,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance

@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.38.0] - 2025-10-10
+
+### Added
+- 🔄 **오프라인 모드 강화** - 네트워크 없이도 완벽하게 동작하는 오프라인 퍼스트 앱
+  - **OfflineQueue**: 오프라인 작업 큐 시스템
+    - pending_actions 테이블로 CRUD 작업 저장
+    - 네트워크 복구 시 Firebase 자동 동기화
+    - 재시도 로직 (최대 3회, 지수 백오프)
+    - 작업 타입: INSERT, UPDATE, DELETE
+  - **ConflictResolver**: 충돌 해결 전략
+    - Last Write Wins (최근 수정 우선)
+    - Field-level Merge (필드별 병합)
+    - 충돌 로그 자동 저장 (30일 보관)
+  - **NetworkMonitor**: 네트워크 상태 실시간 모니터링
+    - ConnectivityManager 기반
+    - Wi-Fi/모바일 데이터 구분
+    - Flow 기반 상태 스트림
+  - **SyncStatusBanner**: 동기화 상태 UI 컴포넌트
+    - 오프라인/동기화 중/충돌/에러 상태 표시
+    - 대기 중인 작업 개수 표시
+    - "지금 동기화" / "해결" 액션 버튼
+  - **OfflineFirstRepository**: 오프라인 우선 저장소
+    - 로컬 DB 먼저 저장 (낙관적 업데이트)
+    - 백그라운드 Firebase 동기화
+    - 네트워크 상태 자동 감지
+
+### Changed
+- 🗄️ **Database Migration**: v16 → v17
+  - `pending_actions` 테이블 생성 (7개 컬럼, 3개 인덱스)
+  - `conflict_logs` 테이블 생성 (9개 컬럼, 3개 인덱스)
+- 🔄 **Converters 확장**
+  - ActionType enum 컨버터 (INSERT, UPDATE, DELETE)
+  - ResolutionStrategy enum 컨버터 (LAST_WRITE_WINS, MANUAL, FIELD_LEVEL_MERGE)
+  - ChosenDataSource enum 컨버터 (LOCAL, REMOTE, MERGED)
+- 🔢 버전 업데이트: `versionCode = 41`, `versionName = "1.38.0"`
+
+### Technical Details
+- **Files Created**: 9개
+  - `PendingActionEntity.kt`, `ConflictLogEntity.kt` (엔티티)
+  - `PendingActionDao.kt`, `ConflictLogDao.kt` (DAO)
+  - `OfflineQueue.kt` (작업 큐 관리)
+  - `ConflictResolver.kt` (충돌 해결)
+  - `NetworkMonitor.kt` (네트워크 모니터링)
+  - `SyncStatusBanner.kt` (UI 컴포넌트)
+  - `OfflineFirstRepository.kt` (오프라인 우선 저장소)
+  - `PendingActionDaoTest.kt` (통합 테스트 10개)
+- **Files Modified**: 3개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_16_17)
+  - `Converters.kt` (3개 enum 컨버터)
+  - `build.gradle.kts` (버전), `CLAUDE.md`, `CHANGELOG.md`
+- **Lines Changed**: +800 (approx.)
+
+### Quality Improvements
+- TDD 기반 구현 (10개 DAO 통합 테스트)
+- 오프라인 환경에서도 안정적인 사용자 경험
+- 동기화 충돌 자동 해결 및 로그 관리
+- 실시간 네트워크 상태 모니터링
+- 낙관적 업데이트로 빠른 응답 속도
+
 ## [1.37.0] - 2025-10-10
 
 ### Added
