@@ -5,6 +5,66 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.31.0] - 2025-10-10
+
+### Added
+- 🎨 **테마 프리셋 확장** - 4개에서 10개로 색상 테마 대폭 확대
+  - **6개 신규 테마 추가**
+    - 주황 (Orange): 따뜻하고 활기찬 색상
+    - 빨강 (Red): 열정적이고 강렬한 색상
+    - 청록 (Teal): 차분하고 세련된 색상
+    - 호박색 (Amber): 밝고 경쾌한 색상
+    - 남색 (Indigo): 깊이 있는 블루 계열
+    - 갈색 (Brown): 따뜻하고 자연스러운 색상
+  - **기존 테마 유지** (보라, 파랑, 초록, 핑크)
+  - **라이트/다크 모드 모두 지원**
+    - 각 테마별로 Light/Dark ColorScheme 구현
+    - Material 3 디자인 가이드라인 준수
+  - **색상 미리보기**
+    - 테마 선택 UI에 색상 원형 미리보기 표시
+    - Primary 색상을 24dp 원으로 시각화
+    - 테두리 효과로 구분 강화
+
+### Changed
+- 🎨 **ThemePreset enum 확장**
+  - 4개 → 10개 테마로 확장
+  - 각 테마에 한글 레이블 추가 (보라, 파랑, 초록, 핑크, 주황, 빨강, 청록, 호박색, 남색, 갈색)
+- 🎨 **Color.kt 대폭 확장**
+  - 36개 신규 색상 상수 추가 (6개 테마 × 6개 색상)
+  - 각 테마별 primary, secondary, tertiary 색상 정의
+  - Light (40 계열), Dark (80 계열) 색상 쌍 구현
+- 🎨 **Theme.kt ColorScheme 확장**
+  - 12개 ColorScheme 추가 (6개 테마 × 2개 모드)
+  - when() 표达식 업데이트로 모든 테마 지원
+  - 동적 컬러 비활성화 시에만 프리셋 적용
+- 🖼️ **SettingsScreen UI 개선**
+  - ThemePresetSection 추가 (10개 테마 선택 가능)
+  - 동적 컬러 비활성화 시에만 프리셋 섹션 표시
+  - ThemePresetColorPreview 컴포넌트로 색상 미리보기
+  - 라디오 버튼 기반 선택 UI
+- 🔢 버전 업데이트: `versionCode = 34`, `versionName = "1.31.0"`
+
+### Technical Details
+- **Files Modified**: 4개
+  - `app/build.gradle.kts` (버전)
+  - `app/src/main/java/com/reminder/data/preferences/ThemePreset.kt` (6개 enum 추가)
+  - `app/src/main/java/com/reminder/ui/theme/Color.kt` (+36개 색상)
+  - `app/src/main/java/com/reminder/ui/theme/Theme.kt` (+12개 ColorScheme)
+  - `app/src/main/java/com/reminder/ui/screen/SettingsScreen.kt` (UI 추가)
+- **New Components**: 2개
+  - `ThemePresetSection`: 테마 프리셋 선택 컴포넌트
+  - `ThemePresetColorPreview`: 색상 미리보기 원형 컴포넌트
+- **Helper Functions**: 1개
+  - `getThemePresetLabel()`: ThemePreset → 한글 레이블 변환
+- **Lines Changed**: +200 (approx.)
+- **Color Palette Size**: 기존 24개 → 60개 색상 상수
+
+### Quality Improvements
+- 사용자 맞춤 경험 강화 (10가지 테마 선택)
+- 시각적 피드백 개선 (색상 미리보기)
+- Material 3 디자인 일관성 유지
+- 동적 컬러와 프리셋 테마의 조화로운 통합
+
 ## [1.30.0] - 2025-10-10
 
 ### Added

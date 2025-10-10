@@ -69,6 +69,84 @@ private val PinkLightColorScheme = lightColorScheme(
     tertiary = LightPink40
 )
 
+// v1.31.0: Orange Theme
+private val OrangeDarkColorScheme = darkColorScheme(
+    primary = Orange80,
+    secondary = OrangeGrey80,
+    tertiary = LightOrange80
+)
+
+private val OrangeLightColorScheme = lightColorScheme(
+    primary = Orange40,
+    secondary = OrangeGrey40,
+    tertiary = LightOrange40
+)
+
+// v1.31.0: Red Theme
+private val RedDarkColorScheme = darkColorScheme(
+    primary = Red80,
+    secondary = RedGrey80,
+    tertiary = LightRed80
+)
+
+private val RedLightColorScheme = lightColorScheme(
+    primary = Red40,
+    secondary = RedGrey40,
+    tertiary = LightRed40
+)
+
+// v1.31.0: Teal Theme
+private val TealDarkColorScheme = darkColorScheme(
+    primary = Teal80,
+    secondary = TealGrey80,
+    tertiary = LightTeal80
+)
+
+private val TealLightColorScheme = lightColorScheme(
+    primary = Teal40,
+    secondary = TealGrey40,
+    tertiary = LightTeal40
+)
+
+// v1.31.0: Amber Theme
+private val AmberDarkColorScheme = darkColorScheme(
+    primary = Amber80,
+    secondary = AmberGrey80,
+    tertiary = LightAmber80
+)
+
+private val AmberLightColorScheme = lightColorScheme(
+    primary = Amber40,
+    secondary = AmberGrey40,
+    tertiary = LightAmber40
+)
+
+// v1.31.0: Indigo Theme
+private val IndigoDarkColorScheme = darkColorScheme(
+    primary = Indigo80,
+    secondary = IndigoGrey80,
+    tertiary = LightIndigo80
+)
+
+private val IndigoLightColorScheme = lightColorScheme(
+    primary = Indigo40,
+    secondary = IndigoGrey40,
+    tertiary = LightIndigo40
+)
+
+// v1.31.0: Brown Theme
+private val BrownDarkColorScheme = darkColorScheme(
+    primary = Brown80,
+    secondary = BrownGrey80,
+    tertiary = LightBrown80
+)
+
+private val BrownLightColorScheme = lightColorScheme(
+    primary = Brown40,
+    secondary = BrownGrey40,
+    tertiary = LightBrown40
+)
+
 // High Contrast Color Schemes
 private val HighContrastDarkColorScheme = darkColorScheme(
     primary = HighContrastPrimary,
@@ -123,6 +201,12 @@ fun ReminderTheme(
             ThemePreset.BLUE -> BlueDarkColorScheme
             ThemePreset.GREEN -> GreenDarkColorScheme
             ThemePreset.PINK -> PinkDarkColorScheme
+            ThemePreset.ORANGE -> OrangeDarkColorScheme
+            ThemePreset.RED -> RedDarkColorScheme
+            ThemePreset.TEAL -> TealDarkColorScheme
+            ThemePreset.AMBER -> AmberDarkColorScheme
+            ThemePreset.INDIGO -> IndigoDarkColorScheme
+            ThemePreset.BROWN -> BrownDarkColorScheme
         }
 
         else -> when (themePreset) {
@@ -130,6 +214,12 @@ fun ReminderTheme(
             ThemePreset.BLUE -> BlueLightColorScheme
             ThemePreset.GREEN -> GreenLightColorScheme
             ThemePreset.PINK -> PinkLightColorScheme
+            ThemePreset.ORANGE -> OrangeLightColorScheme
+            ThemePreset.RED -> RedLightColorScheme
+            ThemePreset.TEAL -> TealLightColorScheme
+            ThemePreset.AMBER -> AmberLightColorScheme
+            ThemePreset.INDIGO -> IndigoLightColorScheme
+            ThemePreset.BROWN -> BrownLightColorScheme
         }
     }
     val view = LocalView.current

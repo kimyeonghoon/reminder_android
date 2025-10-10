@@ -2,10 +2,13 @@ package com.reminder.ui.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,6 +16,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -22,6 +27,8 @@ import com.reminder.backup.BackupManager
 import com.reminder.data.preferences.FontSize
 import com.reminder.data.preferences.Language
 import com.reminder.data.preferences.ThemeMode
+import com.reminder.data.preferences.ThemePreset
+import com.reminder.ui.theme.*
 import com.reminder.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -167,6 +174,16 @@ fun SettingsScreen(
             // 간편 모드가 아닐 때만 동적 컬러 설정 표시
             if (!userPreferences.simpleMode) {
                 HorizontalDivider()
+
+                // v1.31.0: 테마 프리셋 선택 (동적 컬러 비활성화 시에만)
+                if (!userPreferences.dynamicColor) {
+                    ThemePresetSection(
+                        selectedThemePreset = userPreferences.themePreset,
+                        onThemePresetChange = { viewModel.updateThemePreset(it) }
+                    )
+
+                    HorizontalDivider()
+                }
 
                 // 동적 컬러 설정
                 DynamicColorSection(
@@ -339,6 +356,89 @@ fun ThemeSection(
 }
 
 /**
+ * v1.31.0: 테마 프리셋 선택 섹션 (10가지 색상 테마)
+ */
+@Composable
+fun ThemePresetSection(
+    selectedThemePreset: ThemePreset,
+    onThemePresetChange: (ThemePreset) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "테마 색상",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.selectableGroup()
+        ) {
+            ThemePreset.values().forEach { preset ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = selectedThemePreset == preset,
+                            onClick = { onThemePresetChange(preset) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedThemePreset == preset,
+                        onClick = null
+                    )
+                    Text(
+                        text = getThemePresetLabel(preset),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    // 색상 미리보기
+                    ThemePresetColorPreview(preset)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * v1.31.0: 테마 프리셋 색상 미리보기 (작은 색상 원)
+ */
+@Composable
+private fun ThemePresetColorPreview(
+    preset: ThemePreset,
+    modifier: Modifier = Modifier
+) {
+    val color = when (preset) {
+        ThemePreset.PURPLE -> Purple40
+        ThemePreset.BLUE -> Blue40
+        ThemePreset.GREEN -> Green40
+        ThemePreset.PINK -> Pink40New
+        ThemePreset.ORANGE -> Orange40
+        ThemePreset.RED -> Red40
+        ThemePreset.TEAL -> Teal40
+        ThemePreset.AMBER -> Amber40
+        ThemePreset.INDIGO -> Indigo40
+        ThemePreset.BROWN -> Brown40
+    }
+
+    Box(
+        modifier = modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(color)
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape)
+    )
+}
+
+/**
  * 재사용 가능한 설정 스위치 아이템
  */
 @Composable
@@ -477,6 +577,25 @@ private fun getThemeModeLabel(themeMode: ThemeMode): String {
         ThemeMode.LIGHT -> "라이트 모드"
         ThemeMode.DARK -> "다크 모드"
         ThemeMode.SYSTEM -> "시스템 설정 따르기"
+    }
+}
+
+/**
+ * v1.31.0: 테마 프리셋 레이블 (10가지 색상)
+ */
+@Composable
+private fun getThemePresetLabel(preset: ThemePreset): String {
+    return when (preset) {
+        ThemePreset.PURPLE -> "보라 (기본)"
+        ThemePreset.BLUE -> "파랑"
+        ThemePreset.GREEN -> "초록"
+        ThemePreset.PINK -> "핑크"
+        ThemePreset.ORANGE -> "주황"
+        ThemePreset.RED -> "빨강"
+        ThemePreset.TEAL -> "청록"
+        ThemePreset.AMBER -> "호박색"
+        ThemePreset.INDIGO -> "남색"
+        ThemePreset.BROWN -> "갈색"
     }
 }
 
