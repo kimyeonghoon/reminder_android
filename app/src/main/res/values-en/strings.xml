@@ -195,4 +195,21 @@
     <string name="habit_delete_confirm">Delete \'%s\' habit? All records will be deleted.</string>
     <string name="habit_no_items">No habits registered</string>
     <string name="habit_no_items_hint">Tap + button to add your first habit</string>
+
+    <!-- Pomodoro Timer (v1.45.0) -->
+    <string name="pomodoro_title">Pomodoro Timer</string>
+    <string name="pomodoro_focus">Focus</string>
+    <string name="pomodoro_short_break">Short Break</string>
+    <string name="pomodoro_long_break">Long Break</string>
+    <string name="pomodoro_start">Start</string>
+    <string name="pomodoro_pause">Pause</string>
+    <string name="pomodoro_stop">Stop</string>
+    <string name="pomodoro_statistics">Statistics</string>
+    <string name="pomodoro_today_sessions">Today\'s Sessions</string>
+    <string name="pomodoro_total_focus_minutes">Total Focus Time</string>
+    <string name="pomodoro_streak">Streak Days</string>
+    <string name="pomodoro_minutes">%d min</string>
+    <string name="pomodoro_days">%d days</string>
+    <string name="pomodoro_error">Error</string>
+    <string name="pomodoro_ok">OK</string>
 </resources>

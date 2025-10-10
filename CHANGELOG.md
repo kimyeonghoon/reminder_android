@@ -5,6 +5,109 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.45.0] - 2025-10-10
+
+### Added
+- ⏱️ **Pomodoro Timer** - 25/5/15분 집중/휴식 타이머로 생산성 향상
+  - **PomodoroManager**: 포모도로 세션 관리 비즈니스 로직 (TDD Green)
+    - `startSession()`: 세션 시작 (FOCUS, SHORT_BREAK, LONG_BREAK)
+    - `completeSession()`: 세션 완료 기록
+    - `cancelSession()`: 세션 취소 (삭제)
+    - `getTotalCompletedSessions()`: 전체 완료 세션 개수
+    - `getTodayCompletedSessions()`: 오늘 완료 세션 개수
+    - `getTotalFocusMinutes()`: 전체 집중 시간 (분)
+    - `getStreakDays()`: 연속 완료 일수 (오늘 완료 필수)
+    - 타이머 길이: FOCUS 25분, SHORT_BREAK 5분, LONG_BREAK 15분
+  - **PomodoroViewModel**: 타이머 화면 상태 관리
+    - 타이머 카운트다운 (남은 시간 초 단위)
+    - 시작/일시정지/재개/중지 제어
+    - 자동 세션 완료 처리 (타이머 종료 시)
+    - 통계 자동 갱신 (오늘 완료 세션, 전체 집중 시간, Streak)
+    - 에러 처리 및 사용자 알림
+  - **PomodoroTimerScreen**: 포모도로 타이머 UI
+    - 큰 타이머 디스플레이 (MM:SS 형식, 72sp)
+    - 세션 타입별 색상 구분 (집중/짧은휴식/긴휴식)
+    - 시작/일시정지/중지 버튼
+    - 통계 카드 (오늘 완료 세션, 전체 집중 시간, Streak)
+    - 연속 완료 일수 표시 (🔥 불꽃 아이콘)
+  - **다국어 지원**: 한국어, 영어, 중국어 문자열 추가 (15개)
+    - pomodoro_title, pomodoro_focus, pomodoro_short_break, pomodoro_long_break
+    - pomodoro_start, pomodoro_pause, pomodoro_stop
+    - pomodoro_statistics, pomodoro_today_sessions, pomodoro_total_focus_minutes
+    - pomodoro_streak, pomodoro_minutes, pomodoro_days
+    - pomodoro_error, pomodoro_ok
+  - **PomodoroManagerTest**: TDD Red 단위 테스트 12개
+    - startSession 테스트 (리마인더 연결 / 독립 세션)
+    - completeSession 테스트
+    - cancelSession 테스트
+    - getTotalCompletedSessions 테스트
+    - getTodayCompletedSessions 테스트
+    - getFocusSessionDuration/getShortBreakDuration/getLongBreakDuration 테스트
+    - getTotalFocusMinutes 테스트
+    - getStreakDays 테스트 (연속 일수 계산)
+
+### Changed
+- 🗄️ **Database Migration**: v21 → v22
+  - `pomodoro_sessions` 테이블 생성 (8개 컬럼, 3개 인덱스)
+    - id, reminderId (nullable), sessionType, duration, startedAt, completedAt, isCompleted, createdAt
+    - SET NULL 삭제 (리마인더 삭제 시 연결 해제)
+  - SessionType enum (FOCUS, SHORT_BREAK, LONG_BREAK)
+- 📊 **PomodoroSession**: 포모도로 세션 엔티티
+  - `sessionType: SessionType` (집중/휴식 타입)
+  - `duration: Int` (세션 길이, 분 단위)
+  - `reminderId: Long?` (선택적 리마인더 연결)
+  - `Index(value = ["reminderId"])`, `Index(value = ["startedAt"])`, `Index(value = ["isCompleted"])`
+- 🔄 **PomodoroSessionDao 추가**
+  - CRUD 쿼리 (insert, update, getById, deleteById)
+  - 리마인더별 세션 조회 (getSessionsByReminder)
+  - 통계 쿼리 (getCompletedSessionsCount, getCompletedSessionsCountByDate, getCompletedFocusSessionsCount)
+  - Streak 쿼리 (getDistinctCompletionDates)
+  - 기간별 쿼리 (getTodaySessions, getSessionsByDateRange)
+- 🔄 **Converters 확장**
+  - SessionType enum 컨버터 추가
+- 🏗️ **ReminderApplication 확장**
+  - `pomodoroManager` lazy 프로퍼티 추가
+- 🔢 버전 업데이트: `versionCode = 48`, `versionName = "1.45.0"`
+
+### Technical Details
+- **Files Created**: 7개
+  - `PomodoroSession.kt` (엔티티 + SessionType enum)
+  - `PomodoroSessionDao.kt` (DAO, 14개 메서드)
+  - `PomodoroManager.kt` (비즈니스 로직, 13개 메서드)
+  - `PomodoroManagerTest.kt` (TDD Red, 12개 테스트)
+  - `PomodoroViewModel.kt` (ViewModel, 8개 StateFlow, 7개 메서드)
+  - `PomodoroViewModelFactory.kt` (Factory)
+  - `PomodoroTimerScreen.kt` (UI 전체 구현, 4개 Composable)
+- **Files Modified**: 6개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_21_22)
+  - `Converters.kt` (SessionType 컨버터)
+  - `ReminderApplication.kt` (pomodoroManager)
+  - `build.gradle.kts` (버전)
+  - `strings.xml` (한/영/중 3개 언어, 15개 문자열)
+  - `CHANGELOG.md`
+- **Lines Changed**: +800 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현 (12개 테스트 선행 작성)
+- 포모도로 기법으로 집중력 및 생산성 향상
+- 타이머 자동 카운트다운 (1초 단위 업데이트)
+- Streak 시스템으로 동기부여 강화
+- Material 3 디자인 일관성 유지
+
+### Usage
+1. 설정 화면 → "포모도로 타이머" 버튼 (추후 통합 예정)
+2. 시작 버튼 클릭 → 25분 집중 타이머 시작
+3. 타이머 진행 중 일시정지/재개 가능
+4. 중지 버튼으로 세션 취소
+5. 타이머 종료 시 자동 완료 및 통계 갱신
+6. Streak (연속 완료 일수) 자동 계산 및 표시
+
+### Future Work
+- MainActivity 네비게이션 통합
+- SettingsScreen 메뉴 추가
+- 자동 다음 세션 제안 (4 포모도로 후 긴 휴식)
+- 알림 연동 (세션 종료 알림)
+
 ## [1.44.0] - 2025-10-10
 
 ### Added

@@ -10,6 +10,7 @@ import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ResolutionStrategy
+import com.reminder.data.entity.SessionType
 import com.reminder.data.entity.SyncDirection
 import com.reminder.recurrence.RecurrenceEnd
 import com.reminder.recurrence.RecurrenceRule
@@ -203,6 +204,21 @@ class Converters {
             SyncDirection.valueOf(value)
         } catch (e: Exception) {
             SyncDirection.TWO_WAY
+        }
+    }
+
+    // v1.45.0: SessionType converters
+    @TypeConverter
+    fun fromSessionType(value: SessionType): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toSessionType(value: String): SessionType {
+        return try {
+            SessionType.valueOf(value)
+        } catch (e: Exception) {
+            SessionType.FOCUS
         }
     }
 }

@@ -195,4 +195,21 @@
     <string name="habit_delete_confirm">删除\'%s\'习惯？所有记录将一起删除。</string>
     <string name="habit_no_items">暂无已登记习惯</string>
     <string name="habit_no_items_hint">点击+按钮添加第一个习惯</string>
+
+    <!-- Pomodoro Timer (v1.45.0) -->
+    <string name="pomodoro_title">番茄钟计时器</string>
+    <string name="pomodoro_focus">专注</string>
+    <string name="pomodoro_short_break">短休息</string>
+    <string name="pomodoro_long_break">长休息</string>
+    <string name="pomodoro_start">开始</string>
+    <string name="pomodoro_pause">暂停</string>
+    <string name="pomodoro_stop">停止</string>
+    <string name="pomodoro_statistics">统计</string>
+    <string name="pomodoro_today_sessions">今日完成的专注时段</string>
+    <string name="pomodoro_total_focus_minutes">总专注时间</string>
+    <string name="pomodoro_streak">连续完成天数</string>
+    <string name="pomodoro_minutes">%d分钟</string>
+    <string name="pomodoro_days">%d天</string>
+    <string name="pomodoro_error">错误</string>
+    <string name="pomodoro_ok">确定</string>
 </resources>

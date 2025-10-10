@@ -110,6 +110,9 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     // v1.44.0: 습관 추적
     val habitManager by lazy { com.reminder.habit.HabitManager(database.habitDao()) }
 
+    // v1.45.0: 포모도로 타이머
+    val pomodoroManager by lazy { com.reminder.pomodoro.PomodoroManager(database.pomodoroSessionDao()) }
+
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
      */
