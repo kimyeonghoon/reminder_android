@@ -68,3 +68,6 @@ firebase-debug.log
 
 # Captures folder
 /captures
+
+# Claude Code local settings
+.claude/settings.local.json
