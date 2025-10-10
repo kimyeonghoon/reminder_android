@@ -2,19 +2,28 @@ package com.reminder.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reminder.analytics.ProductivityInsights
+import com.reminder.data.dao.GoalDao
+import com.reminder.data.entity.GoalEntity
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.Statistics
 import com.reminder.data.repository.ReminderRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import com.reminder.goal.GoalProgress
+import com.reminder.goal.GoalTracker
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class StatisticsViewModel(
-    private val repository: ReminderRepository
+    private val repository: ReminderRepository,
+    private val goalDao: GoalDao
 ) : ViewModel() {
+
+    // v1.33.0: 목표 추적 및 인사이트
+    private val goalTracker = GoalTracker()
+    private val productivityInsights = ProductivityInsights()
 
     /**
      * 통계 데이터 StateFlow
@@ -92,4 +101,139 @@ class StatisticsViewModel(
 
         return completionCounts
     }
+
+    // ========== v1.33.0: 목표 설정 및 추적 기능 ==========
+
+    /**
+     * 모든 활성 목표
+     */
+    val activeGoals: StateFlow<List<GoalEntity>> = goalDao.getAllActiveGoals()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    /**
+     * 목표 진행률 계산
+     */
+    fun getGoalProgress(goal: GoalEntity): StateFlow<GoalProgress> {
+        return repository.allReminders.map { reminders ->
+            goalTracker.calculateProgress(goal, reminders)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = GoalProgress(0, goal.targetCount, 0.0, false, 0)
+        )
+    }
+
+    /**
+     * 목표 추가
+     */
+    fun addGoal(goal: GoalEntity) {
+        viewModelScope.launch {
+            goalDao.insertGoal(goal)
+        }
+    }
+
+    /**
+     * 목표 수정
+     */
+    fun updateGoal(goal: GoalEntity) {
+        viewModelScope.launch {
+            goalDao.updateGoal(goal)
+        }
+    }
+
+    /**
+     * 목표 삭제
+     */
+    fun deleteGoal(goal: GoalEntity) {
+        viewModelScope.launch {
+            goalDao.deleteGoal(goal)
+        }
+    }
+
+    /**
+     * 목표 비활성화
+     */
+    fun deactivateGoal(goalId: Long) {
+        viewModelScope.launch {
+            goalDao.deactivateGoal(goalId)
+        }
+    }
+
+    /**
+     * 만료된 목표 자동 비활성화
+     */
+    fun deactivateExpiredGoals() {
+        viewModelScope.launch {
+            goalDao.deactivateExpiredGoals()
+        }
+    }
+
+    // ========== v1.33.0: 생산성 인사이트 ==========
+
+    /**
+     * 생산성 인사이트 (실시간 생성)
+     */
+    val insights = combine(
+        statistics,
+        repository.allReminders
+    ) { stats, reminders ->
+        // Statistics 객체를 ProductivityInsights용 Statistics로 변환
+        val completedThisWeek = reminders.count {
+            it.isCompleted && it.completedAt != null &&
+                    ChronoUnit.DAYS.between(it.completedAt?.toLocalDate(), LocalDate.now()) < 7
+        }
+        val totalThisWeek = reminders.count {
+            ChronoUnit.DAYS.between(it.createdAt.toLocalDate(), LocalDate.now()) < 7
+        }
+        val thisWeekRate = if (totalThisWeek > 0) completedThisWeek.toDouble() / totalThisWeek else 0.0
+
+        val completedLastWeek = reminders.count {
+            it.isCompleted && it.completedAt != null &&
+                    ChronoUnit.DAYS.between(it.completedAt?.toLocalDate(), LocalDate.now()) in 7..13
+        }
+        val totalLastWeek = reminders.count {
+            val daysSince = ChronoUnit.DAYS.between(it.createdAt.toLocalDate(), LocalDate.now())
+            daysSince in 7..13
+        }
+        val lastWeekRate = if (totalLastWeek > 0) completedLastWeek.toDouble() / totalLastWeek else 0.0
+
+        // 가장 생산적인 시간대 계산
+        val productiveHour = reminders
+            .filter { it.isCompleted && it.completedAt != null }
+            .groupBy { it.completedAt!!.hour }
+            .maxByOrNull { it.value.size }
+            ?.key
+
+        // 카테고리별 통계
+        val categoryStats = reminders
+            .filter { it.category.isNotBlank() }
+            .groupBy { it.category }
+            .mapValues { (_, categoryReminders) ->
+                val completed = categoryReminders.count { it.isCompleted }
+                val total = categoryReminders.size
+                com.reminder.analytics.CategoryStats(
+                    completed = completed,
+                    total = total,
+                    completionRate = if (total > 0) completed.toDouble() / total else 0.0
+                )
+            }
+
+        val insightStats = com.reminder.analytics.Statistics(
+            thisWeekCompletionRate = thisWeekRate,
+            lastWeekCompletionRate = lastWeekRate,
+            mostProductiveHour = productiveHour,
+            categoryStats = categoryStats,
+            consecutiveGoalAchievementDays = 0 // TODO: 연속 달성 일수 계산
+        )
+
+        productivityInsights.generateInsights(insightStats)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 }
