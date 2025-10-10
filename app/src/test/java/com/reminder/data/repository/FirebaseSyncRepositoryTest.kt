@@ -130,4 +130,39 @@ class FirebaseSyncRepositoryTest {
         assertEquals(1L, result)
         verify(mockDao).insertReminder(testReminder)
     }
+
+    @Test
+    fun `완료된 리마인더 삭제 시 로컬과 원격에서 모두 삭제된다`() = runTest {
+        // Given
+        val completedReminder1 = testReminder.copy(id = 1, isCompleted = true)
+        val completedReminder2 = testReminder.copy(id = 2, isCompleted = true)
+        val completedReminders = listOf(completedReminder1, completedReminder2)
+
+        whenever(mockDao.getCompletedRemindersList()).thenReturn(completedReminders)
+
+        // When
+        repository.deleteAllCompletedReminders()
+        advanceUntilIdle() // 백그라운드 코루틴 완료 대기
+
+        // Then
+        verify(mockDao).getCompletedRemindersList()
+        verify(mockDao).deleteAllCompletedReminders()
+        verify(mockRemoteDataSource).deleteReminder(1)
+        verify(mockRemoteDataSource).deleteReminder(2)
+    }
+
+    @Test
+    fun `완료된 리마인더가 없을 때 삭제 시 원격 호출 없이 완료된다`() = runTest {
+        // Given
+        whenever(mockDao.getCompletedRemindersList()).thenReturn(emptyList())
+
+        // When
+        repository.deleteAllCompletedReminders()
+        advanceUntilIdle() // 백그라운드 코루틴 완료 대기
+
+        // Then
+        verify(mockDao).getCompletedRemindersList()
+        verify(mockDao).deleteAllCompletedReminders()
+        // 원격 삭제 호출이 없어야 함
+    }
 }

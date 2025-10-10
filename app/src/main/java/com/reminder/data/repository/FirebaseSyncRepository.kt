@@ -94,9 +94,18 @@ class FirebaseSyncRepository(
     }
 
     suspend fun deleteAllCompletedReminders() {
+        // 완료된 리마인더들의 ID를 먼저 가져오기
+        val completedReminders = reminderDao.getCompletedRemindersList()
+
+        // 로컬에서 삭제
         reminderDao.deleteAllCompletedReminders()
 
-        // TODO: 완료된 항목들을 원격에서도 삭제하는 로직 필요
+        // 백그라운드에서 원격 동기화 (각 리마인더를 개별 삭제)
+        syncScope.launch {
+            completedReminders.forEach { reminder ->
+                remoteDataSource.deleteReminder(reminder.id)
+            }
+        }
     }
 
     suspend fun toggleReminderCompletion(reminder: ReminderEntity) {
