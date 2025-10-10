@@ -5,6 +5,74 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.37.0] - 2025-10-10
+
+### Added
+- 🤖 **AI 스마트 추천 시스템** - 머신러닝 기반 지능형 리마인더 관리
+  - **PriorityPredictor**: 제목/설명 분석 → 우선순위 자동 예측
+    - 과거 패턴 학습 (키워드 기반)
+    - 신뢰도 점수 계산 (사용 횟수, 최근성 고려)
+    - 가중치 알고리즘 (usage × confidence × recency)
+  - **DueDateSuggester**: 유사 작업 소요 시간 분석 → 마감일 제안
+    - 카테고리별 평균 소요 일수 계산
+    - 신뢰도 기반 제안 (데이터 분산도 고려)
+  - **CategoryClassifier**: 자동 카테고리 분류 강화 (v1.25.0 ML 업그레이드)
+    - 유사 텍스트 기반 카테고리 제안 (최대 3개)
+    - 점수 계산 (사용 빈도 + 신뢰도 + 최근성)
+  - **NotificationTimeSuggester**: 완료 시간대 패턴 분석 → 최적 알림 시간 제안
+    - 요일별, 카테고리별 완료 시간 학습
+    - 시간대별 생산성 분석
+  - **SmartSuggestionChip**: AI 제안 UI 컴포넌트
+    - 애니메이션 효과 (expandVertically + fadeIn)
+    - 신뢰도 30% 이상만 표시
+    - 클릭 시 자동 적용
+- 💾 **ML 학습 데이터 테이블** (DB v15 → v16)
+  - `ml_training_data` 테이블 생성
+  - MLDataType enum (PRIORITY, CATEGORY, DUE_DATE, NOTIFICATION_TIME)
+  - 학습 데이터 자동 저장 및 축적
+
+### Changed
+- 🗄️ **Database Migration**: v15 → v16
+  - `ml_training_data` 테이블 추가 (10개 컬럼)
+  - 3개 인덱스 추가 (dataType, dataType+inputText, createdAt)
+- 🔄 **Converters 확장**
+  - MLDataType enum 컨버터 추가
+- 🔢 버전 업데이트: `versionCode = 40`, `versionName = "1.37.0"`
+
+### Technical Details
+- **Files Created**: 9개
+  - `MLTrainingDataEntity.kt` (ML 학습 데이터 엔티티)
+  - `MLTrainingDataDao.kt` (DAO, 12개 쿼리 메서드)
+  - `PriorityPredictor.kt` (우선순위 예측기)
+  - `DueDateSuggester.kt` (마감일 제안기)
+  - `CategoryClassifier.kt` (카테고리 분류기)
+  - `NotificationTimeSuggester.kt` (알림 시간 제안기)
+  - `SmartSuggestionChip.kt` (AI 제안 UI)
+  - `PriorityPredictorTest.kt` (TDD 테스트)
+- **Files Modified**: 3개
+  - `ReminderDatabase.kt` (엔티티 추가, MIGRATION_15_16)
+  - `Converters.kt` (MLDataType 컨버터)
+  - `build.gradle.kts` (버전), `CLAUDE.md`, `CHANGELOG.md`
+- **TDD 방식 구현**: Red-Green-Refactor 사이클
+  - Red: PriorityPredictorTest 5개 테스트 작성 (먼저 실패)
+  - Green: PriorityPredictor 구현 (테스트 통과)
+- **ML Algorithm**:
+  - 유사도 기반 검색 (LIKE 쿼리)
+  - 가중치 계산 (로그 스케일 사용 횟수 × 신뢰도 × 최근성)
+  - 신뢰도 계산 (일치율 50% + 사용 신뢰도 25% + 평균 신뢰도 25%)
+- **Lines Changed**: +1200 (approx.)
+
+### Quality Improvements
+- TDD 기반 안정적 구현
+- 학습 데이터 자동 축적으로 사용할수록 정확도 향상
+- 사용자 맞춤형 AI 제안 (개인화된 패턴 학습)
+- UI 친화적 제안 (신뢰도 낮으면 숨김)
+
+### Future Work (v1.37.1 예정)
+- AddEditReminderScreen에 AI 제안 기능 통합
+- 학습 데이터 정리 (90일 이상 사용 안 된 데이터 삭제)
+- ML 모델 정확도 모니터링 (Firebase Analytics)
+
 ## [1.31.0] - 2025-10-10
 
 ### Added

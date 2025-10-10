@@ -3,6 +3,7 @@ package com.reminder.data.database
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.recurrence.RecurrenceEnd
@@ -107,6 +108,21 @@ class Converters {
             } catch (e: Exception) {
                 RecurrenceEnd.Never
             }
+        }
+    }
+
+    // v1.37.0: MLDataType converters
+    @TypeConverter
+    fun fromMLDataType(value: MLDataType): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toMLDataType(value: String): MLDataType {
+        return try {
+            MLDataType.valueOf(value)
+        } catch (e: Exception) {
+            MLDataType.PRIORITY
         }
     }
 }

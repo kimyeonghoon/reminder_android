@@ -8,12 +8,14 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.reminder.data.dao.GoalDao
+import com.reminder.data.dao.MLTrainingDataDao
 import com.reminder.data.dao.RecurrenceExceptionDao
 import com.reminder.data.dao.ReminderDao
 import com.reminder.data.dao.ReminderImageDao
 import com.reminder.data.dao.SavedFilterDao
 import com.reminder.data.dao.SubTaskDao
 import com.reminder.data.entity.GoalEntity
+import com.reminder.data.entity.MLTrainingDataEntity
 import com.reminder.data.entity.RecurrenceExceptionEntity
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.ReminderImage
@@ -21,8 +23,8 @@ import com.reminder.data.entity.SavedFilterEntity
 import com.reminder.data.entity.SubTask
 
 @Database(
-    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class],
-    version = 15,
+    entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class],
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -34,6 +36,7 @@ abstract class ReminderDatabase : RoomDatabase() {
     abstract fun savedFilterDao(): SavedFilterDao
     abstract fun goalDao(): GoalDao
     abstract fun recurrenceExceptionDao(): RecurrenceExceptionDao
+    abstract fun mlTrainingDataDao(): MLTrainingDataDao
 
     companion object {
         @Volatile
@@ -262,6 +265,31 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_15_16 = object : Migration(15, 16) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // v1.37.0: ML 학습 데이터 테이블 생성
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS ml_training_data (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        dataType TEXT NOT NULL,
+                        inputText TEXT NOT NULL,
+                        outputLabel TEXT NOT NULL,
+                        category TEXT,
+                        dayOfWeek INTEGER,
+                        confidence REAL NOT NULL,
+                        usageCount INTEGER NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        lastUsedAt TEXT NOT NULL
+                    )
+                """.trimIndent())
+
+                // ML 학습 데이터 인덱스 추가
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_ml_training_data_dataType ON ml_training_data(dataType)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_ml_training_data_dataType_inputText ON ml_training_data(dataType, inputText)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_ml_training_data_createdAt ON ml_training_data(createdAt)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -269,7 +297,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance
