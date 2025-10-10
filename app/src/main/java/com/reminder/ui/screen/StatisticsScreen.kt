@@ -22,6 +22,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.reminder.data.entity.Statistics
+import com.reminder.ui.components.TrendChart
 import com.reminder.viewmodel.StatisticsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +78,12 @@ fun StatisticsScreen(
 
             // 완료율 카드
             CompletionRateCard(statistics = statistics)
+
+            // v1.28.0: 주간 트렌드 차트
+            WeeklyTrendCard(statistics = statistics)
+
+            // v1.28.0: 월간 트렌드 차트
+            MonthlyTrendCard(statistics = statistics)
 
             // 우선순위별 분포 차트
             PriorityDistributionChart(statistics = statistics)
@@ -338,6 +345,89 @@ fun CategoryDistributionChart(
                     chart.invalidate()
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun WeeklyTrendCard(
+    statistics: Statistics,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "최근 7일 완료 트렌드",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            if (statistics.weeklyCompleted.sum() > 0) {
+                val labels = listOf("오늘", "1일 전", "2일 전", "3일 전", "4일 전", "5일 전", "6일 전")
+
+                TrendChart(
+                    data = statistics.weeklyCompleted,
+                    labels = labels,
+                    lineColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            } else {
+                Text(
+                    text = "완료된 리마인더가 없습니다",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(32.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MonthlyTrendCard(
+    statistics: Statistics,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "최근 30일 완료 트렌드",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            if (statistics.monthlyCompleted.sum() > 0) {
+                // 30일 라벨: 0일 전, 5일 전, 10일 전, 15일 전, 20일 전, 25일 전, 29일 전 (간격을 두고 표시)
+                val labels = (0 until 30).map {
+                    if (it % 5 == 0) "${it}일 전" else ""
+                }
+
+                TrendChart(
+                    data = statistics.monthlyCompleted,
+                    labels = labels,
+                    lineColor = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            } else {
+                Text(
+                    text = "완료된 리마인더가 없습니다",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(32.dp)
+                )
+            }
         }
     }
 }
