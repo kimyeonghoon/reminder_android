@@ -1,13 +1,20 @@
 package com.reminder.data.database
 
 import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class Converters {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private val gson = Gson()
 
     @TypeConverter
     fun fromLocalDateTime(value: LocalDateTime?): String? {
@@ -49,6 +56,57 @@ class Converters {
             RecurrencePattern.valueOf(value)
         } catch (e: Exception) {
             RecurrencePattern.NONE
+        }
+    }
+
+    // v1.35.0: LocalDate converters
+    @TypeConverter
+    fun fromLocalDate(value: LocalDate?): String? {
+        return value?.format(dateFormatter)
+    }
+
+    @TypeConverter
+    fun toLocalDate(value: String?): LocalDate? {
+        return value?.let { LocalDate.parse(it, dateFormatter) }
+    }
+
+    // v1.35.0: RecurrenceRule converters
+    @TypeConverter
+    fun fromRecurrenceRule(value: RecurrenceRule?): String? {
+        return value?.let { gson.toJson(it) }
+    }
+
+    @TypeConverter
+    fun toRecurrenceRule(value: String?): RecurrenceRule? {
+        return value?.let {
+            try {
+                gson.fromJson(it, RecurrenceRule::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    // v1.35.0: RecurrenceEnd converters (sealed class)
+    @TypeConverter
+    fun fromRecurrenceEnd(value: RecurrenceEnd?): String? {
+        return value?.let { gson.toJson(it) }
+    }
+
+    @TypeConverter
+    fun toRecurrenceEnd(value: String?): RecurrenceEnd? {
+        return value?.let {
+            try {
+                // Gson needs RuntimeTypeAdapterFactory for sealed classes
+                // For simplicity, we'll handle the three types manually
+                when {
+                    it.contains("\"count\"") -> gson.fromJson(it, RecurrenceEnd.AfterOccurrences::class.java)
+                    it.contains("\"date\"") -> gson.fromJson(it, RecurrenceEnd.OnDate::class.java)
+                    else -> RecurrenceEnd.Never
+                }
+            } catch (e: Exception) {
+                RecurrenceEnd.Never
+            }
         }
     }
 }

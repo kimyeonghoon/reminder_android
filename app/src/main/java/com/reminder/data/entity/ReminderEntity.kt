@@ -3,6 +3,8 @@ package com.reminder.data.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
 import java.time.LocalDateTime
 
 @Entity(
@@ -44,33 +46,20 @@ data class ReminderEntity(
     // 음성 알림 (TTS)
     val readAloud: Boolean = false,          // 알림 시 음성으로 읽기
 
-    // 반복 리마인더
-    val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
-    val recurrenceInterval: Int = 1,
-    val recurrenceDaysOfWeek: String? = null,  // "MONDAY,WEDNESDAY,FRIDAY"
-    val recurrenceEndDate: LocalDateTime? = null
-) {
-    /**
-     * RecurrenceRule 생성
-     */
-    fun toRecurrenceRule(): RecurrenceRule {
-        val daysOfWeek = recurrenceDaysOfWeek?.split(",")
-            ?.mapNotNull { dayName ->
-                try {
-                    java.time.DayOfWeek.valueOf(dayName.trim())
-                } catch (e: Exception) {
-                    null
-                }
-            }?.toSet()
+    // v1.35.0: 반복 작업 고급 옵션
+    val recurrenceRule: RecurrenceRule? = null,  // 반복 규칙 (DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM)
+    val recurrenceEnd: RecurrenceEnd? = null,    // 반복 종료 조건 (Never, AfterOccurrences, OnDate)
 
-        return RecurrenceRule(
-            pattern = recurrencePattern,
-            interval = recurrenceInterval,
-            daysOfWeek = daysOfWeek,
-            endDate = recurrenceEndDate
-        )
-    }
-}
+    // 반복 리마인더 (레거시 - 하위 호환성 유지)
+    @Deprecated("Use recurrenceRule instead")
+    val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
+    @Deprecated("Use recurrenceRule instead")
+    val recurrenceInterval: Int = 1,
+    @Deprecated("Use recurrenceRule instead")
+    val recurrenceDaysOfWeek: String? = null,  // "MONDAY,WEDNESDAY,FRIDAY"
+    @Deprecated("Use recurrenceEnd instead")
+    val recurrenceEndDate: LocalDateTime? = null
+)
 
 enum class Priority {
     LOW,
