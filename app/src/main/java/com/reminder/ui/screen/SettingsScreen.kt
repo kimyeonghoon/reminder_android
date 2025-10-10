@@ -41,6 +41,7 @@ fun SettingsScreen(
     backupManager: BackupManager,
     onNavigateBack: () -> Unit,
     onHelpClick: () -> Unit = {},
+    onCalendarSyncClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -245,6 +246,14 @@ fun SettingsScreen(
                 )
 
                 HorizontalDivider()
+            }
+
+            // v1.40.1: 캘린더 동기화
+            OutlinedButton(
+                onClick = onCalendarSyncClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("캘린더 동기화")
             }
 
             // 도움말

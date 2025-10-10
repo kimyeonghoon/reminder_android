@@ -94,6 +94,16 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     val categorySuggestionHelper by lazy { com.reminder.ml.CategorySuggestionHelper() }
     val completionPatternAnalyzer by lazy { com.reminder.analytics.CompletionPatternAnalyzer() }
 
+    // v1.40.1: 캘린더 동기화
+    val deviceCalendarProvider by lazy { com.reminder.calendar.DeviceCalendarProvider(this) }
+    val calendarSyncManager by lazy {
+        com.reminder.calendar.CalendarSyncManager(
+            deviceCalendarProvider,
+            database.calendarSyncConfigDao(),
+            database.reminderDao()
+        )
+    }
+
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
      */

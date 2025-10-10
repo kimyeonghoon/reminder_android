@@ -32,6 +32,7 @@ import com.reminder.data.preferences.Language
 import com.reminder.data.preferences.PreferencesRepository
 import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
+import com.reminder.ui.screen.CalendarSyncScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
 import com.reminder.ui.screen.OnboardingScreen
@@ -40,6 +41,8 @@ import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
 import com.reminder.util.LocaleHelper
+import com.reminder.viewmodel.CalendarSyncViewModel
+import com.reminder.viewmodel.CalendarSyncViewModelFactory
 import com.reminder.viewmodel.ReminderViewModel
 import com.reminder.viewmodel.ReminderViewModelFactory
 import com.reminder.viewmodel.SettingsViewModel
@@ -197,6 +200,15 @@ fun ReminderAppContent(
 
     val statisticsViewModel: StatisticsViewModel = viewModel(
         factory = StatisticsViewModelFactory(app.repository)
+    )
+
+    // v1.40.1: CalendarSyncViewModel 추가
+    val calendarSyncViewModel: CalendarSyncViewModel = viewModel(
+        factory = CalendarSyncViewModelFactory(
+            app.calendarSyncManager,
+            app.deviceCalendarProvider,
+            app.database.reminderDao()
+        )
     )
 
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
@@ -374,7 +386,8 @@ fun ReminderAppContent(
                 viewModel = settingsViewModel,
                 backupManager = app.backupManager,
                 onNavigateBack = { navController.popBackStack() },
-                onHelpClick = { navController.navigate("help") }
+                onHelpClick = { navController.navigate("help") },
+                onCalendarSyncClick = { navController.navigate("calendar_sync") }
             )
         }
         composable(
@@ -437,6 +450,39 @@ fun ReminderAppContent(
         ) {
             PatternAnalysisScreen(
                 viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        // v1.40.1: CalendarSyncScreen 라우트
+        composable(
+            "calendar_sync",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            CalendarSyncScreen(
+                viewModel = calendarSyncViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

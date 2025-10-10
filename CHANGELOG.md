@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.40.1] - 2025-10-10
+
+### Added
+- 🎨 **캘린더 동기화 UI 구현** - v1.40.0 백엔드 기능에 대한 사용자 인터페이스 추가
+  - **CalendarSyncViewModel**: 캘린더 동기화 화면 상태 관리
+    - 캘린더 권한 상태 확인 및 관리
+    - 기기 캘린더 목록 로딩
+    - 동기화 실행 상태 관리
+    - 에러 처리 및 사용자 알림
+  - **CalendarSyncScreen**: 캘린더 동기화 전용 화면
+    - 권한 요청 UI (READ_CALENDAR, WRITE_CALENDAR)
+    - 기기 캘린더 목록 표시 (색상, 이름, 계정)
+    - 동기화 방향 선택 다이얼로그 (단방향/양방향)
+    - "지금 동기화" 버튼 및 로딩 상태
+    - 에러 다이얼로그 표시
+  - **설정 화면 메뉴**: "캘린더 동기화" 버튼 추가
+    - 도움말 버튼 위에 배치
+    - CalendarSyncScreen으로 네비게이션 연결
+  - **네비게이션**: `calendar_sync` 라우트 추가
+    - 슬라이드 애니메이션 (좌→우 진입/퇴장)
+    - CalendarSyncViewModel 의존성 주입
+  - **ReminderApplication**: 캘린더 관련 lazy 프로퍼티 추가
+    - `deviceCalendarProvider` 초기화
+    - `calendarSyncManager` 초기화
+
+### Changed
+- 🔢 버전 업데이트: `versionCode = 44`, `versionName = "1.40.1"`
+
+### Technical Details
+- **Files Created**: 2개
+  - `CalendarSyncViewModel.kt` (ViewModel, 6개 StateFlow, 6개 메서드)
+  - `CalendarSyncViewModelFactory.kt` (Factory)
+- **Files Modified**: 4개
+  - `CalendarSyncScreen.kt` (UI 전체 구현, 3개 Composable 추가)
+  - `SettingsScreen.kt` (캘린더 동기화 버튼 추가)
+  - `MainActivity.kt` (라우트 및 ViewModel 추가)
+  - `ReminderApplication.kt` (lazy 프로퍼티 추가)
+- **Lines Changed**: +350 (approx.)
+
+### Quality Improvements
+- 권한 요청 UX 개선 (명확한 안내 메시지)
+- 동기화 상태 실시간 피드백
+- Material 3 디자인 일관성 유지
+- 에러 처리 및 사용자 알림 강화
+
 ## [1.40.0] - 2025-10-10
 
 ### Added
