@@ -27,14 +27,20 @@ class HapticFeedback(private val view: View) {
 
     /**
      * 확인/성공 피드백
+     *
+     * @SuppressLint("InlinedApi"): CONFIRM은 API 30+이지만, 상수이므로 하위 버전에서도 안전
      */
+    @android.annotation.SuppressLint("InlinedApi")
     fun confirm() {
         view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
     }
 
     /**
      * 거부/취소 피드백
+     *
+     * @SuppressLint("InlinedApi"): REJECT는 API 30+이지만, 상수이므로 하위 버전에서도 안전
      */
+    @android.annotation.SuppressLint("InlinedApi")
     fun reject() {
         view.performHapticFeedback(HapticFeedbackConstants.REJECT)
     }

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.61.0] - 2025-10-11
+
+### Changed
+- 🧹 **Android Lint 추가 정리** - InlinedApi 및 XML 주석 개선
+  - **InlinedApi 경고 수정 (4개)**
+    - DndManager.kt - PRIORITY_CATEGORY_ALARMS, PRIORITY_CATEGORY_MEDIA 상수에 @SuppressLint 추가
+    - HapticFeedback.kt - CONFIRM, REJECT 상수에 @SuppressLint 추가
+    - API 28+ 및 API 30+ 상수이지만 컴파일 타임 상수이므로 안전하게 사용 가능함을 명시
+  - **XML 주석 개선 (2개)**
+    - widget_info.xml - API 31+ 속성 설명 주석 추가 (targetCellWidth, targetCellHeight)
+    - quick_note_widget_info.xml - API 31+ 속성 설명 주석 추가
+    - 하위 API 레벨에서는 무시되며 안전함을 문서화
+
+### Code Quality
+- @SuppressLint 사용 시 명확한 이유를 주석으로 설명
+- XML 속성의 API 레벨 요구사항을 명시적으로 문서화
+- 코드베이스의 Lint 경고 추가 감소
+
+### Technical Debt
+- **Lint 경고 감소**: InlinedApi 4개 해결
+- **문서화 개선**: API 레벨 호환성 설명 추가
+
 ## [1.60.0] - 2025-10-11
 
 ### Changed

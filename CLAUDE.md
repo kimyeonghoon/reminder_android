@@ -71,8 +71,9 @@
 - ✅ v1.58.0 - 온보딩 개선 (6개 페이지, 한국어, 신규 기능 소개)
 - ✅ v1.59.0 - 코드 품질 개선 (Lint 경고 25개 수정, Compose 성능 최적화)
 - ✅ v1.60.0 - 최종 코드 정리 (ObsoleteSdkInt 경고 완전 제거, 코드 단순화)
+- ✅ v1.61.0 - Android Lint 추가 정리 (InlinedApi 경고 수정, XML 주석 개선)
 
-**🎉 현재 버전: v1.60.0 (versionCode 66, DB v24)**
+**🎉 현재 버전: v1.61.0 (versionCode 67, DB v24)**
 
 ---
 

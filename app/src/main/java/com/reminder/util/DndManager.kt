@@ -85,7 +85,11 @@ class DndManager(private val context: Context) {
 
     /**
      * Policy 카테고리 빌드
+     *
+     * @SuppressLint("InlinedApi"): PRIORITY_CATEGORY_ALARMS, PRIORITY_CATEGORY_MEDIA는
+     * API 28+이지만, 상수이므로 하위 버전에서도 안전하게 사용 가능
      */
+    @android.annotation.SuppressLint("InlinedApi")
     private fun buildPolicyCategories(allowCalls: Boolean, allowAlarms: Boolean): Int {
         var categories = 0
 
