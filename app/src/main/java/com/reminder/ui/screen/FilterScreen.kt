@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -183,7 +184,7 @@ fun FilterBottomSheet(
                         label = { Text("음성 알림") },
                         leadingIcon = {
                             Icon(
-                                if (filterWithTts) Icons.Default.Done else Icons.Default.VolumeUp,
+                                if (filterWithTts) Icons.Default.Done else Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = null,
                                 modifier = Modifier.size(FilterChipDefaults.IconSize)
                             )

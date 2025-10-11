@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -153,7 +154,7 @@ private fun getIconForPreset(iconName: String): androidx.compose.ui.graphics.vec
         "location_on" -> Icons.Default.LocationOn
         "repeat" -> Icons.Default.Repeat
         "link" -> Icons.Default.Link
-        "volume_up" -> Icons.Default.VolumeUp
+        "volume_up" -> Icons.AutoMirrored.Filled.VolumeUp
         else -> Icons.Default.FilterList
     }
 }
