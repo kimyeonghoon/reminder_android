@@ -104,6 +104,17 @@ TDD(Test-Driven Development)로 개발되어 안정성과 품질이 검증되었
   - **자동 카운트**: 각 쿼드런트별 리마인더 개수 실시간 표시
   - **간편한 관리**: 드래그 없이 완료/삭제 가능
 
+### 🤖 AI 긴급도 자동 예측 (NEW!)
+- **키워드 기반 NLP 분석으로 긴급도 자동 제안**
+  - 제목/설명을 분석하여 긴급도 자동 예측
+  - 한글/영어 양쪽 언어 지원
+  - 🤖 AI 제안 버튼으로 클릭 한 번에 적용
+  - 예측 근거 설명 제공 (어떤 키워드를 감지했는지)
+- **3단계 긴급도 분류**:
+  - HIGH: 긴급, urgent, asap, 지금, 바로, 오늘, 당장, 즉시 등
+  - MEDIUM: 이번 주, this week, soon, 곧 등
+  - LOW: 나중에, later, someday, 언젠가 등
+
 ## 📱 스크린샷
 
 <!-- 추후 추가 예정 -->
@@ -202,6 +213,10 @@ _스크린샷은 곧 추가됩니다_
 
 11. **Eisenhower Matrix 사용하기** (NEW!)
     - 할 일 추가 시 "Priority (중요도)"와 "Urgency (긴급도)" 설정
+    - **🤖 AI 긴급도 자동 예측** (v1.48.0):
+      - 제목과 설명을 입력하면 AI가 긴급도를 자동으로 분석
+      - 🤖 AI 제안 버튼이 나타나면 클릭하여 예측값 적용
+      - 어떤 키워드를 감지했는지 설명 제공
     - Eisenhower Matrix 화면에서 4개 쿼드런트로 자동 분류 확인
     - 각 쿼드런트:
       - **빨간색 (DO_FIRST)**: 지금 바로 처리해야 할 일
@@ -452,7 +467,8 @@ fun ReminderCard(
   - `ReminderViewModelTest`: ViewModel 로직
   - `ReminderRepositoryTest`: Repository 로직
   - `ReminderTemplateTest`: 템플릿 기능 테스트 (2개)
-  - `EisenhowerMatrixTest`: Eisenhower Matrix 로직 (10개) - NEW!
+  - `EisenhowerMatrixTest`: Eisenhower Matrix 로직 (10개)
+  - `UrgencyPredictorTest`: AI 긴급도 예측 로직 (17개) - NEW!
 
 - **통합 테스트**: Database, DAO 쿼리
   - `ReminderDaoTest`: Room DAO 쿼리 검증
@@ -464,7 +480,35 @@ fun ReminderCard(
 
 ## 📦 릴리즈 & 버전
 
-### v1.47.0 (최신) - 2025-10-11
+### v1.48.0 (최신) - 2025-10-11
+
+#### 🤖 AI 긴급도 자동 예측 기능 구현
+- **UrgencyPredictor 클래스**: 키워드 기반 NLP 분석 엔진
+  - 제목과 설명을 분석하여 긴급도 자동 예측 (HIGH/MEDIUM/LOW)
+  - 한글/영어 양쪽 언어 지원
+  - 예측 근거 설명 제공 기능 (`getReasonForPrediction`)
+- **AddEditReminderScreen 통합**:
+  - 제목/설명 입력 시 자동으로 긴급도 예측
+  - 🤖 AI 제안 버튼 표시 (예측값이 현재 값과 다를 때만)
+  - 클릭 한 번으로 예측값 적용 가능
+  - 간편 모드에서는 숨김 처리
+- **키워드 분류**:
+  - HIGH: 긴급, urgent, asap, 지금, 바로, 오늘, 당장, 즉시, 빨리, 급해, now, immediately, today, critical, emergency
+  - MEDIUM: 이번 주, 이번주, 곧, 조만간, this week, soon, upcoming, shortly
+  - LOW: 나중에, 언젠가, 여유, 천천히, later, someday, eventually, whenever, low priority
+  - DEFAULT: MEDIUM (키워드 없을 때)
+
+#### 💾 기술 세부사항
+- **TDD 방식 개발**: Red-Green-Refactor 사이클 완전 준수
+  - 17개 테스트 먼저 작성 후 구현
+  - 총 240개 테스트 모두 통과 (223 + 17) ✅
+- **테스트 커버리지**: 17개 테스트 (UrgencyPredictorTest.kt)
+  - 한글/영어 키워드 감지 테스트
+  - 여러 긴급도 키워드 우선순위 테스트
+  - 대소문자 구분 없음 테스트
+  - 빈 문자열 및 기본값 테스트
+
+### v1.47.0 - 2025-10-11
 
 #### 🎯 Eisenhower Matrix 생산성 매트릭스 구현
 - **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH

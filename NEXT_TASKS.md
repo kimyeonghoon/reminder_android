@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.47.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.48.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.47.0 (versionCode 53)
+- **최신 버전**: v1.48.0 (versionCode 54)
 - **DB 버전**: v23
-- **총 릴리즈**: 53개 버전
-- **테스트 커버리지**: 223/223 통과 (100% ✅)
+- **총 릴리즈**: 54개 버전
+- **테스트 커버리지**: 240/240 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -39,14 +39,15 @@
 - ✅ 테스트 안정화 (v1.45.1: Fake 구현 패턴, 213개 테스트 100% 통과)
 - ✅ Bottom Navigation Bar (v1.46.0~v1.46.2: 5개 메인 탭, UI 정리 완료)
 - ✅ **Eisenhower Matrix (v1.47.0: 중요도×긴급도 매트릭스, TDD)** 🎯
+- ✅ **AI 긴급도 예측 (v1.48.0: 키워드 기반 NLP 분석, 자동 제안)** 🤖
 
 ---
 
-## 🔥 다음 버전 계획 (v1.47.0 이후)
+## 🔥 다음 버전 계획 (v1.48.0 이후)
 
 ### 🎯 향후 개발 방향
 
-현재 v1.47.0까지 완료되어 핵심 기능, Bottom Navigation 통합, Eisenhower Matrix 생산성 기능, 그리고 Navigation 통합이 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
+현재 v1.48.0까지 완료되어 핵심 기능, Eisenhower Matrix, 그리고 AI 긴급도 예측까지 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
 
 #### 1. ~~Navigation 통합~~ ✅ 완료됨 (v1.47.0)
 - ~~**Eisenhower Matrix 화면을 MainActivity Navigation에 추가**~~
@@ -95,13 +96,13 @@
 - 자연어 처리 (NLP) 기반 리마인더 생성
 - 일정 최적화 제안 (스케줄링 AI)
 - 음성 어시스턴트 통합 (Google Assistant, Bixby)
-- **Eisenhower Matrix 자동 분류 개선**:
-  - 제목/설명 분석으로 긴급도 자동 예측
-  - 과거 데이터 학습으로 정확도 향상
+- ~~**Eisenhower Matrix 자동 분류 개선**~~ ✅ 부분 완료 (v1.48.0)
+  - ✅ 제목/설명 분석으로 긴급도 자동 예측 (키워드 기반)
+  - ⏳ 과거 데이터 학습으로 정확도 향상 (향후)
 
 ---
 
-## 🚧 최근 완료 이력 (v1.46.0 ~ v1.47.0)
+## 🚧 최근 완료 이력 (v1.46.0 ~ v1.48.0)
 
 ### v1.46.0: Bottom Navigation Bar ✅
 **완료됨** - 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
@@ -143,6 +144,27 @@
     - SearchBar inputField 파라미터
   - RTL 언어 지원 개선
 
+### v1.48.0: AI 긴급도 자동 예측 ✅ 🤖
+**완료됨** - Eisenhower Matrix 고도화 1단계: AI 기반 긴급도 예측 기능 구현
+- **UrgencyPredictor 클래스 구현**:
+  - 키워드 기반 NLP 분석 엔진
+  - 한글/영어 지원 (긴급, urgent, asap, 지금, 바로, 오늘 등)
+  - 3단계 긴급도 예측 (HIGH, MEDIUM, LOW)
+  - 예측 근거 설명 제공 기능
+- **AddEditReminderScreen 통합**:
+  - 제목/설명 입력 시 자동으로 긴급도 예측
+  - 🤖 AI 제안 버튼 표시 (예측값이 현재 값과 다를 때만)
+  - 클릭 한 번으로 예측값 적용 가능
+  - 간편 모드에서는 숨김 처리
+- **TDD 방식 개발**:
+  - 17개 테스트 먼저 작성 후 구현 (Red-Green-Refactor)
+  - 총 240개 테스트 모두 통과 (223 + 17) ✅
+- **키워드 분류**:
+  - HIGH: 긴급, urgent, asap, 지금, 바로, 오늘, 당장, 즉시, 빨리, 급해, now, immediately, today, critical, emergency
+  - MEDIUM: 이번 주, 이번주, 곧, 조만간, this week, soon, upcoming, shortly
+  - LOW: 나중에, 언젠가, 여유, 천천히, later, someday, eventually, whenever, low priority
+  - DEFAULT: MEDIUM (키워드 없을 때)
+
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
@@ -175,7 +197,7 @@
 
 ## 📅 다음 세션 제안
 
-v1.47.0까지 Eisenhower Matrix 구현, Navigation 통합, 코드 품질 개선 모두 완료! 다음 세션에서는:
+v1.48.0까지 AI 긴급도 자동 예측 완료! 다음 세션에서는:
 
 ### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨
 - ✅ MainActivity.kt에 EisenhowerMatrixScreen 라우팅 추가 완료
@@ -187,11 +209,15 @@ v1.47.0까지 Eisenhower Matrix 구현, Navigation 통합, 코드 품질 개선 
 - ✅ Material 3 최신 API 100% 적용
   - AutoMirrored 아이콘, MenuAnchorType, SearchBar inputField
 
-### 3. **Eisenhower Matrix 고도화** (다음 우선순위 권장) 🔴
-- AI 기반 긴급도 자동 예측 (제목/설명 분석)
+### 3. ~~**AI 긴급도 자동 예측**~~ ✅ 완료됨 (v1.48.0)
+- ✅ UrgencyPredictor 클래스 구현 (키워드 기반 NLP)
+- ✅ AddEditReminderScreen에 AI 제안 버튼 통합
+- ✅ 17개 테스트 작성 및 통과 (TDD 방식)
+
+### 4. **Eisenhower Matrix 고도화 계속** (다음 우선순위) 🔴
+- 쿼드런트별 통계 대시보드 (완료율, 평균 처리 시간, 트렌드)
 - 쿼드런트 간 드래그 앤 드롭 이동
-- 쿼드런트별 통계 대시보드
-- 예상 시간: 3-4시간
+- 예상 시간: 2-3시간
 
 ### 4. **포커스 모드 구현** (고급 기능)
 - Eisenhower Matrix DO_FIRST와 연동

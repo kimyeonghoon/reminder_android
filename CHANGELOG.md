@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.48.0] - 2025-10-11
+
+### Added
+- 🤖 **AI 긴급도 자동 예측 기능** - Eisenhower Matrix 고도화 1단계
+  - **UrgencyPredictor 클래스 구현**
+    - 키워드 기반 NLP 분석 엔진
+    - 제목과 설명을 분석하여 긴급도 자동 예측 (HIGH, MEDIUM, LOW)
+    - 한글/영어 양쪽 언어 지원
+    - 예측 근거 설명 제공 기능 (`getReasonForPrediction`)
+  - **AddEditReminderScreen 통합**
+    - 제목/설명 입력 시 자동으로 긴급도 예측
+    - 🤖 AI 제안 버튼 표시 (예측값이 현재 값과 다를 때만)
+    - 클릭 한 번으로 예측값 적용 가능
+    - 예측 근거를 사용자에게 설명
+    - 간편 모드에서는 숨김 처리
+  - **키워드 분류 체계**
+    - HIGH 키워드: 긴급, urgent, asap, 지금, 바로, 오늘, 당장, 즉시, 빨리, 급해, now, immediately, today, critical, emergency
+    - MEDIUM 키워드: 이번 주, 이번주, 곧, 조만간, this week, soon, upcoming, shortly
+    - LOW 키워드: 나중에, 언젠가, 여유, 천천히, later, someday, eventually, whenever, low priority
+    - DEFAULT: MEDIUM (키워드가 없을 때)
+  - **우선순위 기반 매칭**
+    - HIGH > MEDIUM > LOW 순서로 우선순위 적용
+    - 여러 긴급도 키워드가 있으면 가장 높은 긴급도 반환
+
+### Technical Details
+- **TDD 방식 개발**: 테스트 먼저 작성 후 구현 (Red-Green-Refactor)
+  - `UrgencyPredictorTest.kt`: 17개 테스트 작성
+    - 한글 키워드 감지 테스트 (긴급, 지금, 바로, 오늘, 이번 주, 나중에, 언젠가)
+    - 영어 키워드 감지 테스트 (urgent, asap, this week, soon, later, someday)
+    - 여러 긴급도 키워드 우선순위 테스트
+    - description만 키워드 포함 테스트
+    - 대소문자 구분 없음 테스트
+    - 빈 문자열 기본값 테스트
+  - `UrgencyPredictor.kt`: 구현 (94줄)
+    - `predictUrgency()`: 제목+설명 분석 후 긴급도 반환
+    - `getReasonForPrediction()`: 예측 근거 설명 생성
+- **UI 통합**:
+  - `AddEditReminderScreen.kt`: AI 제안 버튼 추가 (27줄 추가)
+  - remember로 predictor 인스턴스 생성
+  - remember(title, description)로 예측값 캐싱
+  - 예측값 != 현재값일 때만 버튼 표시
+- **새 파일**:
+  - `app/src/main/java/com/reminder/ai/UrgencyPredictor.kt` (94줄)
+  - `app/src/test/java/com/reminder/ai/UrgencyPredictorTest.kt` (236줄)
+
+### Testing
+- **모든 테스트 통과** ✅
+  - AI 긴급도 예측 테스트 17개 추가
+  - 기존 테스트 223개 모두 통과
+  - 총 240개 테스트 100% 통과 (BUILD SUCCESSFUL)
+
+### Notes
+- MINOR 버전 업데이트 (새로운 기능 추가)
+- 하위 호환성 유지
+- Eisenhower Matrix 고도화의 첫 번째 단계 완료
+- 향후 과거 데이터 학습으로 정확도 향상 예정
+
 ## [1.47.0] - 2025-10-11
 
 ### Added
