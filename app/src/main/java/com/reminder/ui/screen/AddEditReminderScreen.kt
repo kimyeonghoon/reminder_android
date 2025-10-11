@@ -30,6 +30,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import com.reminder.ai.UrgencyPredictor
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
@@ -356,6 +357,35 @@ fun AddEditReminderScreen(
                                 urgencyExpanded = false
                             }
                         )
+                    }
+                }
+            }
+
+            // v1.48.0: AI 긴급도 예측
+            if (!simpleMode && (title.isNotBlank() || description.isNotBlank())) {
+                val predictor = remember { UrgencyPredictor() }
+                val predicted = remember(title, description) {
+                    predictor.predictUrgency(title, description)
+                }
+                val reason = remember(title, description) {
+                    predictor.getReasonForPrediction(title, description)
+                }
+
+                if (predicted != urgency) {
+                    OutlinedButton(
+                        onClick = { urgency = predicted },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                        ) {
+                            Text("🤖 AI 제안: ${predicted.name} 긴급도")
+                            Text(
+                                text = reason,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
