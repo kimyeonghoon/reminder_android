@@ -200,8 +200,8 @@ private fun WidgetConfigScreen(
                     listOf(
                         SortOption.BY_DATE_ASC to "날짜순 (빠른 순)",
                         SortOption.BY_DATE_DESC to "날짜순 (늦은 순)",
-                        SortOption.BY_PRIORITY to "우선순위순",
-                        SortOption.BY_CREATED_DATE to "생성일순"
+                        SortOption.BY_PRIORITY_HIGH_FIRST to "우선순위순",
+                        SortOption.BY_CREATED_ASC to "생성일순"
                     ).forEach { (sort, label) ->
                         FilterChip(
                             selected = selectedSort == sort,

@@ -89,4 +89,14 @@ interface ReminderDao {
 
     @Query("UPDATE reminders SET isArchived = :isArchived, updatedAt = :updatedAt WHERE id = :id")
     suspend fun updateArchiveStatus(id: Long, isArchived: Boolean, updatedAt: java.time.LocalDateTime)
+
+    // Toggle completion status
+    @Query("""
+        UPDATE reminders
+        SET isCompleted = NOT isCompleted,
+            completedAt = CASE WHEN isCompleted = 0 THEN :completedAt ELSE NULL END,
+            updatedAt = :updatedAt
+        WHERE id = :id
+    """)
+    suspend fun toggleReminderCompletion(id: Long, completedAt: java.time.LocalDateTime = java.time.LocalDateTime.now(), updatedAt: java.time.LocalDateTime = java.time.LocalDateTime.now())
 }

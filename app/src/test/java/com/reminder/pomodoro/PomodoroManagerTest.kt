@@ -8,8 +8,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.*
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,7 +24,7 @@ class PomodoroManagerTest {
 
     @Before
     fun setup() {
-        pomodoroSessionDao = mock(PomodoroSessionDao::class.java)
+        pomodoroSessionDao = mock()
         pomodoroManager = PomodoroManager(pomodoroSessionDao)
     }
 
@@ -34,6 +33,7 @@ class PomodoroManagerTest {
         // Given
         val reminderId = 1L
         val sessionType = SessionType.FOCUS
+        whenever(pomodoroSessionDao.insertSession(any())).thenReturn(1L)
 
         // When
         val sessionId = pomodoroManager.startSession(reminderId, sessionType)
@@ -47,6 +47,7 @@ class PomodoroManagerTest {
     fun `리마인더 없이 독립 세션을 시작할 수 있다`() = runTest {
         // Given
         val sessionType = SessionType.FOCUS
+        whenever(pomodoroSessionDao.insertSession(any())).thenReturn(1L)
 
         // When
         val sessionId = pomodoroManager.startSession(null, sessionType)
@@ -76,9 +77,9 @@ class PomodoroManagerTest {
         pomodoroManager.completeSession(sessionId)
 
         // Then
-        verify(pomodoroSessionDao, times(1)).updateSession(argThat {
-            it.id == sessionId && it.isCompleted
-        })
+        verify(pomodoroSessionDao, times(1)).updateSession(
+            check { require(it.id == sessionId && it.isCompleted) }
+        )
     }
 
     @Test

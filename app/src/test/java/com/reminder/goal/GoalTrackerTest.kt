@@ -1,5 +1,6 @@
 package com.reminder.goal
 
+import com.reminder.data.entity.GoalType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import org.junit.Assert.*
@@ -25,7 +26,9 @@ class GoalTrackerTest {
         // 테스트용 리마인더 데이터 생성
         val today = LocalDate.now()
         val thisWeek = today.minusDays(3)
-        val lastWeek = today.minusDays(10)
+        // 이번 달 범위 내에서 날짜 설정 (flaky test 방지)
+        val thisMonthStart = today.withDayOfMonth(1)
+        val thisMonthMid = today.withDayOfMonth(15) // 이번 달 중순
 
         testReminders = listOf(
             // 이번 주 완료 (3개)
@@ -53,12 +56,12 @@ class GoalTrackerTest {
                 category = "업무",
                 priority = Priority.LOW
             ),
-            // 지난주 완료 (1개)
+            // 이번 달 초 완료 (1개)
             ReminderEntity(
                 id = 4,
-                title = "지난주 완료",
+                title = "이번 달 초 완료",
                 isCompleted = true,
-                completedAt = lastWeek.atTime(9, 0),
+                completedAt = thisMonthMid.atTime(9, 0),
                 category = "개인",
                 priority = Priority.HIGH
             ),

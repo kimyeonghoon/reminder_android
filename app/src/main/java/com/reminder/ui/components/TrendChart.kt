@@ -58,8 +58,8 @@ fun TrendChart(
                 xAxis.apply {
                     position = XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(true)
-                    gridColor = gridColor
-                    textColor = textColor
+                    setGridColor(gridColor)
+                    setTextColor(textColor)
                     granularity = 1f
                     labelRotationAngle = -45f
                     valueFormatter = IndexAxisValueFormatter(labels.asReversed())
@@ -68,8 +68,8 @@ fun TrendChart(
                 // 왼쪽 Y축 설정
                 axisLeft.apply {
                     setDrawGridLines(true)
-                    gridColor = gridColor
-                    textColor = textColor
+                    setGridColor(gridColor)
+                    setTextColor(textColor)
                     axisMinimum = 0f
                     granularity = 1f
                 }

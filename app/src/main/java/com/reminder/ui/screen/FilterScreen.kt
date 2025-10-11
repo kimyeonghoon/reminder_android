@@ -20,7 +20,7 @@ import java.time.LocalDateTime
  *
  * 복합 필터 조건을 설정할 수 있는 화면
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FilterBottomSheet(
     currentFilter: ReminderFilter?,
@@ -258,7 +258,7 @@ fun FilterBottomSheet(
 /**
  * 필터 섹션 컴포넌트
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun FilterSection(
     title: String,

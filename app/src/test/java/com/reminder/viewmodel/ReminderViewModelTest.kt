@@ -32,7 +32,7 @@ class ReminderViewModelTest {
     private lateinit var categorySuggestionHelper: com.reminder.ml.CategorySuggestionHelper
     private lateinit var completionPatternAnalyzer: com.reminder.analytics.CompletionPatternAnalyzer
     private lateinit var viewModel: ReminderViewModel
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
@@ -47,10 +47,23 @@ class ReminderViewModelTest {
         categorySuggestionHelper = mock()
         completionPatternAnalyzer = mock()
 
-        // Mock DAO and its methods
+        // Mock all DAOs and their methods
         val reminderDao = mock<com.reminder.data.dao.ReminderDao>()
         whenever(reminderDao.getSnoozedReminders()).thenReturn(flowOf(emptyList()))
         whenever(database.reminderDao()).thenReturn(reminderDao)
+
+        val subTaskDao = mock<com.reminder.data.dao.SubTaskDao>()
+        whenever(database.subTaskDao()).thenReturn(subTaskDao)
+
+        val reminderImageDao = mock<com.reminder.data.dao.ReminderImageDao>()
+        whenever(database.reminderImageDao()).thenReturn(reminderImageDao)
+
+        val reminderTemplateDao = mock<com.reminder.data.dao.ReminderTemplateDao>()
+        whenever(database.reminderTemplateDao()).thenReturn(reminderTemplateDao)
+
+        val savedFilterDao = mock<com.reminder.data.dao.SavedFilterDao>()
+        whenever(savedFilterDao.getAllSavedFilters()).thenReturn(flowOf(emptyList()))
+        whenever(database.savedFilterDao()).thenReturn(savedFilterDao)
 
         // Mock repository flows
         whenever(repository.allReminders).thenReturn(flowOf(emptyList()))

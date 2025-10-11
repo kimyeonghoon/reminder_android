@@ -41,7 +41,7 @@ class ArchiveManagerTest {
 
         // Then
         verify(reminderDao).updateReminder(
-            argThat { it.id == 1L && it.isArchived }
+            check { require(it.id == 1L && it.isArchived) }
         )
     }
 
@@ -58,7 +58,7 @@ class ArchiveManagerTest {
 
         // Then
         verify(reminderDao).updateReminder(
-            argThat { it.id == 1L && !it.isArchived }
+            check { require(it.id == 1L && !it.isArchived) }
         )
     }
 
@@ -84,7 +84,7 @@ class ArchiveManagerTest {
         // Then
         assertEquals(1, archivedCount) // 35일 전 항목만 아카이브
         verify(reminderDao).updateReminder(
-            argThat { it.id == 1L && it.isArchived }
+            check { require(it.id == 1L && it.isArchived) }
         )
     }
 

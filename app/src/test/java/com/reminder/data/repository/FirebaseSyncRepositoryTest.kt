@@ -30,6 +30,7 @@ class FirebaseSyncRepositoryTest {
     private lateinit var repository: FirebaseSyncRepository
     private lateinit var mockDao: ReminderDao
     private lateinit var mockRemoteDataSource: RemoteDataSource
+    private val testDispatcher = StandardTestDispatcher()
 
     private val testReminder = ReminderEntity(
         id = 1,
@@ -48,7 +49,7 @@ class FirebaseSyncRepositoryTest {
         mockDao = mock()
         mockRemoteDataSource = mock()
         // 테스트 디스패처를 사용하여 코루틴 제어 가능하도록 설정
-        repository = FirebaseSyncRepository(mockDao, mockRemoteDataSource, StandardTestDispatcher())
+        repository = FirebaseSyncRepository(mockDao, mockRemoteDataSource, testDispatcher)
     }
 
     @Test
@@ -132,7 +133,7 @@ class FirebaseSyncRepositoryTest {
     }
 
     @Test
-    fun `완료된 리마인더 삭제 시 로컬과 원격에서 모두 삭제된다`() = runTest {
+    fun `완료된 리마인더 삭제 시 로컬과 원격에서 모두 삭제된다`() = runTest(testDispatcher) {
         // Given
         val completedReminder1 = testReminder.copy(id = 1, isCompleted = true)
         val completedReminder2 = testReminder.copy(id = 2, isCompleted = true)

@@ -6,14 +6,12 @@ import com.reminder.data.entity.HabitEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 /**
  * v1.44.0: HabitManager TDD Tests

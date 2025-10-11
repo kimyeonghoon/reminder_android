@@ -30,9 +30,13 @@ data class ReminderEntity(
     val category: String = "",
     val tags: String = "", // 콤마로 구분된 태그 (예: "work,urgent,meeting")
     val isCompleted: Boolean = false,
+    val completedAt: LocalDateTime? = null,  // 완료 시간 (통계 및 분석용)
     val isArchived: Boolean = false,     // v1.43.0: 아카이브 여부 (완료 후 일정 기간 지나면 자동 아카이브)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    // 이미지 첨부
+    val imageUri: String? = null,            // 첨부 이미지 URI (v1.39.0 확장)
 
     // 스누즈 기능
     val snoozeUntil: LocalDateTime? = null,  // 스누즈된 시간 (null이면 스누즈되지 않음)
