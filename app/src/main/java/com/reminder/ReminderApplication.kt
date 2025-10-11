@@ -241,25 +241,26 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
     /**
      * 초기 사용자 속성 설정
+     * v1.55.0: collect() 대신 first() 사용하여 앱 시작 시간 최적화
      */
     private fun setupInitialUserProperties() {
         applicationScope.launch {
-            preferencesRepository.userPreferences.collect { preferences ->
-                // Crashlytics 사용자 속성 설정
-                val totalReminders = database.reminderDao().getAllRemindersList().size
-                crashlyticsHelper.setUserProperties(
-                    themeMode = preferences.themeMode.name,
-                    simpleMode = preferences.simpleMode,
-                    totalReminders = totalReminders
-                )
+            val preferences = preferencesRepository.userPreferences.first()
 
-                // Firebase Analytics 사용자 속성 설정
-                FirebaseAnalytics.getInstance(this@ReminderApplication).apply {
-                    setUserProperty("language", preferences.language.code)  // v1.30.0
-                    setUserProperty("theme_mode", preferences.themeMode.name)
-                    setUserProperty("simple_mode", preferences.simpleMode.toString())
-                    setUserProperty("font_size", preferences.fontSize.name)
-                }
+            // Crashlytics 사용자 속성 설정
+            val totalReminders = database.reminderDao().getAllRemindersList().size
+            crashlyticsHelper.setUserProperties(
+                themeMode = preferences.themeMode.name,
+                simpleMode = preferences.simpleMode,
+                totalReminders = totalReminders
+            )
+
+            // Firebase Analytics 사용자 속성 설정
+            FirebaseAnalytics.getInstance(this@ReminderApplication).apply {
+                setUserProperty("language", preferences.language.code)  // v1.30.0
+                setUserProperty("theme_mode", preferences.themeMode.name)
+                setUserProperty("simple_mode", preferences.simpleMode.toString())
+                setUserProperty("font_size", preferences.fontSize.name)
             }
         }
     }

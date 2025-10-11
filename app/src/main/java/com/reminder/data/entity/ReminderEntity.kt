@@ -17,8 +17,10 @@ import java.time.LocalDateTime
         Index(value = ["urgency"]),     // v1.47.0: 긴급도 인덱스
         Index(value = ["category"]),
         Index(value = ["updatedAt"]),
+        Index(value = ["snoozeUntil"]), // v1.55.0: 스누즈 쿼리 최적화
         Index(value = ["isCompleted", "dueDateTime"]),  // 복합 인덱스 (가장 자주 사용되는 쿼리)
         Index(value = ["isCompleted", "isArchived"]),    // v1.43.0: 완료+아카이브 복합 인덱스
+        Index(value = ["isCompleted", "updatedAt"]),     // v1.55.0: 완료 리마인더 정렬 최적화
         Index(value = ["priority", "urgency"])           // v1.47.0: Eisenhower Matrix용 복합 인덱스
     ]
 )

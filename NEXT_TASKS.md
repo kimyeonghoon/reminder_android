@@ -1,15 +1,15 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.53.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.54.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.53.0 (versionCode 59)
+- **최신 버전**: v1.54.0 (versionCode 60)
 - **DB 버전**: v24
-- **총 릴리즈**: 59개 버전
+- **총 릴리즈**: 60개 버전
 - **테스트 커버리지**: 276/276 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
@@ -44,6 +44,7 @@
 - ✅ **포커스 모드 (v1.51.0: 집중 타이머, DO_FIRST 연동, 세션 관리, TDD)** 🎯
 - ✅ **포커스 모드 Bottom Navigation 통합 (v1.52.0: 1탭 접근, Settings 이동)** 🎯
 - ✅ **Eisenhower Matrix Long Press 이동 (v1.53.0: 빠른 이동 UX 개선)** 🎯
+- ✅ **방해 금지 모드 (v1.54.0: DND 자동 활성화, 세션 연동, API 23+)** 🔕
 
 ---
 
@@ -75,11 +76,12 @@
 - 성능 최적화 및 메모리 누수 점검
 
 #### 3. 고급 생산성 기능
-- ~~**포커스 모드**~~ ✅ 부분 완료 (v1.51.0)
+- ~~**포커스 모드**~~ ✅ 완료 (v1.51.0 ~ v1.54.0)
   - ✅ 집중 타이머 (25/50/90분)
   - ✅ Eisenhower Matrix DO_FIRST 쿼드런트와 연동
   - ✅ 세션 히스토리 및 통계 (오늘 집중 시간, Streak)
-  - ⏳ 방해 금지 모드 (DND), 특정 앱 차단 (향후)
+  - ✅ 방해 금지 모드 (DND) - v1.54.0
+  - ⏳ 특정 앱 차단 (향후)
 - **목표 기반 리마인더** (장기 목표 → 하위 작업 자동 생성)
   - AI 기반 작업 분해 제안
   - Eisenhower Matrix로 우선순위 자동 배정
@@ -253,6 +255,41 @@
   - EisenhowerMatrixScreen.kt, app/build.gradle.kts
 - **테스트**: 276/276 통과 ✅
 
+### v1.54.0: 방해 금지 모드 (Do Not Disturb) ✅ 🔕
+**완료됨** - 포커스 세션 중 자동 알림 차단
+- **DND 자동 관리**:
+  - 포커스 세션 시작 시 자동 활성화
+  - 세션 완료/중단 시 자동 비활성화 (이전 상태 복원)
+  - NotificationManager.INTERRUPTION_FILTER_PRIORITY 활용
+- **세부 제어**:
+  - 전화 허용 토글 (긴급 전화 수신)
+  - 알람 허용 토글 (시계 알람 유지)
+  - 자동 활성화 토글 (세션 시작 시 DND 여부)
+  - DND 수동 켜기/끄기 가능
+- **권한 관리**:
+  - NOTIFICATION_POLICY_ACCESS 권한 자동 확인
+  - 권한 없을 시 설정 화면 유도 다이얼로그
+  - Material 3 UI (AlertDialog, Switch)
+- **새 파일** (3개):
+  - DndManager.kt (NotificationManager 래퍼)
+  - DndSettings.kt (설정 데이터 클래스)
+  - DndRepository.kt (SharedPreferences 기반 저장소)
+- **수정 파일** (6개):
+  - FocusModeViewModel.kt (DND 통합)
+  - FocusModeViewModelFactory.kt (DndRepository 추가)
+  - ReminderApplication.kt (DndRepository 초기화)
+  - FocusModeScreen.kt (DND UI, 권한 다이얼로그)
+  - app/build.gradle.kts (v60)
+  - CHANGELOG.md
+- **API 호환성**:
+  - API 23+ (Android M) 필수
+  - 하위 버전에서는 graceful degradation (null)
+- **UI/UX**:
+  - DndSettingsCard (전체 DND 설정 카드)
+  - 권한 요청 AlertDialog
+  - Icons.Default.ArrowBack deprecated 수정 → AutoMirrored
+- **테스트**: 276/276 통과 ✅
+
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
@@ -285,7 +322,7 @@
 
 ## 📅 다음 세션 제안
 
-v1.53.0까지 완료! 다음 세션에서는:
+v1.54.0까지 완료! 다음 세션에서는:
 
 ### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
 ### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
@@ -295,23 +332,9 @@ v1.53.0까지 완료! 다음 세션에서는:
 ### 6. ~~**포커스 모드 구현**~~ ✅ 완료됨 (v1.51.0)
 ### 7. ~~**포커스 모드 Bottom Navigation 통합**~~ ✅ 완료됨 (v1.52.0)
 ### 8. ~~**Eisenhower Matrix Long Press 이동**~~ ✅ 완료됨 (v1.53.0)
+### 9. ~~**방해 금지 모드 (Do Not Disturb)**~~ ✅ 완료됨 (v1.54.0)
 
-### 9. **방해 금지 모드 (Do Not Disturb)** (다음 우선순위) 🔴
-- **포커스 세션 중 알림 차단**
-  - NotificationManager.Policy 활용
-  - 방해 금지 모드 자동 활성화/비활성화
-  - 권한 요청 UI (INTERRUPTION_FILTER 권한)
-- **앱 차단 기능 (선택사항)**
-  - AccessibilityService 활용
-  - 차단할 앱 목록 설정
-  - 집중 방해 앱 자동 차단 (소셜 미디어, 게임 등)
-- **UI/UX**
-  - 전체 화면 타이머 모드
-  - 화면 밝기 조절 옵션
-  - 긴급 전화는 허용하는 옵션
-- 예상 시간: 4-5시간
-
-### 10. **Wear OS 앱 구현** (장기 프로젝트)
+### 10. **Wear OS 앱 구현** (다음 우선순위) 🔴
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
@@ -319,7 +342,7 @@ v1.53.0까지 완료! 다음 세션에서는:
 - 리마인더 빠른 완료 기능
 - 예상 시간: 6-7시간
 
-### 11. **시간 블로킹 (Time Blocking)** (중기 계획)
+### 11. **시간 블로킹 (Time Blocking)** 🟡
 - 캘린더와 통합하여 작업 시간 예약
 - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
 - 드래그 앤 드롭으로 시간대 배정
@@ -369,7 +392,7 @@ v1.53.0까지 완료! 다음 세션에서는:
 - **Pomodoro Timer**: Bottom Navigation 통합 완료 ✅
 - **Habit Tracker**: Bottom Navigation 통합 완료 ✅
 - **Eisenhower Matrix**: Navigation 통합 완료 ✅
-- **포커스 모드**: 기본 타이머 완료, 방해 금지 모드는 향후 추가 예정 ⏳
+- **포커스 모드**: 기본 타이머 및 방해 금지 모드 완료 ✅
 
 ### Wear OS 구현 시 고려사항
 - Wear OS 기기 테스트 필수
@@ -391,10 +414,10 @@ v1.53.0까지 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.53.0까지 59개 버전, 24개 DB 마이그레이션을 완료했습니다. 포커스 모드와 생산성 매트릭스로 집중력 극대화!_
+_v1.54.0까지 60개 버전, 24개 DB 마이그레이션을 완료했습니다. 포커스 모드와 방해 금지 모드로 집중력 극대화!_
 
 **주요 성과**:
-- ✅ 59개 버전 릴리즈 (v1.0.0 ~ v1.53.0)
+- ✅ 60개 버전 릴리즈 (v1.0.0 ~ v1.54.0)
 - ✅ 24번의 데이터베이스 마이그레이션
 - ✅ TDD 기반 안정적인 코드베이스 (276개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
@@ -403,15 +426,15 @@ _v1.53.0까지 59개 버전, 24개 DB 마이그레이션을 완료했습니다. 
 - ✅ 포모도로 & 습관 추적
 - ✅ Bottom Navigation Bar (5개 메인 탭: Home, Statistics, Pomodoro, Focus, Habits)
 - ✅ **Eisenhower Matrix (중요도×긴급도 매트릭스, Long Press 이동)** 🎯
-- ✅ **포커스 모드 (집중 타이머, 세션 관리, Bottom Nav 통합)** 🎯
+- ✅ **포커스 모드 (집중 타이머, 세션 관리, 방해 금지 모드)** 🎯🔕
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **방해 금지 모드** (포커스 세션 중 알림 차단, 앱 차단)
-2. 🟡 **Wear OS 앱 구현** (스마트워치 지원)
-3. 🟢 **시간 블로킹** (캘린더 통합 작업 예약)
+1. 🔴 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
+2. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
+3. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
 
-**⭐ v1.53.0 하이라이트**:
-- **v1.52.0**: 포커스 모드가 Bottom Navigation 4번째 탭으로! 이제 1탭으로 바로 접근 가능
+**⭐ v1.54.0 하이라이트**:
 - **v1.53.0**: Eisenhower Matrix에서 Long Press로 쿼드런트 간 이동이 2탭 → 1탭으로 단축! 햅틱 피드백으로 더 직관적인 UX
+- **v1.54.0**: 방해 금지 모드 (DND) 완성! 포커스 세션 시작 시 자동으로 알림 차단, 완료 시 이전 상태 자동 복원. 전화/알람 허용 여부 세부 제어 가능 🔕
