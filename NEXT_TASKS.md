@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.50.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.51.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.50.0 (versionCode 56)
-- **DB 버전**: v23
-- **총 릴리즈**: 56개 버전
-- **테스트 커버리지**: 253/253 통과 (100% ✅)
+- **최신 버전**: v1.51.0 (versionCode 57)
+- **DB 버전**: v24
+- **총 릴리즈**: 57개 버전
+- **테스트 커버리지**: 276/276 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -40,6 +40,8 @@
 - ✅ Bottom Navigation Bar (v1.46.0~v1.46.2: 5개 메인 탭, UI 정리 완료)
 - ✅ **Eisenhower Matrix (v1.47.0: 중요도×긴급도 매트릭스, TDD)** 🎯
 - ✅ **AI 긴급도 예측 (v1.48.0: 키워드 기반 NLP 분석, 자동 제안)** 🤖
+- ✅ **Eisenhower Matrix 고도화 2/3단계 (v1.49.0~v1.50.0: 통계, 이동, 트렌드)** 📊
+- ✅ **포커스 모드 (v1.51.0: 집중 타이머, DO_FIRST 연동, 세션 관리, TDD)** 🎯
 
 ---
 
@@ -71,9 +73,11 @@
 - 성능 최적화 및 메모리 누수 점검
 
 #### 3. 고급 생산성 기능
-- **포커스 모드** (방해 금지 모드, 특정 앱 차단)
-  - Eisenhower Matrix의 DO_FIRST 쿼드런트와 연동
-  - 집중해야 할 시간에 방해 요소 차단
+- ~~**포커스 모드**~~ ✅ 부분 완료 (v1.51.0)
+  - ✅ 집중 타이머 (25/50/90분)
+  - ✅ Eisenhower Matrix DO_FIRST 쿼드런트와 연동
+  - ✅ 세션 히스토리 및 통계 (오늘 집중 시간, Streak)
+  - ⏳ 방해 금지 모드 (DND), 특정 앱 차단 (향후)
 - **목표 기반 리마인더** (장기 목표 → 하위 작업 자동 생성)
   - AI 기반 작업 분해 제안
   - Eisenhower Matrix로 우선순위 자동 배정
@@ -185,6 +189,39 @@
   - 7개 새 테스트 (통계 3개, 이동 4개)
   - 총 247개 테스트 모두 통과 (240 + 7) ✅
 
+### v1.51.0: 포커스 모드 (Focus Mode) ✅ 🎯
+**완료됨** - 집중 타이머 및 세션 관리 시스템 (TDD)
+- **데이터베이스 레이어**:
+  - FocusSessionEntity (reminderId, focusType, targetDurationMinutes, startTime, endTime, actualDurationMinutes, isCompleted, isInterrupted)
+  - FocusSessionDao (Flow 기반 반응형 쿼리, Room)
+  - FocusSessionRepository (데이터 접근 추상화)
+  - DB 마이그레이션: v23 → v24 (focus_sessions 테이블 추가)
+- **도메인 로직 (7개 확장 함수)**:
+  - isActive(), complete(), interrupt(), reset()
+  - getRemainingMinutes(), calculateProgress()
+  - List.calculateStreak() (연속 완료 기록 계산)
+- **ViewModel 레이어 (11개 테스트)**:
+  - FocusModeViewModel (StateFlow 기반)
+  - startFocusSession(), completeSession(), interruptSession(), resetSession()
+  - getTodayFocusMinutes(), getCurrentStreak()
+  - startFocusSessionForReminder() (리마인더 연결 세션)
+  - FocusState enum (IDLE, ACTIVE, COMPLETED, INTERRUPTED)
+- **UI 레이어 (500+ 줄)**:
+  - FocusModeScreen (Material 3)
+  - StatsCard (오늘 집중 시간, 연속 기록 Streak)
+  - TimerCard (타입 선택, 시간 선택 25/50/90분, 시작/완료/중단 버튼)
+  - CircularTimer (Canvas API 원형 프로그레스 바, 초 단위 타이머)
+  - SessionHistoryItem (최근 세션 10개 리스트)
+  - FocusType 선택 다이얼로그 (DO_FIRST, DEEP_WORK, POMODORO, BREAK)
+- **Eisenhower Matrix 연동**:
+  - DO_FIRST 쿼드런트에 "집중 시작" 버튼 추가
+  - MainActivity focus_mode 라우트 추가
+  - 화면 전환 애니메이션 (슬라이드 + 페이드 300ms)
+- **TDD 방식 개발**:
+  - 7개 도메인 테스트
+  - 11개 ViewModel 테스트
+  - 총 276개 테스트 모두 통과 (253 + 23) ✅
+
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
@@ -217,35 +254,36 @@
 
 ## 📅 다음 세션 제안
 
-v1.49.0까지 Eisenhower Matrix 고도화 2단계 완료! 다음 세션에서는:
+v1.51.0까지 포커스 모드 완료! 다음 세션에서는:
 
 ### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
 ### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
 ### 3. ~~**AI 긴급도 자동 예측**~~ ✅ 완료됨 (v1.48.0)
 ### 4. ~~**Eisenhower Matrix 고도화 2단계**~~ ✅ 완료됨 (v1.49.0)
 ### 5. ~~**Eisenhower Matrix 고도화 3단계**~~ ✅ 완료됨 (v1.50.0)
+### 6. ~~**포커스 모드 구현**~~ ✅ 완료됨 (v1.51.0)
 
-### 6. **포커스 모드 구현** (다음 우선순위) 🔴
-- **드래그 앤 드롭 UI** 구현
-  - 쿼드런트 간 리마인더 드래그 앤 드롭
-  - 드래그 중 미리보기 효과
-  - 드롭 시 moveReminderToQuadrant() 호출
-- **쿼드런트별 트렌드 분석**
-  - 주간/월간 완료 트렌드 그래프
-  - 쿼드런트별 생산성 비교
-  - 시간대별 쿼드런트 분포 분석
+### 7. **포커스 모드 고도화** (다음 우선순위) 🔴
+- **방해 금지 모드 (Do Not Disturb)**
+  - 포커스 세션 중 알림 차단
+  - 특정 앱 사용 제한 (AccessibilityService 활용)
+  - 화면 밝기 조절 및 전체 화면 타이머
+- **Bottom Navigation 통합**
+  - 포커스 모드를 5번째 탭으로 추가
+  - 접근성 향상
 - 예상 시간: 3-4시간
 
-### 6. **포커스 모드 구현** (고급 기능)
-- Eisenhower Matrix DO_FIRST와 연동
-- 방해 금지 모드, 앱 차단 기능
-- 타이머 기반 집중 시간 관리
-- 예상 시간: 4-5시간
+### 8. **드래그 앤 드롭 UI** (Eisenhower Matrix 개선)
+- 쿼드런트 간 리마인더 드래그 앤 드롭
+- 드래그 중 미리보기 효과
+- 드롭 시 moveReminderToQuadrant() 호출
+- 예상 시간: 2-3시간
 
-### 7. **Wear OS 앱 구현** (장기 프로젝트)
+### 9. **Wear OS 앱 구현** (장기 프로젝트)
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
+- 포커스 모드 워치 버전
 - 예상 시간: 6-7시간
 
 ---
@@ -290,7 +328,8 @@ v1.49.0까지 Eisenhower Matrix 고도화 2단계 완료! 다음 세션에서는
 - **캘린더 통합**: Google Calendar API 10,000 requests/day 제한
 - **Pomodoro Timer**: Bottom Navigation 통합 완료 ✅
 - **Habit Tracker**: Bottom Navigation 통합 완료 ✅
-- **Eisenhower Matrix**: Navigation 통합 미완료 (다음 작업 권장) 🔴
+- **Eisenhower Matrix**: Navigation 통합 완료 ✅
+- **포커스 모드**: 기본 타이머 완료, 방해 금지 모드는 향후 추가 예정 ⏳
 
 ### Wear OS 구현 시 고려사항
 - Wear OS 기기 테스트 필수
@@ -312,24 +351,25 @@ v1.49.0까지 Eisenhower Matrix 고도화 2단계 완료! 다음 세션에서는
 
 **Happy Coding! 🚀**
 
-_v1.47.0까지 53개 버전, 23개 DB 마이그레이션을 완료했습니다. Eisenhower Matrix로 생산성이 한 단계 더 업그레이드되었습니다!_
+_v1.51.0까지 57개 버전, 24개 DB 마이그레이션을 완료했습니다. 포커스 모드로 집중력 향상!_
 
 **주요 성과**:
-- ✅ 53개 버전 릴리즈 (v1.0.0 ~ v1.47.0)
-- ✅ 23번의 데이터베이스 마이그레이션
-- ✅ TDD 기반 안정적인 코드베이스 (223개 테스트 100% 통과)
+- ✅ 57개 버전 릴리즈 (v1.0.0 ~ v1.51.0)
+- ✅ 24번의 데이터베이스 마이그레이션
+- ✅ TDD 기반 안정적인 코드베이스 (276개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
 - ✅ AI/ML 기반 스마트 추천
 - ✅ 포모도로 & 습관 추적
 - ✅ Bottom Navigation Bar (5개 메인 탭, UI 일관성 완벽 정리)
 - ✅ **Eisenhower Matrix (중요도×긴급도 매트릭스)** 🎯
+- ✅ **포커스 모드 (집중 타이머, 세션 관리)** 🎯
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **Eisenhower Matrix 고도화 3단계** (드래그 앤 드롭 UI, 트렌드 분석)
-2. 🟡 포커스 모드 구현 (DO_FIRST 연동, 방해 금지, 타이머)
+1. 🔴 **포커스 모드 고도화** (방해 금지 모드, Bottom Navigation 통합)
+2. 🟡 드래그 앤 드롭 UI (Eisenhower Matrix 개선)
 3. 🟢 Wear OS 앱 구현 (스마트워치 지원)
 
-**⭐ v1.49.0 하이라이트**: Eisenhower Matrix 고도화 2단계! 각 쿼드런트의 완료율과 평균 처리 시간을 실시간으로 확인하고, 리마인더를 쿼드런트 간에 쉽게 이동하세요. 데이터 기반 생산성 관리!
+**⭐ v1.51.0 하이라이트**: 포커스 모드 출시! Eisenhower Matrix의 DO_FIRST 쿼드런트에서 "집중 시작" 버튼을 눌러 집중 세션을 시작하세요. 25/50/90분 타이머, 원형 프로그레스 바, 세션 히스토리, 연속 완료 Streak 기록까지! TDD로 완벽하게 구현되었습니다.
