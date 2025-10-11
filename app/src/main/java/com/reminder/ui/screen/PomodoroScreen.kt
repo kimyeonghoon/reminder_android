@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun PomodoroScreen(
     viewModel: PomodoroViewModel,
-    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // 상태 수집
@@ -63,11 +62,6 @@ fun PomodoroScreen(
         topBar = {
             TopAppBar(
                 title = { Text("포모도로 타이머") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, "뒤로 가기")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer

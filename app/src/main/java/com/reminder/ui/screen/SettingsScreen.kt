@@ -10,8 +10,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,12 +37,9 @@ import java.time.format.DateTimeFormatter
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     backupManager: BackupManager,
-    onNavigateBack: () -> Unit,
     onHelpClick: () -> Unit = {},
     onCalendarSyncClick: () -> Unit = {},
     onArchiveClick: () -> Unit = {},
-    onHabitTrackerClick: () -> Unit = {},
-    onPomodoroClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -143,12 +138,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("설정") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
-                    }
-                }
+                title = { Text("설정") }
             )
         },
         modifier = modifier
@@ -265,22 +255,6 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("아카이브 관리")
-            }
-
-            // v1.44.0: 습관 추적
-            OutlinedButton(
-                onClick = onHabitTrackerClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("습관 추적")
-            }
-
-            // v1.45.0: 포모도로 타이머
-            OutlinedButton(
-                onClick = onPomodoroClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("포모도로 타이머")
             }
 
             // 도움말

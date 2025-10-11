@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.46.2] - 2025-10-11
+
+### Changed
+- 🧹 **Bottom Navigation 화면 UI 정리** - 일관된 사용자 경험 제공
+  - **4개 메인 탭 화면에서 뒤로가기 버튼 제거**
+    - StatisticsScreen, PomodoroScreen, HabitTrackerScreen, SettingsScreen
+    - Bottom Navigation 탭이 주요 네비게이션 수단이므로 Back 버튼 불필요
+    - 사용자는 하단 탭으로 화면 전환
+  - **SettingsScreen 중복 메뉴 버튼 제거**
+    - "습관 추적" 버튼 제거 (Bottom Nav의 습관 탭으로 접근 가능)
+    - "포모도로 타이머" 버튼 제거 (Bottom Nav의 포모도로 탭으로 접근 가능)
+  - **함수 시그니처 정리**
+    - StatisticsScreen: `onNavigateBack` 파라미터 제거
+    - PomodoroScreen: `onNavigateBack` 파라미터 제거
+    - HabitTrackerScreen: `onNavigateBack` 파라미터 제거
+    - SettingsScreen: `onNavigateBack`, `onHabitTrackerClick`, `onPomodoroClick` 파라미터 제거
+  - **MainActivity.kt 호출 지점 업데이트**
+    - 4개 화면의 composable 호출에서 불필요한 콜백 제거
+    - 코드 간결화 및 유지보수성 향상
+
+### Technical Details
+- **Files Modified**: 5개
+  - `StatisticsScreen.kt` (TopBar navigationIcon 제거, 파라미터 제거, imports 정리)
+  - `PomodoroScreen.kt` (TopBar navigationIcon 제거, 파라미터 제거)
+  - `HabitTrackerScreen.kt` (TopBar navigationIcon 제거, 파라미터 제거, imports 정리)
+  - `SettingsScreen.kt` (TopBar navigationIcon 제거, 중복 메뉴 버튼 2개 제거, 파라미터 3개 제거, imports 정리)
+  - `MainActivity.kt` (4개 composable 호출 지점 업데이트)
+- **Lines Changed**: -47 (중복 및 불필요한 코드 제거)
+- **Tests**: 모든 테스트 통과 ✅ (213/213)
+- **Build**: 성공 (BUILD SUCCESSFUL)
+
+### Quality Improvements
+- UI 일관성 대폭 향상 (Bottom Navigation 중심 네비게이션)
+- 코드 품질 개선 (사용되지 않는 파라미터 및 UI 요소 제거)
+- 사용자 경험 개선 (메인 화면은 탭으로만 전환, 하위 화면은 Back으로 복귀)
+- 네비게이션 패턴 명확화 (메인 5개 탭 vs 서브 화면 구분)
+
 ## [1.46.1] - 2025-10-11
 
 ### Changed

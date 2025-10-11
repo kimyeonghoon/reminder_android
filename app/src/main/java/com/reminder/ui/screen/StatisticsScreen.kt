@@ -3,8 +3,6 @@ package com.reminder.ui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,7 +27,6 @@ import com.reminder.viewmodel.StatisticsViewModel
 @Composable
 fun StatisticsScreen(
     viewModel: StatisticsViewModel,
-    onNavigateBack: () -> Unit,
     onCompletionHistoryClick: () -> Unit = {},
     onPatternAnalysisClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -39,12 +36,7 @@ fun StatisticsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("통계") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
-                    }
-                }
+                title = { Text("통계") }
             )
         },
         modifier = modifier

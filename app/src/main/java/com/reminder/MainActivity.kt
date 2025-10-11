@@ -413,7 +413,6 @@ fun ReminderAppContent(
         ) {
             StatisticsScreen(
                 viewModel = statisticsViewModel,
-                onNavigateBack = { navController.popBackStack() },
                 onCompletionHistoryClick = { navController.navigate("completion_history") },
                 onPatternAnalysisClick = { navController.navigate("pattern_analysis") }
             )
@@ -480,12 +479,9 @@ fun ReminderAppContent(
             SettingsScreen(
                 viewModel = settingsViewModel,
                 backupManager = app.backupManager,
-                onNavigateBack = { navController.popBackStack() },
                 onHelpClick = { navController.navigate("help") },
                 onCalendarSyncClick = { navController.navigate("calendar_sync") },
-                onArchiveClick = { navController.navigate("archive") },
-                onHabitTrackerClick = { navController.navigate("habit_tracker") },
-                onPomodoroClick = { navController.navigate("pomodoro") }
+                onArchiveClick = { navController.navigate("archive") }
             )
         }
         composable(
@@ -646,8 +642,7 @@ fun ReminderAppContent(
             }
         ) {
             HabitTrackerScreen(
-                viewModel = habitViewModel,
-                onNavigateBack = { navController.popBackStack() }
+                viewModel = habitViewModel
             )
         }
         // v1.46.0: PomodoroScreen 라우트
@@ -679,8 +674,7 @@ fun ReminderAppContent(
             }
         ) {
             PomodoroScreen(
-                viewModel = pomodoroViewModel,
-                onNavigateBack = { navController.popBackStack() }
+                viewModel = pomodoroViewModel
             )
         }
         }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,7 +24,6 @@ import com.reminder.viewmodel.HabitViewModel
 @Composable
 fun HabitTrackerScreen(
     viewModel: HabitViewModel,
-    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val habits by viewModel.allHabits.collectAsState()
@@ -56,15 +54,7 @@ fun HabitTrackerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.habit_tracker_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back)
-                        )
-                    }
-                }
+                title = { Text(stringResource(R.string.habit_tracker_title)) }
             )
         },
         floatingActionButton = {
