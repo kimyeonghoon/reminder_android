@@ -12,6 +12,7 @@ TDD(Test-Driven Development)로 개발되어 안정성과 품질이 검증되었
 ### 📋 기본 기능
 - ✅ **할 일 관리** - 할 일을 추가, 수정, 완료 표시
 - 🎯 **우선순위 설정** - 높음/중간/낮음으로 중요도 구분
+- ⚡ **긴급도 설정** - 높음/중간/낮음으로 긴급도 구분 (NEW!)
 - 🏷️ **카테고리** - 할 일을 카테고리별로 정리
 - 🔍 **스마트 검색** - 제목, 설명, 카테고리로 빠른 검색
 
@@ -91,6 +92,17 @@ TDD(Test-Driven Development)로 개발되어 안정성과 품질이 검증되었
   - 가장 생산적인 시간대 추천
   - 요일별 완료율 통계
   - 평균 완료 소요 시간 분석
+
+### 🎯 Eisenhower Matrix (NEW!)
+- **생산성 향상을 위한 중요도×긴급도 매트릭스**
+  - **4개 쿼드런트 자동 분류**:
+    - Q1 (DO_FIRST): 중요하고 긴급함 → 즉시 처리
+    - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 → 계획 수립
+    - Q3 (DELEGATE): 긴급하지만 중요하지 않음 → 위임
+    - Q4 (DELETE): 중요하지도 긴급하지도 않음 → 제거/최소화
+  - **2×2 그리드 시각화**: 쿼드런트별 색상 구분 (빨강/파랑/노랑/초록)
+  - **자동 카운트**: 각 쿼드런트별 리마인더 개수 실시간 표시
+  - **간편한 관리**: 드래그 없이 완료/삭제 가능
 
 ## 📱 스크린샷
 
@@ -187,6 +199,16 @@ _스크린샷은 곧 추가됩니다_
     - 태그로 검색 및 필터링
     - 설정에서 백업하기 (JSON 파일)
     - 백업 파일로 데이터 복원
+
+11. **Eisenhower Matrix 사용하기** (NEW!)
+    - 할 일 추가 시 "Priority (중요도)"와 "Urgency (긴급도)" 설정
+    - Eisenhower Matrix 화면에서 4개 쿼드런트로 자동 분류 확인
+    - 각 쿼드런트:
+      - **빨간색 (DO_FIRST)**: 지금 바로 처리해야 할 일
+      - **파란색 (SCHEDULE)**: 계획을 세워 처리할 일
+      - **노란색 (DELEGATE)**: 위임하거나 빠르게 처리할 일
+      - **초록색 (DELETE)**: 제거하거나 최소화할 일
+    - 쿼드런트 내에서 바로 완료 체크 및 삭제 가능
 
 ## 🛠️ 기술 스택
 
@@ -304,6 +326,7 @@ sequenceDiagram
 - **주요 컴포넌트**:
   - `HomeScreen.kt`: 메인 리마인더 리스트 화면
   - `AddEditReminderScreen.kt`: 리마인더 추가/수정 화면
+  - `EisenhowerMatrixScreen.kt`: Eisenhower Matrix 화면 (NEW!)
   - `StatisticsScreen.kt`: 통계 대시보드
   - `PatternAnalysisScreen.kt`: 완료 패턴 분석
   - `ReminderCard.kt`: 재사용 가능한 리마인더 카드 컴포넌트
@@ -429,6 +452,7 @@ fun ReminderCard(
   - `ReminderViewModelTest`: ViewModel 로직
   - `ReminderRepositoryTest`: Repository 로직
   - `ReminderTemplateTest`: 템플릿 기능 테스트 (2개)
+  - `EisenhowerMatrixTest`: Eisenhower Matrix 로직 (10개) - NEW!
 
 - **통합 테스트**: Database, DAO 쿼리
   - `ReminderDaoTest`: Room DAO 쿼리 검증
@@ -440,7 +464,23 @@ fun ReminderCard(
 
 ## 📦 릴리즈 & 버전
 
-### v1.27.1 (최신) - 2025-10-10
+### v1.47.0 (최신) - 2025-10-11
+- 🎯 **Eisenhower Matrix 기능** - 생산성 향상을 위한 중요도×긴급도 매트릭스
+  - **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
+  - **4개 쿼드런트 자동 분류**:
+    - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
+    - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
+    - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
+    - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
+  - **Eisenhower Matrix 화면**: 2×2 그리드로 시각화
+  - **쿼드런트별 색상 구분**: 빨강/파랑/노랑/초록
+  - **TDD 개발**: 테스트 먼저 작성 후 구현 (10개 테스트 추가)
+- 💾 **데이터베이스 마이그레이션**: v22 → v23
+  - urgency 컬럼 추가 (기본값: MEDIUM)
+  - urgency 인덱스 및 priority+urgency 복합 인덱스 추가
+- ✅ **모든 테스트 통과**: 223개/223개 (기존 213 + 신규 10)
+
+### v1.27.1 - 2025-10-10
 - 🧪 **UI 테스트 확장** - v1.22.0~v1.26.0 신규 기능 UI 테스트 추가 (33개)
   - PatternAnalysisScreenTest.kt 신규 작성 (14개 테스트)
   - AddEditReminderScreenTest.kt 확장 (19개 테스트 추가)
