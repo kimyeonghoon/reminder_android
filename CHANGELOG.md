@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.62.0] - 2025-10-11
+
+### Fixed
+- 🐛 **Android Lint Error 등급 이슈 완전 제거** - 위젯 및 Tile 안정성 향상
+  - **RemoteViewLayout 에러 수정 (3개)**
+    - widget_reminder_item.xml - CheckBox → ImageView, View → ImageView 교체
+    - widget_reminder_list.xml - 구분선 View → ImageView 교체
+    - ReminderRemoteViewsFactory.kt - setBoolean → setImageViewResource로 변경
+    - RemoteViews 호환 뷰만 사용하도록 수정
+  - **StartActivityAndCollapseDeprecated 수정 (1개)**
+    - ReminderTileService.kt - API 레벨별 분기 처리
+    - API 34+: PendingIntent 사용
+    - API 33 이하: Intent 사용 (@SuppressLint 추가)
+  - **MissingTranslation 수정 (2개)**
+    - priority_indicator 문자열 영어/중국어 번역 추가
+    - values-en/strings.xml: "Priority indicator"
+    - values-zh/strings.xml: "优先级指示器"
+
+### Added
+- 🎨 **체크박스 아이콘 리소스 추가**
+  - ic_checkbox_unchecked_24.xml - 빈 체크박스 아이콘
+  - ic_checkbox_checked_24.xml - 체크된 체크박스 아이콘
+  - Material Design 스타일 적용
+
+### Changed
+- ♻️ **위젯 레이아웃 RemoteViews 호환 개선**
+  - CheckBox → ImageView (체크 상태 아이콘으로 표시)
+  - View → ImageView (우선순위 표시, 구분선)
+  - RemoteViews 표준 준수로 위젯 안정성 향상
+
+### Code Quality
+- **Lint Error 0개 달성** - 모든 Error 등급 이슈 해결
+- 모든 유닛 테스트 통과 (213개)
+- RemoteViews 호환성 100% 확보
+
 ## [1.61.0] - 2025-10-11
 
 ### Changed

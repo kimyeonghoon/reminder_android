@@ -33,11 +33,12 @@
             android:contentDescription="@string/widget_refresh" />
     </LinearLayout>
 
-    <!-- 구분선 -->
-    <View
+    <!-- 구분선 (RemoteViews 호환: View → ImageView) -->
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/widget_divider" />
+        android:background="@color/widget_divider"
+        android:contentDescription="@null" />
 
     <!-- 리마인더 리스트 -->
     <ListView

@@ -74,8 +74,9 @@ class ReminderRemoteViewsFactory(
         }
         remoteViews.setInt(R.id.widget_item_priority_indicator, "setBackgroundColor", priorityColor)
 
-        // 체크박스 상태 설정 (항상 체크 안 됨 - 완료된 항목은 목록에 없음)
-        remoteViews.setBoolean(R.id.widget_item_checkbox, "setChecked", false)
+        // 체크 아이콘 설정 (항상 체크 안 됨 - 완료된 항목은 목록에 없음)
+        // RemoteViews 호환: CheckBox → ImageView
+        remoteViews.setImageViewResource(R.id.widget_item_checkbox, R.drawable.ic_checkbox_unchecked_24)
 
         // 컨테이너 클릭 시 앱 열기를 위한 Fill-in Intent
         val containerFillInIntent = Intent().apply {

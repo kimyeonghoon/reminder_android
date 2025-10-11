@@ -8,13 +8,14 @@
     android:gravity="center_vertical"
     android:background="@android:color/transparent">
 
-    <!-- 우선순위 표시 -->
-    <View
+    <!-- 우선순위 표시 (RemoteViews 호환: View → ImageView) -->
+    <ImageView
         android:id="@+id/widget_item_priority_indicator"
         android:layout_width="4dp"
         android:layout_height="match_parent"
         android:layout_marginEnd="12dp"
-        android:background="@color/priority_medium" />
+        android:background="@color/priority_medium"
+        android:contentDescription="@string/priority_indicator" />
 
     <!-- 텍스트 영역 -->
     <LinearLayout
@@ -47,11 +48,12 @@
             android:ellipsize="end" />
     </LinearLayout>
 
-    <!-- 완료 체크박스 -->
-    <CheckBox
+    <!-- 완료 체크 아이콘 (RemoteViews 호환: CheckBox → ImageView) -->
+    <ImageView
         android:id="@+id/widget_item_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
+        android:src="@drawable/ic_checkbox_unchecked_24"
         android:contentDescription="@string/widget_complete" />
 </LinearLayout>

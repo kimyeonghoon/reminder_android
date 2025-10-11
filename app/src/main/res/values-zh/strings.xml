@@ -131,6 +131,7 @@
     <string name="widget_refresh">刷新</string>
     <string name="widget_no_reminders">暂无事项</string>
     <string name="widget_description">待办事项小部件</string>
+    <string name="priority_indicator">优先级指示器</string>
     <string name="widget_complete">完成</string>
 
     <!-- 快速备忘录小部件 -->

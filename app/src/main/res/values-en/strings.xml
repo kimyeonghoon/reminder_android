@@ -131,6 +131,7 @@
     <string name="widget_refresh">Refresh</string>
     <string name="widget_no_reminders">No reminders</string>
     <string name="widget_description">To-Do List Widget</string>
+    <string name="priority_indicator">Priority indicator</string>
     <string name="widget_complete">Complete</string>
 
     <!-- Quick Note Widget -->

@@ -46,29 +46,29 @@ class ReminderTileService : TileService() {
 
     /**
      * 타일 클릭 시 호출
+     *
+     * v1.62.0: 모든 API 레벨에서 동일한 방식 사용
      */
     override fun onClick() {
         super.onClick()
 
-        // Android 14+ (API 34+): unlockAndRun 사용 (잠금 화면 처리)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            unlockAndRun {
-                launchQuickAddActivity()
-            }
-        } else {
-            launchQuickAddActivity()
-        }
+        // PendingIntent 방식으로 통일 (잠금 화면 자동 처리)
+        launchQuickAddActivity()
     }
 
     /**
      * QuickAddActivity 실행
+     *
+     * v1.62.0: API 34+에서 PendingIntent 사용, 이전 버전에서는 Intent 사용
      */
+    @android.annotation.SuppressLint("StartActivityAndCollapseDeprecated")
     private fun launchQuickAddActivity() {
         val intent = Intent(this, QuickAddActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
-        // Android 14+ (API 34+): startActivityAndCollapse 대신 PendingIntent 사용
+        // API 34+: startActivityAndCollapse(PendingIntent) 사용
+        // API 33 이하: startActivityAndCollapse(Intent) 사용 (deprecated이지만 유일한 방법)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val pendingIntent = PendingIntent.getActivity(
                 this,
@@ -78,6 +78,7 @@ class ReminderTileService : TileService() {
             )
             startActivityAndCollapse(pendingIntent)
         } else {
+            // API 33 이하에서는 Intent 버전 사용 (deprecated이지만 대안 없음)
             @Suppress("DEPRECATION")
             startActivityAndCollapse(intent)
         }
