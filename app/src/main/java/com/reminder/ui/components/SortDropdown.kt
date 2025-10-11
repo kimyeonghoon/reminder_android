@@ -38,7 +38,7 @@ fun SortDropdown(
         ) {
             OutlinedButton(
                 onClick = { expanded = true },
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
             ) {
                 Text(text = getSortOptionLabel(selectedSortOption))
                 Spacer(modifier = Modifier.width(4.dp))

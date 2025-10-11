@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -37,7 +39,7 @@ fun SharedListsScreen(
                 title = { Text("공유 리스트") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "뒤로")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "뒤로")
                     }
                 }
             )
@@ -245,6 +247,6 @@ private fun getListIcon(iconName: String): androidx.compose.ui.graphics.vector.I
         "shopping" -> Icons.Default.ShoppingCart
         "health" -> Icons.Default.FavoriteBorder
         "study" -> Icons.Default.School
-        else -> Icons.Default.List
+        else -> Icons.AutoMirrored.Filled.List
     }
 }
