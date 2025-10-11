@@ -1,15 +1,15 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.51.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.53.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.51.0 (versionCode 57)
+- **최신 버전**: v1.53.0 (versionCode 59)
 - **DB 버전**: v24
-- **총 릴리즈**: 57개 버전
+- **총 릴리즈**: 59개 버전
 - **테스트 커버리지**: 276/276 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
@@ -42,6 +42,8 @@
 - ✅ **AI 긴급도 예측 (v1.48.0: 키워드 기반 NLP 분석, 자동 제안)** 🤖
 - ✅ **Eisenhower Matrix 고도화 2/3단계 (v1.49.0~v1.50.0: 통계, 이동, 트렌드)** 📊
 - ✅ **포커스 모드 (v1.51.0: 집중 타이머, DO_FIRST 연동, 세션 관리, TDD)** 🎯
+- ✅ **포커스 모드 Bottom Navigation 통합 (v1.52.0: 1탭 접근, Settings 이동)** 🎯
+- ✅ **Eisenhower Matrix Long Press 이동 (v1.53.0: 빠른 이동 UX 개선)** 🎯
 
 ---
 
@@ -106,7 +108,7 @@
 
 ---
 
-## 🚧 최근 완료 이력 (v1.46.0 ~ v1.48.0)
+## 🚧 최근 완료 이력 (v1.46.0 ~ v1.53.0)
 
 ### v1.46.0: Bottom Navigation Bar ✅
 **완료됨** - 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
@@ -222,6 +224,35 @@
   - 11개 ViewModel 테스트
   - 총 276개 테스트 모두 통과 (253 + 23) ✅
 
+### v1.52.0: 포커스 모드 Bottom Navigation 통합 ✅ 🎯
+**완료됨** - 사용자 접근성 대폭 향상
+- **Bottom Navigation 개선**:
+  - 포커스 모드를 4번째 탭으로 추가 (Home, Statistics, Pomodoro, **Focus**, Habits)
+  - Settings 탭 제거 → HomeScreen TopAppBar로 이동
+  - Focus 아이콘: `Icons.Default.Adjust`
+- **UX 개선**:
+  - 포커스 모드 접근: 2탭 (Home → Eisenhower Matrix → 집중 시작) → **1탭** (Focus 탭)
+  - Settings는 HomeScreen TopAppBar에서 항상 접근 가능
+- **파일 수정** (3개):
+  - MainActivity.kt, HomeScreen.kt, app/build.gradle.kts
+- **테스트**: 276/276 통과 ✅
+
+### v1.53.0: Eisenhower Matrix Long Press 빠른 이동 ✅ 🎯
+**완료됨** - 쿼드런트 간 리마인더 이동 UX 개선
+- **Long Press 제스처**:
+  - QuadrantReminderCard에 `combinedClickable` 적용
+  - 리마인더를 길게 누르면 이동 메뉴 자동 오픈
+  - 햅틱 피드백 (`haptic.longPress()`)
+- **이중 접근 방식**:
+  - Long Press: 1탭 (신규)
+  - MoreVert 버튼: 2탭 (기존)
+- **UX 개선**:
+  - 기존: MoreVert → 쿼드런트 선택 (2탭)
+  - 신규: Long Press → 쿼드런트 선택 (1탭) - **50% 단축**
+- **파일 수정** (2개):
+  - EisenhowerMatrixScreen.kt, app/build.gradle.kts
+- **테스트**: 276/276 통과 ✅
+
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
@@ -254,7 +285,7 @@
 
 ## 📅 다음 세션 제안
 
-v1.51.0까지 포커스 모드 완료! 다음 세션에서는:
+v1.53.0까지 완료! 다음 세션에서는:
 
 ### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
 ### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
@@ -262,29 +293,38 @@ v1.51.0까지 포커스 모드 완료! 다음 세션에서는:
 ### 4. ~~**Eisenhower Matrix 고도화 2단계**~~ ✅ 완료됨 (v1.49.0)
 ### 5. ~~**Eisenhower Matrix 고도화 3단계**~~ ✅ 완료됨 (v1.50.0)
 ### 6. ~~**포커스 모드 구현**~~ ✅ 완료됨 (v1.51.0)
+### 7. ~~**포커스 모드 Bottom Navigation 통합**~~ ✅ 완료됨 (v1.52.0)
+### 8. ~~**Eisenhower Matrix Long Press 이동**~~ ✅ 완료됨 (v1.53.0)
 
-### 7. **포커스 모드 고도화** (다음 우선순위) 🔴
-- **방해 금지 모드 (Do Not Disturb)**
-  - 포커스 세션 중 알림 차단
-  - 특정 앱 사용 제한 (AccessibilityService 활용)
-  - 화면 밝기 조절 및 전체 화면 타이머
-- **Bottom Navigation 통합**
-  - 포커스 모드를 5번째 탭으로 추가
-  - 접근성 향상
-- 예상 시간: 3-4시간
+### 9. **방해 금지 모드 (Do Not Disturb)** (다음 우선순위) 🔴
+- **포커스 세션 중 알림 차단**
+  - NotificationManager.Policy 활용
+  - 방해 금지 모드 자동 활성화/비활성화
+  - 권한 요청 UI (INTERRUPTION_FILTER 권한)
+- **앱 차단 기능 (선택사항)**
+  - AccessibilityService 활용
+  - 차단할 앱 목록 설정
+  - 집중 방해 앱 자동 차단 (소셜 미디어, 게임 등)
+- **UI/UX**
+  - 전체 화면 타이머 모드
+  - 화면 밝기 조절 옵션
+  - 긴급 전화는 허용하는 옵션
+- 예상 시간: 4-5시간
 
-### 8. **드래그 앤 드롭 UI** (Eisenhower Matrix 개선)
-- 쿼드런트 간 리마인더 드래그 앤 드롭
-- 드래그 중 미리보기 효과
-- 드롭 시 moveReminderToQuadrant() 호출
-- 예상 시간: 2-3시간
-
-### 9. **Wear OS 앱 구현** (장기 프로젝트)
+### 10. **Wear OS 앱 구현** (장기 프로젝트)
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
 - 포커스 모드 워치 버전
+- 리마인더 빠른 완료 기능
 - 예상 시간: 6-7시간
+
+### 11. **시간 블로킹 (Time Blocking)** (중기 계획)
+- 캘린더와 통합하여 작업 시간 예약
+- Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
+- 드래그 앤 드롭으로 시간대 배정
+- AI 기반 최적 시간 제안
+- 예상 시간: 5-6시간
 
 ---
 
@@ -351,25 +391,27 @@ v1.51.0까지 포커스 모드 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.51.0까지 57개 버전, 24개 DB 마이그레이션을 완료했습니다. 포커스 모드로 집중력 향상!_
+_v1.53.0까지 59개 버전, 24개 DB 마이그레이션을 완료했습니다. 포커스 모드와 생산성 매트릭스로 집중력 극대화!_
 
 **주요 성과**:
-- ✅ 57개 버전 릴리즈 (v1.0.0 ~ v1.51.0)
+- ✅ 59개 버전 릴리즈 (v1.0.0 ~ v1.53.0)
 - ✅ 24번의 데이터베이스 마이그레이션
 - ✅ TDD 기반 안정적인 코드베이스 (276개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
 - ✅ AI/ML 기반 스마트 추천
 - ✅ 포모도로 & 습관 추적
-- ✅ Bottom Navigation Bar (5개 메인 탭, UI 일관성 완벽 정리)
-- ✅ **Eisenhower Matrix (중요도×긴급도 매트릭스)** 🎯
-- ✅ **포커스 모드 (집중 타이머, 세션 관리)** 🎯
+- ✅ Bottom Navigation Bar (5개 메인 탭: Home, Statistics, Pomodoro, Focus, Habits)
+- ✅ **Eisenhower Matrix (중요도×긴급도 매트릭스, Long Press 이동)** 🎯
+- ✅ **포커스 모드 (집중 타이머, 세션 관리, Bottom Nav 통합)** 🎯
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **포커스 모드 고도화** (방해 금지 모드, Bottom Navigation 통합)
-2. 🟡 드래그 앤 드롭 UI (Eisenhower Matrix 개선)
-3. 🟢 Wear OS 앱 구현 (스마트워치 지원)
+1. 🔴 **방해 금지 모드** (포커스 세션 중 알림 차단, 앱 차단)
+2. 🟡 **Wear OS 앱 구현** (스마트워치 지원)
+3. 🟢 **시간 블로킹** (캘린더 통합 작업 예약)
 
-**⭐ v1.51.0 하이라이트**: 포커스 모드 출시! Eisenhower Matrix의 DO_FIRST 쿼드런트에서 "집중 시작" 버튼을 눌러 집중 세션을 시작하세요. 25/50/90분 타이머, 원형 프로그레스 바, 세션 히스토리, 연속 완료 Streak 기록까지! TDD로 완벽하게 구현되었습니다.
+**⭐ v1.53.0 하이라이트**:
+- **v1.52.0**: 포커스 모드가 Bottom Navigation 4번째 탭으로! 이제 1탭으로 바로 접근 가능
+- **v1.53.0**: Eisenhower Matrix에서 Long Press로 쿼드런트 간 이동이 2탭 → 1탭으로 단축! 햅틱 피드백으로 더 직관적인 UX
