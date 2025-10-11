@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.49.0] - 2025-10-11
+
+### Added
+- 📊 **Eisenhower Matrix 고도화 2단계** - 쿼드런트별 통계 및 이동 기능
+  - **쿼드런트별 통계 대시보드**
+    - 각 쿼드런트의 완료율 표시 (완료/전체 %)
+    - 평균 처리 시간 표시 (분/시간/일 단위 자동 변환)
+    - 실시간 통계 계산 (completed reminders 기반)
+    - `QuadrantStats` 데이터 클래스: totalCount, completedCount, completionRate, averageCompletionMinutes
+    - `calculateQuadrantStats()` 확장 함수: 리마인더 리스트에서 통계 계산
+  - **쿼드런트 간 이동 기능**
+    - `moveToQuadrant()` 확장 함수: 리마인더를 다른 쿼드런트로 이동
+    - 이동 시 Priority와 Urgency 자동 업데이트
+      - DO_FIRST: Priority.HIGH + Urgency.HIGH
+      - SCHEDULE: Priority.HIGH + Urgency.LOW
+      - DELEGATE: Priority.LOW + Urgency.HIGH
+      - DELETE: Priority.LOW + Urgency.LOW
+    - `ReminderViewModel.moveReminderToQuadrant()`: 알람 재스케줄링 및 Analytics 로깅 포함
+  - **UI 업데이트**
+    - 각 쿼드런트 카드에 통계 칩 표시 (완료율, 평균 처리 시간)
+    - `StatisticsRow()` 컴포넌트: 통계를 가로로 나열
+    - `StatisticChip()` 컴포넌트: 개별 통계 항목 표시
+    - 통계가 있을 때만 표시 (totalCount > 0)
+
+### Technical Details
+- **TDD 방식 개발**: 테스트 먼저 작성 후 구현 (Red-Green-Refactor)
+  - `EisenhowerMatrixTest.kt`: 7개 새 테스트 추가
+    - 쿼드런트 통계 계산 테스트 (완료율, 평균 처리 시간)
+    - 완료된 리마인더가 없을 때 처리
+    - 쿼드런트에 리마인더가 없을 때 처리
+    - 쿼드런트 간 이동 테스트 (4개 쿼드런트 모두)
+  - `EisenhowerMatrix.kt`: 도메인 로직 구현
+    - `QuadrantStats` data class
+    - `calculateQuadrantStats()` 확장 함수
+    - `moveToQuadrant()` 확장 함수
+  - `ReminderViewModel.kt`: 이동 기능 통합
+    - `moveReminderToQuadrant()` 함수 추가
+    - 알람 재스케줄링 로직 포함
+  - `AnalyticsHelper.kt`: 새 이벤트 로깅 추가
+    - `logReminderMovedToQuadrant()` 함수
+  - `EisenhowerMatrixScreen.kt`: UI 업데이트
+    - `StatisticsRow()` 컴포넌트 (25줄)
+    - `StatisticChip()` 컴포넌트 (20줄)
+    - QuadrantCard에 통계 표시 로직 추가
+
+### Testing
+- **모든 테스트 통과** ✅
+  - Eisenhower Matrix 테스트 7개 추가 (통계 3개, 이동 4개)
+  - 기존 테스트 240개 모두 통과
+  - 총 247개 테스트 100% 통과 (BUILD SUCCESSFUL)
+- **빌드 검증** ✅
+  - Debug/Release 빌드 성공
+  - Lint 검사 통과
+  - ProGuard/R8 최적화 성공
+
+### Notes
+- MINOR 버전 업데이트 (새로운 기능 추가)
+- 하위 호환성 유지
+- Eisenhower Matrix 고도화의 두 번째 단계 완료
+- 향후 드래그 앤 드롭 UI, 쿼드런트별 트렌드 분석 예정
+
 ## [1.48.0] - 2025-10-11
 
 ### Added

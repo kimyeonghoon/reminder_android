@@ -19,12 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.domain.Quadrant
+import com.reminder.domain.QuadrantStats
+import com.reminder.domain.calculateQuadrantStats
 import com.reminder.domain.countByQuadrant
 import com.reminder.domain.filterByQuadrant
 import com.reminder.domain.getInfo
 import com.reminder.domain.getQuadrant
 import com.reminder.ui.components.ReminderCard
 import com.reminder.viewmodel.ReminderViewModel
+import kotlin.math.roundToInt
 
 /**
  * v1.47.0: Eisenhower Matrix 화면
@@ -183,6 +186,12 @@ private fun QuadrantCard(
     modifier: Modifier = Modifier
 ) {
     val info = quadrant.getInfo()
+    val allReminders by viewModel.allReminders.collectAsStateWithLifecycle()
+
+    // v1.49.0: 통계 계산
+    val stats = remember(allReminders) {
+        allReminders.calculateQuadrantStats(quadrant)
+    }
 
     Card(
         modifier = modifier
@@ -231,6 +240,12 @@ private fun QuadrantCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                // v1.49.0: 통계 표시
+                if (stats.totalCount > 0) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    StatisticsRow(stats)
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -269,6 +284,68 @@ private fun QuadrantCard(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * v1.49.0: 쿼드런트 통계 표시
+ */
+@Composable
+private fun StatisticsRow(stats: QuadrantStats) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // 완료율
+        StatisticChip(
+            label = "완료",
+            value = "${stats.completionRate.roundToInt()}%"
+        )
+
+        // 평균 처리 시간
+        if (stats.averageCompletionMinutes > 0) {
+            val timeText = when {
+                stats.averageCompletionMinutes < 60 -> "${stats.averageCompletionMinutes.roundToInt()}분"
+                stats.averageCompletionMinutes < 1440 -> "${(stats.averageCompletionMinutes / 60).roundToInt()}시간"
+                else -> "${(stats.averageCompletionMinutes / 1440).roundToInt()}일"
+            }
+            StatisticChip(
+                label = "평균",
+                value = timeText
+            )
+        }
+    }
+}
+
+/**
+ * v1.49.0: 통계 칩
+ */
+@Composable
+private fun StatisticChip(
+    label: String,
+    value: String
+) {
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

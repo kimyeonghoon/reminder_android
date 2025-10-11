@@ -118,3 +118,76 @@ fun Quadrant.getInfo(): QuadrantInfo {
         )
     }
 }
+
+/**
+ * v1.49.0: 쿼드런트 통계 데이터 클래스
+ */
+data class QuadrantStats(
+    val quadrant: Quadrant,
+    val totalCount: Int,
+    val completedCount: Int,
+    val completionRate: Double,  // 0.0 ~ 100.0
+    val averageCompletionMinutes: Double  // 평균 처리 시간 (분)
+)
+
+/**
+ * v1.49.0: 리마인더 리스트의 쿼드런트별 통계 계산
+ *
+ * @param quadrant 통계를 계산할 쿼드런트
+ * @return QuadrantStats - 완료율, 평균 처리 시간 등
+ */
+fun List<ReminderEntity>.calculateQuadrantStats(quadrant: Quadrant): QuadrantStats {
+    val quadrantReminders = this.filterByQuadrant(quadrant)
+    val totalCount = quadrantReminders.size
+    val completedReminders = quadrantReminders.filter { it.isCompleted }
+    val completedCount = completedReminders.size
+
+    // 완료율 계산 (0.0 ~ 100.0)
+    val completionRate = if (totalCount > 0) {
+        (completedCount.toDouble() / totalCount) * 100.0
+    } else {
+        0.0
+    }
+
+    // 평균 처리 시간 계산 (분 단위)
+    val averageCompletionMinutes = if (completedCount > 0) {
+        val totalMinutes = completedReminders.sumOf { reminder ->
+            java.time.Duration.between(reminder.createdAt, reminder.updatedAt).toMinutes()
+        }
+        totalMinutes.toDouble() / completedCount
+    } else {
+        0.0
+    }
+
+    return QuadrantStats(
+        quadrant = quadrant,
+        totalCount = totalCount,
+        completedCount = completedCount,
+        completionRate = completionRate,
+        averageCompletionMinutes = averageCompletionMinutes
+    )
+}
+
+/**
+ * v1.49.0: 리마인더를 다른 쿼드런트로 이동
+ *
+ * 이동 시 Priority와 Urgency를 자동으로 조정하여
+ * 해당 쿼드런트의 조건을 만족하도록 함
+ *
+ * @param targetQuadrant 이동할 쿼드런트
+ * @return 이동된 ReminderEntity (Priority와 Urgency가 업데이트됨)
+ */
+fun ReminderEntity.moveToQuadrant(targetQuadrant: Quadrant): ReminderEntity {
+    val (newPriority, newUrgency) = when (targetQuadrant) {
+        Quadrant.DO_FIRST -> Pair(Priority.HIGH, Urgency.HIGH)
+        Quadrant.SCHEDULE -> Pair(Priority.HIGH, Urgency.LOW)
+        Quadrant.DELEGATE -> Pair(Priority.LOW, Urgency.HIGH)
+        Quadrant.DELETE -> Pair(Priority.LOW, Urgency.LOW)
+    }
+
+    return this.copy(
+        priority = newPriority,
+        urgency = newUrgency,
+        updatedAt = java.time.LocalDateTime.now()
+    )
+}

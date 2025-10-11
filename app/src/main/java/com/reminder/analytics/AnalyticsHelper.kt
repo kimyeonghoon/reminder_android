@@ -268,4 +268,16 @@ class AnalyticsHelper(private val firebaseAnalytics: FirebaseAnalytics) {
         }
         firebaseAnalytics.logEvent("pattern_analyzed", bundle)
     }
+
+    /**
+     * v1.49.0: 리마인더를 다른 쿼드런트로 이동 이벤트 로깅
+     *
+     * @param quadrantName 이동한 쿼드런트 이름
+     */
+    fun logReminderMovedToQuadrant(quadrantName: String) {
+        val bundle = Bundle().apply {
+            putString("quadrant_name", quadrantName)
+        }
+        firebaseAnalytics.logEvent("reminder_moved_to_quadrant", bundle)
+    }
 }

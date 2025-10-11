@@ -6,6 +6,7 @@ import com.reminder.analytics.AnalyticsHelper
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
+import com.reminder.domain.moveToQuadrant
 import com.reminder.notification.AlarmScheduler
 import com.reminder.snooze.SnoozeManager
 import com.reminder.snooze.SnoozeOption
@@ -960,6 +961,30 @@ class ReminderViewModel(
             com.google.gson.Gson().fromJson(json, com.reminder.filter.ReminderFilter::class.java)
         } catch (e: Exception) {
             null
+        }
+    }
+
+    // ==================== Eisenhower Matrix (v1.49.0) ====================
+
+    /**
+     * 리마인더를 다른 쿼드런트로 이동
+     *
+     * @param reminder 이동할 리마인더
+     * @param targetQuadrant 목표 쿼드런트
+     */
+    fun moveReminderToQuadrant(reminder: ReminderEntity, targetQuadrant: com.reminder.domain.Quadrant) {
+        viewModelScope.launch {
+            val movedReminder = reminder.moveToQuadrant(targetQuadrant)
+            repository.updateReminder(movedReminder)
+
+            // 알람 재스케줄링 (필요시)
+            alarmScheduler.cancel(movedReminder.id)
+            if (movedReminder.dueDateTime != null && !movedReminder.isCompleted) {
+                alarmScheduler.schedule(movedReminder)
+            }
+
+            // Analytics 이벤트 로깅
+            analyticsHelper.logReminderMovedToQuadrant(targetQuadrant.name)
         }
     }
 }

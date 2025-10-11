@@ -57,8 +57,11 @@
 - ✅ v1.46.0 - Bottom Navigation Bar (5개 메인 탭 통합, 사용자 경험 대폭 향상)
 - ✅ v1.46.1 - HomeScreen UI 정리 (중복 버튼 제거, Bottom Navigation 일관성 향상)
 - ✅ v1.46.2 - Bottom Navigation 화면 UI 정리 (뒤로가기 버튼 제거, 중복 메뉴 제거)
+- ✅ v1.47.0 - Eisenhower Matrix (중요도×긴급도 매트릭스, 4개 쿼드런트)
+- ✅ v1.48.0 - AI 긴급도 자동 예측 (키워드 기반 NLP, 자동 제안)
+- ✅ v1.49.0 - Eisenhower Matrix 고도화 2단계 (통계 대시보드, 쿼드런트 이동)
 
-**🎉 현재 버전: v1.46.2 (versionCode 50, DB v22)**
+**🎉 현재 버전: v1.49.0 (versionCode 55, DB v23)**
 
 ---
 

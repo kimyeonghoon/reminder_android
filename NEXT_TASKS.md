@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.48.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.49.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.48.0 (versionCode 54)
+- **최신 버전**: v1.49.0 (versionCode 55)
 - **DB 버전**: v23
-- **총 릴리즈**: 54개 버전
-- **테스트 커버리지**: 240/240 통과 (100% ✅)
+- **총 릴리즈**: 55개 버전
+- **테스트 커버리지**: 247/247 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -145,25 +145,27 @@
   - RTL 언어 지원 개선
 
 ### v1.48.0: AI 긴급도 자동 예측 ✅ 🤖
-**완료됨** - Eisenhower Matrix 고도화 1단계: AI 기반 긴급도 예측 기능 구현
-- **UrgencyPredictor 클래스 구현**:
-  - 키워드 기반 NLP 분석 엔진
-  - 한글/영어 지원 (긴급, urgent, asap, 지금, 바로, 오늘 등)
-  - 3단계 긴급도 예측 (HIGH, MEDIUM, LOW)
-  - 예측 근거 설명 제공 기능
-- **AddEditReminderScreen 통합**:
-  - 제목/설명 입력 시 자동으로 긴급도 예측
-  - 🤖 AI 제안 버튼 표시 (예측값이 현재 값과 다를 때만)
-  - 클릭 한 번으로 예측값 적용 가능
-  - 간편 모드에서는 숨김 처리
+**완료됨** - Eisenhower Matrix 고도화 1단계
+
+### v1.49.0: Eisenhower Matrix 고도화 2단계 ✅ 📊
+**완료됨** - 쿼드런트별 통계 및 이동 기능
+- **쿼드런트별 통계 대시보드**:
+  - 각 쿼드런트의 완료율 표시 (완료/전체 %)
+  - 평균 처리 시간 표시 (분/시간/일 단위 자동 변환)
+  - QuadrantStats 데이터 클래스
+  - calculateQuadrantStats() 확장 함수
+- **쿼드런트 간 이동 기능**:
+  - moveToQuadrant() 확장 함수
+  - 이동 시 Priority와 Urgency 자동 업데이트
+  - ReminderViewModel.moveReminderToQuadrant() 함수
+  - 알람 재스케줄링 및 Analytics 로깅 포함
+- **UI 업데이트**:
+  - 각 쿼드런트 카드에 통계 칩 표시
+  - StatisticsRow() 컴포넌트 (완료율, 평균 처리 시간)
+  - StatisticChip() 컴포넌트
 - **TDD 방식 개발**:
-  - 17개 테스트 먼저 작성 후 구현 (Red-Green-Refactor)
-  - 총 240개 테스트 모두 통과 (223 + 17) ✅
-- **키워드 분류**:
-  - HIGH: 긴급, urgent, asap, 지금, 바로, 오늘, 당장, 즉시, 빨리, 급해, now, immediately, today, critical, emergency
-  - MEDIUM: 이번 주, 이번주, 곧, 조만간, this week, soon, upcoming, shortly
-  - LOW: 나중에, 언젠가, 여유, 천천히, later, someday, eventually, whenever, low priority
-  - DEFAULT: MEDIUM (키워드 없을 때)
+  - 7개 새 테스트 (통계 3개, 이동 4개)
+  - 총 247개 테스트 모두 통과 (240 + 7) ✅
 
 ---
 
@@ -197,36 +199,34 @@
 
 ## 📅 다음 세션 제안
 
-v1.48.0까지 AI 긴급도 자동 예측 완료! 다음 세션에서는:
+v1.49.0까지 Eisenhower Matrix 고도화 2단계 완료! 다음 세션에서는:
 
-### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨
-- ✅ MainActivity.kt에 EisenhowerMatrixScreen 라우팅 추가 완료
-- ✅ HomeScreen TopAppBar에 GridOn 아이콘 진입점 추가 완료
-- ✅ 화면 전환 애니메이션 적용 완료
-
-### 2. ~~**코드 품질 개선**~~ ✅ 완료됨
-- ✅ 모든 UI Deprecation warnings 수정 완료 (9개 파일)
-- ✅ Material 3 최신 API 100% 적용
-  - AutoMirrored 아이콘, MenuAnchorType, SearchBar inputField
-
+### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
+### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
 ### 3. ~~**AI 긴급도 자동 예측**~~ ✅ 완료됨 (v1.48.0)
-- ✅ UrgencyPredictor 클래스 구현 (키워드 기반 NLP)
-- ✅ AddEditReminderScreen에 AI 제안 버튼 통합
-- ✅ 17개 테스트 작성 및 통과 (TDD 방식)
+### 4. ~~**Eisenhower Matrix 고도화 2단계**~~ ✅ 완료됨 (v1.49.0)
 
-### 4. **Eisenhower Matrix 고도화 계속** (다음 우선순위) 🔴
-- 쿼드런트별 통계 대시보드 (완료율, 평균 처리 시간, 트렌드)
-- 쿼드런트 간 드래그 앤 드롭 이동
-- 예상 시간: 2-3시간
+### 5. **Eisenhower Matrix 고도화 3단계** (다음 우선순위) 🔴
+- **드래그 앤 드롭 UI** 구현
+  - 쿼드런트 간 리마인더 드래그 앤 드롭
+  - 드래그 중 미리보기 효과
+  - 드롭 시 moveReminderToQuadrant() 호출
+- **쿼드런트별 트렌드 분석**
+  - 주간/월간 완료 트렌드 그래프
+  - 쿼드런트별 생산성 비교
+  - 시간대별 쿼드런트 분포 분석
+- 예상 시간: 3-4시간
 
-### 4. **포커스 모드 구현** (고급 기능)
+### 6. **포커스 모드 구현** (고급 기능)
 - Eisenhower Matrix DO_FIRST와 연동
 - 방해 금지 모드, 앱 차단 기능
+- 타이머 기반 집중 시간 관리
 - 예상 시간: 4-5시간
 
-### 5. **Wear OS 앱 구현** (장기 프로젝트)
+### 7. **Wear OS 앱 구현** (장기 프로젝트)
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
+- Eisenhower Matrix 간소화 버전
 - 예상 시간: 6-7시간
 
 ---
@@ -309,8 +309,8 @@ _v1.47.0까지 53개 버전, 23개 DB 마이그레이션을 완료했습니다. 
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **Eisenhower Matrix 고도화** (AI 예측, 드래그 앤 드롭, 통계)
-2. 🟡 포커스 모드 구현 (DO_FIRST 연동, 방해 금지)
+1. 🔴 **Eisenhower Matrix 고도화 3단계** (드래그 앤 드롭 UI, 트렌드 분석)
+2. 🟡 포커스 모드 구현 (DO_FIRST 연동, 방해 금지, 타이머)
 3. 🟢 Wear OS 앱 구현 (스마트워치 지원)
 
-**⭐ v1.47.0 하이라이트**: Eisenhower Matrix로 생산성 혁명! 중요하고 긴급한 일을 한눈에 파악하고 효율적으로 관리하세요. Navigation 통합 완료로 즉시 사용 가능!
+**⭐ v1.49.0 하이라이트**: Eisenhower Matrix 고도화 2단계! 각 쿼드런트의 완료율과 평균 처리 시간을 실시간으로 확인하고, 리마인더를 쿼드런트 간에 쉽게 이동하세요. 데이터 기반 생산성 관리!
