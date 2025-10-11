@@ -20,7 +20,6 @@ class DndManager(private val context: Context) {
     /**
      * DND 권한이 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun hasPermission(): Boolean {
         return notificationManager.isNotificationPolicyAccessGranted
     }
@@ -37,7 +36,6 @@ class DndManager(private val context: Context) {
      * @param allowCalls 긴급 전화 허용 여부
      * @param allowAlarms 알람 허용 여부
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun enableDnd(allowCalls: Boolean = true, allowAlarms: Boolean = true) {
         if (!hasPermission()) return
 
@@ -47,24 +45,21 @@ class DndManager(private val context: Context) {
         // Priority Only 모드로 설정
         notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
 
-        // Policy 설정 (API 23+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val policyCategories = buildPolicyCategories(allowCalls, allowAlarms)
+        // Policy 설정
+        val policyCategories = buildPolicyCategories(allowCalls, allowAlarms)
 
-            val policy = NotificationManager.Policy(
-                policyCategories,
-                NotificationManager.Policy.PRIORITY_SENDERS_STARRED, // 연락처에 있는 사람만
-                NotificationManager.Policy.PRIORITY_SENDERS_ANY
-            )
+        val policy = NotificationManager.Policy(
+            policyCategories,
+            NotificationManager.Policy.PRIORITY_SENDERS_STARRED, // 연락처에 있는 사람만
+            NotificationManager.Policy.PRIORITY_SENDERS_ANY
+        )
 
-            notificationManager.setNotificationPolicy(policy)
-        }
+        notificationManager.setNotificationPolicy(policy)
     }
 
     /**
      * DND 비활성화 (이전 상태로 복원)
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun disableDnd() {
         if (!hasPermission()) return
 
@@ -79,7 +74,6 @@ class DndManager(private val context: Context) {
     /**
      * 현재 DND가 활성화되어 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun isEnabled(): Boolean {
         if (!hasPermission()) return false
 
@@ -113,7 +107,6 @@ class DndManager(private val context: Context) {
     /**
      * 이전 Interruption Filter 저장
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun savePreviousInterruptionFilter() {
         val currentFilter = notificationManager.currentInterruptionFilter
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

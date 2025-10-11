@@ -138,7 +138,7 @@ fun AddEditReminderScreen(
 
     // 반복 설정
     var recurrencePattern by remember { mutableStateOf(reminder?.recurrencePattern ?: RecurrencePattern.NONE) }
-    var recurrenceInterval by remember { mutableStateOf(reminder?.recurrenceInterval ?: 1) }
+    var recurrenceInterval by remember { mutableIntStateOf(reminder?.recurrenceInterval ?: 1) }
     var recurrenceDaysOfWeek by remember {
         mutableStateOf(
             reminder?.recurrenceDaysOfWeek?.split(",")

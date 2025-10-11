@@ -57,9 +57,9 @@ fun FocusModeScreen(
     var showDndPermissionDialog by remember { mutableStateOf(false) }
 
     // 타이머 업데이트 (매 초)
-    var remainingMinutes by remember { mutableStateOf(0) }
-    var remainingSeconds by remember { mutableStateOf(0) }
-    var progress by remember { mutableStateOf(0f) }
+    var remainingMinutes by remember { mutableIntStateOf(0) }
+    var remainingSeconds by remember { mutableIntStateOf(0) }
+    var progress by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(currentSession, focusState) {
         if (focusState == FocusState.ACTIVE) {
@@ -263,7 +263,7 @@ private fun TimerCard(
     onInterrupt: () -> Unit,
     onReset: () -> Unit
 ) {
-    var selectedMinutes by remember { mutableStateOf(25) }
+    var selectedMinutes by remember { mutableIntStateOf(25) }
     var selectedType by remember { mutableStateOf(FocusType.DEEP_WORK) }
     var showTypeDialog by remember { mutableStateOf(false) }
 

@@ -32,9 +32,9 @@ fun RecurrenceSettingScreen(
     onCancel: () -> Unit
 ) {
     var recurrenceType by remember { mutableStateOf(initialRule?.type ?: RecurrenceType.DAILY) }
-    var interval by remember { mutableStateOf(initialRule?.interval ?: 1) }
+    var interval by remember { mutableIntStateOf(initialRule?.interval ?: 1) }
     var selectedDaysOfWeek by remember { mutableStateOf(initialRule?.daysOfWeek ?: emptySet()) }
-    var dayOfMonth by remember { mutableStateOf(initialRule?.dayOfMonth ?: 1) }
+    var dayOfMonth by remember { mutableIntStateOf(initialRule?.dayOfMonth ?: 1) }
     var endType by remember { mutableStateOf(
         when (initialEnd) {
             is RecurrenceEnd.Never -> "never"
@@ -43,7 +43,7 @@ fun RecurrenceSettingScreen(
             else -> "never"
         }
     ) }
-    var afterCount by remember { mutableStateOf((initialEnd as? RecurrenceEnd.AfterOccurrences)?.count ?: 10) }
+    var afterCount by remember { mutableIntStateOf((initialEnd as? RecurrenceEnd.AfterOccurrences)?.count ?: 10) }
     var endDate by remember { mutableStateOf((initialEnd as? RecurrenceEnd.OnDate)?.date ?: LocalDate.now().plusMonths(1)) }
 
     var isEnabled by remember { mutableStateOf(initialRule != null) }

@@ -45,18 +45,58 @@ class NotificationHelper(private val context: Context) {
      * 사용자 설정에 따라 소리, 진동, LED 설정
      */
     fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // 사용자 설정 읽기
-            val userPreferences = runBlocking {
-                preferencesRepository.userPreferences.first()
+        // 사용자 설정 읽기
+        val userPreferences = runBlocking {
+            preferencesRepository.userPreferences.first()
+        }
+
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Reminders for your tasks"
+
+            // LED 설정
+            if (userPreferences.notificationLed) {
+                enableLights(true)
+                lightColor = android.graphics.Color.BLUE
+            } else {
+                enableLights(false)
             }
 
+            // 진동 설정
+            if (userPreferences.notificationVibration) {
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 250, 250)
+            } else {
+                enableVibration(false)
+            }
+
+            // 소리 설정 (채널에서는 기본 소리만 사용)
+            if (!userPreferences.notificationSound) {
+                setSound(null, null)
+            }
+        }
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    /**
+     * v1.29.0: 모든 알림 채널 생성 (우선순위별)
+     * Android 8.0+ 에서 우선순위별로 다른 채널 사용
+     */
+    fun createAllNotificationChannels() {
+        val userPreferences = runBlocking {
+            preferencesRepository.userPreferences.first()
+        }
+
+        ReminderNotificationChannel.getAllChannels().forEach { channelType ->
             val channel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
+                channelType.channelId,
+                channelType.channelName,
+                channelType.importance
             ).apply {
-                description = "Reminders for your tasks"
+                description = channelType.description
 
                 // LED 설정
                 if (userPreferences.notificationLed) {
@@ -66,68 +106,24 @@ class NotificationHelper(private val context: Context) {
                     enableLights(false)
                 }
 
-                // 진동 설정
-                if (userPreferences.notificationVibration) {
+                // 진동 설정 (낮은 우선순위는 진동 없음)
+                if (userPreferences.notificationVibration &&
+                    channelType != ReminderNotificationChannel.LOW_PRIORITY
+                ) {
                     enableVibration(true)
                     vibrationPattern = longArrayOf(0, 250, 250, 250)
                 } else {
                     enableVibration(false)
                 }
 
-                // 소리 설정 (채널에서는 기본 소리만 사용)
-                if (!userPreferences.notificationSound) {
+                // 소리 설정 (낮은 우선순위는 소리 없음)
+                if (!userPreferences.notificationSound ||
+                    channelType == ReminderNotificationChannel.LOW_PRIORITY
+                ) {
                     setSound(null, null)
                 }
             }
             notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    /**
-     * v1.29.0: 모든 알림 채널 생성 (우선순위별)
-     * Android 8.0+ 에서 우선순위별로 다른 채널 사용
-     */
-    fun createAllNotificationChannels() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val userPreferences = runBlocking {
-                preferencesRepository.userPreferences.first()
-            }
-
-            ReminderNotificationChannel.getAllChannels().forEach { channelType ->
-                val channel = NotificationChannel(
-                    channelType.channelId,
-                    channelType.channelName,
-                    channelType.importance
-                ).apply {
-                    description = channelType.description
-
-                    // LED 설정
-                    if (userPreferences.notificationLed) {
-                        enableLights(true)
-                        lightColor = android.graphics.Color.BLUE
-                    } else {
-                        enableLights(false)
-                    }
-
-                    // 진동 설정 (낮은 우선순위는 진동 없음)
-                    if (userPreferences.notificationVibration &&
-                        channelType != ReminderNotificationChannel.LOW_PRIORITY
-                    ) {
-                        enableVibration(true)
-                        vibrationPattern = longArrayOf(0, 250, 250, 250)
-                    } else {
-                        enableVibration(false)
-                    }
-
-                    // 소리 설정 (낮은 우선순위는 소리 없음)
-                    if (!userPreferences.notificationSound ||
-                        channelType == ReminderNotificationChannel.LOW_PRIORITY
-                    ) {
-                        setSound(null, null)
-                    }
-                }
-                notificationManager.createNotificationChannel(channel)
-            }
         }
     }
 
@@ -154,16 +150,7 @@ class NotificationHelper(private val context: Context) {
         }
 
         // v1.29.0: 우선순위별 채널 ID 선택
-        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ReminderNotificationChannel.fromPriority(reminder.priority).channelId
-        } else {
-            CHANNEL_ID
-        }
-
-        // 사용자 설정 읽기
-        val userPreferences = runBlocking {
-            preferencesRepository.userPreferences.first()
-        }
+        val channelId = ReminderNotificationChannel.fromPriority(reminder.priority).channelId
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(getNotificationIcon(reminder.priority))
@@ -173,25 +160,6 @@ class NotificationHelper(private val context: Context) {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-
-        // Android O 미만에서는 개별 알림에 설정 적용
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // 소리 설정
-            if (userPreferences.notificationSound) {
-                val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                builder.setSound(defaultSoundUri)
-            }
-
-            // 진동 설정
-            if (userPreferences.notificationVibration) {
-                builder.setVibrate(longArrayOf(0, 250, 250, 250))
-            }
-
-            // LED 설정
-            if (userPreferences.notificationLed) {
-                builder.setLights(android.graphics.Color.BLUE, 1000, 1000)
-            }
-        }
 
         return builder.build()
     }
@@ -224,11 +192,7 @@ class NotificationHelper(private val context: Context) {
             return baseNotification
         }
 
-        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ReminderNotificationChannel.fromPriority(reminder.priority).channelId
-        } else {
-            CHANNEL_ID
-        }
+        val channelId = ReminderNotificationChannel.fromPriority(reminder.priority).channelId
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -281,11 +245,7 @@ class NotificationHelper(private val context: Context) {
      * "완료", "1시간 후", "보기" 버튼 추가
      */
     fun buildNotificationWithActions(reminder: ReminderEntity): Notification {
-        val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ReminderNotificationChannel.fromPriority(reminder.priority).channelId
-        } else {
-            CHANNEL_ID
-        }
+        val channelId = ReminderNotificationChannel.fromPriority(reminder.priority).channelId
 
         val viewIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

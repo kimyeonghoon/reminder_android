@@ -96,7 +96,7 @@ private fun WidgetConfigScreen(
     var selectedDate by remember { mutableStateOf(FilterDate.ALL) }
     var selectedSort by remember { mutableStateOf(SortOption.BY_DATE_ASC) }
     var selectedSize by remember { mutableStateOf(WidgetPreferences.SIZE_MEDIUM) }
-    var maxItems by remember { mutableStateOf(5) }
+    var maxItems by remember { mutableIntStateOf(5) }
 
     Scaffold(
         topBar = {

@@ -26,7 +26,6 @@ class DndRepository(context: Context) {
     /**
      * DND 권한이 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun hasPermission(): Boolean {
         return dndManager.hasPermission()
     }
@@ -41,7 +40,6 @@ class DndRepository(context: Context) {
     /**
      * DND 활성화
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun enableDnd() {
         val settings = _dndSettings.value
         if (settings.enabled && settings.autoEnable) {
@@ -55,7 +53,6 @@ class DndRepository(context: Context) {
     /**
      * DND 비활성화
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun disableDnd() {
         dndManager.disableDnd()
     }
@@ -63,7 +60,6 @@ class DndRepository(context: Context) {
     /**
      * 현재 DND가 활성화되어 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun isEnabled(): Boolean {
         return dndManager.isEnabled()
     }

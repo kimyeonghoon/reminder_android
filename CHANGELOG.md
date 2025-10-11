@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.59.0] - 2025-10-11
+
+### Changed
+- 🧹 **코드 품질 개선** - Android Lint 경고 수정 및 성능 최적화
+  - **ObsoleteSdkInt 경고 수정 (15개)**
+    - DndManager.kt - 불필요한 @RequiresApi 제거 (6개)
+    - DndRepository.kt - 불필요한 @RequiresApi 제거 (4개)
+    - NotificationHelper.kt - Android O 이전 버전 fallback 코드 제거 (5개)
+    - minSdk 26 기준으로 API 23/24/26 체크 제거
+  - **AutoboxingStateCreation 성능 개선 (10개)**
+    - AddEditReminderScreen.kt - recurrenceInterval (1개)
+    - FocusModeScreen.kt - remainingMinutes, remainingSeconds, progress, selectedMinutes (4개)
+    - HabitTrackerScreen.kt - frequency (1개)
+    - RecurrenceSettingScreen.kt - interval, dayOfMonth, afterCount (3개)
+    - WidgetConfigActivity.kt - maxItems (1개)
+    - mutableStateOf → mutableIntStateOf/mutableFloatStateOf로 변경하여 autoboxing 오버헤드 제거
+
+### Performance
+- **Compose 성능 최적화**
+  - 기본형 타입(Int, Float) 상태 관리에 전용 State 구현 사용
+  - 불필요한 Boxing/Unboxing 제거로 메모리 사용량 감소
+  - UI 렌더링 최적화
+
+### Technical Debt
+- **Lint 경고 감소**: 181개 → 156개 (25개 감소)
+- **코드 정리**: 불필요한 SDK 버전 체크 제거
+- **최신 Android API 대응**: Android O+ 전용 코드로 단순화
+
 ## [1.58.0] - 2025-10-11
 
 ### Changed

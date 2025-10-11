@@ -266,7 +266,7 @@ fun AddHabitDialog(
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var frequency by remember { mutableStateOf(7) }
+    var frequency by remember { mutableIntStateOf(7) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
