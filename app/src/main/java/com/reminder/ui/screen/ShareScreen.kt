@@ -221,7 +221,7 @@ private fun CollaboratorCard(
                             }
                         )
                     }
-                    Divider()
+                    HorizontalDivider()
                     DropdownMenuItem(
                         text = {
                             Text(

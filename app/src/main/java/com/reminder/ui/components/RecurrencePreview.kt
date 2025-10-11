@@ -111,7 +111,7 @@ fun RecurrencePreview(
             // 다음 발생 날짜들
             if (nextOccurrences.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Divider(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f))
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(

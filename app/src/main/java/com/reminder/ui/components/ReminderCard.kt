@@ -162,7 +162,7 @@ fun ReminderCard(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             LinearProgressIndicator(
-                                progress = completed.toFloat() / total.toFloat(),
+                                progress = { completed.toFloat() / total.toFloat() },
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(6.dp),

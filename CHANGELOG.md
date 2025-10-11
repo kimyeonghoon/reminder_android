@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.46.3] - 2025-10-11
+
+### Changed
+- 🔧 **Compose API 최신화** - Material 3 최신 API 적용
+  - **Divider → HorizontalDivider 마이그레이션** (3개 파일)
+    - `ShareScreen.kt`: DropdownMenu 구분선 업데이트
+    - `RecurrencePreview.kt`: 반복 일정 미리보기 구분선 업데이트
+    - `RecurrenceSelector.kt`: 반복 설정 구분선 업데이트
+  - **LinearProgressIndicator 람다 형식 적용** (2개 파일)
+    - `ReminderCard.kt`: 서브태스크 진행률 표시 업데이트
+    - `GoalProgressCard.kt`: 목표 진행률 표시 업데이트
+    - `progress = value` → `progress = { value }` (최신 Material 3 API)
+
+### Technical Details
+- **Files Modified**: 5개 (UI 컴포넌트 및 화면)
+- **API Updates**:
+  - `Divider()` → `HorizontalDivider()` (Material 3 권장)
+  - `LinearProgressIndicator(progress = Float)` → `LinearProgressIndicator(progress = () -> Float)` (람다 형식)
+- **Tests**: 모든 테스트 통과 ✅ (213/213)
+- **Build**: 성공 (BUILD SUCCESSFUL)
+- **Compose BOM**: 2024.12.01 (최신)
+
+### Quality Improvements
+- Material 3 최신 API 준수로 미래 호환성 향상
+- Deprecation warnings 제거 (일부)
+- 코드 품질 개선 및 유지보수성 향상
+
+### Notes
+- 기능 변경 없음 (UI 동작 동일)
+- 하위 호환성 유지 (PATCH 버전 업데이트)
+- 남은 경고: `menuAnchor()` deprecated (향후 수정 예정)
+
 ## [1.46.2] - 2025-10-11
 
 ### Changed

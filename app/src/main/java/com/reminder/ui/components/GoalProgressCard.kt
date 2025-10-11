@@ -112,7 +112,7 @@ fun GoalProgressCard(
 
                 // 진행률 바
                 LinearProgressIndicator(
-                    progress = (progress.percentage / 100.0).toFloat().coerceIn(0f, 1f),
+                    progress = { (progress.percentage / 100.0).toFloat().coerceIn(0f, 1f) },
                     modifier = Modifier.fillMaxWidth().height(8.dp),
                     color = if (progress.isAchieved) {
                         MaterialTheme.colorScheme.primary

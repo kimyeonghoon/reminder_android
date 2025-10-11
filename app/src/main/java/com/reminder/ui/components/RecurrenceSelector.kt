@@ -182,7 +182,7 @@ fun RecurrenceSelector(
 
         // 미리보기
         if (previewOccurrences.isNotEmpty()) {
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             Text(
                 text = "Next occurrences:",
