@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.53.0] - 2025-10-11
+
+### Added
+- 🎯 **Eisenhower Matrix 빠른 이동 기능** - 쿼드런트 간 리마인더 이동 UX 개선
+  - **Long Press 빠른 이동**
+    - 리마인더 카드를 길게 누르면 이동 메뉴 자동 오픈
+    - 기존 2탭 (MoreVert → 쿼드런트 선택) → 1탭 (Long Press → 쿼드런트 선택)으로 단축
+    - 햅틱 피드백으로 Long Press 감지 확인
+  - **이중 접근 방식 제공**
+    - Long Press: 빠른 이동 (신규)
+    - MoreVert 버튼: 명시적 메뉴 오픈 (기존)
+    - 사용자 선호에 따라 두 가지 방법 모두 사용 가능
+  - **시각적/촉각적 피드백**
+    - `haptic.longPress()`: 길게 누르면 진동 피드백
+    - DropdownMenu 자동 오픈으로 즉각적인 시각 피드백
+    - 쿼드런트별 색상 표시로 이동 대상 명확하게 표시
+
+### Changed
+- **QuadrantReminderCard UI 개선**
+  - `clickable` → `combinedClickable` 마이그레이션
+  - 일반 클릭: 리마인더 상세 화면 (기존 동작 유지)
+  - 길게 누르기: 이동 메뉴 오픈 (신규 동작)
+
+### Technical Details
+- **파일 수정** (2개)
+  - `EisenhowerMatrixScreen.kt`:
+    - `@OptIn(ExperimentalFoundationApi::class)` 추가
+    - `combinedClickable` modifier 적용
+    - `onLongClick` 핸들러 추가
+    - `rememberHapticFeedback()` import 및 사용
+  - `app/build.gradle.kts`: versionCode 58→59, versionName "1.52.0"→"1.53.0"
+- **UI/UX**
+  - Compose Foundation API: `combinedClickable`
+  - Haptic Feedback: `longPress()` 패턴
+  - Material 3 DropdownMenu 자동 확장
+
+### Testing
+- **모든 테스트 통과** ✅
+  - 기존 276개 테스트 100% 통과
+  - 빌드 성공 (Debug/Release)
+  - Long Press 제스처 동작 확인
+  - 햅틱 피드백 정상 작동
+
+### Notes
+- MINOR 버전 업데이트 (UX 개선)
+- 하위 호환성 100% 유지 (기존 MoreVert 버튼 여전히 사용 가능)
+- 모바일 UX 모범 사례: 복잡한 드래그 앤 드롭 대신 Long Press 제스처 채택
+- 사용자 피드백 반영: Eisenhower Matrix에서 쿼드런트 이동이 번거로웠던 점 개선
+
 ## [1.52.0] - 2025-10-11
 
 ### Added

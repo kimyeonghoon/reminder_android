@@ -1,7 +1,9 @@
 package com.reminder.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,6 +35,7 @@ import com.reminder.domain.filterByQuadrant
 import com.reminder.domain.getInfo
 import com.reminder.domain.getQuadrant
 import com.reminder.ui.components.ReminderCard
+import com.reminder.util.rememberHapticFeedback
 import com.reminder.viewmodel.ReminderViewModel
 import kotlin.math.roundToInt
 
@@ -331,7 +334,9 @@ private fun QuadrantCard(
 
 /**
  * v1.50.0: 쿼드런트 전용 리마인더 카드 (이동 메뉴 포함)
+ * v1.53.0: Long Press로 이동 메뉴 빠른 열기
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun QuadrantReminderCard(
     reminder: ReminderEntity,
@@ -340,10 +345,17 @@ private fun QuadrantReminderCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val haptic = rememberHapticFeedback()
     var showMoveMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = {
+                haptic.longPress()
+                showMoveMenu = true
+            }
+        ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
