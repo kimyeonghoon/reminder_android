@@ -34,28 +34,33 @@ data class OnboardingPage(
 private val onboardingPages = listOf(
     OnboardingPage(
         icon = Icons.Default.CheckCircle,
-        title = "Welcome to Reminder",
-        description = "Manage your tasks efficiently with our powerful reminder app"
+        title = "환영합니다!",
+        description = "스마트한 리마인더 앱으로 생산성을 극대화하세요. 작업 관리부터 집중 모드까지 모든 기능을 제공합니다."
     ),
     OnboardingPage(
         icon = Icons.Default.Notifications,
-        title = "Never Miss a Task",
-        description = "Set alarms and get notifications for your important reminders"
+        title = "알림과 리마인더",
+        description = "중요한 작업을 절대 놓치지 마세요. 알람, 반복 작업, 위치 기반 알림까지 지원합니다."
     ),
     OnboardingPage(
-        icon = Icons.Default.Refresh,
-        title = "Recurring Reminders",
-        description = "Create repeating tasks with flexible scheduling options"
+        icon = Icons.Default.GridOn,
+        title = "아이젠하워 매트릭스",
+        description = "중요도×긴급도로 작업을 4개 쿼드런트로 분류하세요. AI가 긴급도를 자동으로 예측해드립니다."
+    ),
+    OnboardingPage(
+        icon = Icons.Default.Adjust,
+        title = "포커스 모드",
+        description = "집중 타이머로 생산성을 높이세요. 방해 금지 모드가 자동으로 활성화되어 몰입을 도와줍니다."
     ),
     OnboardingPage(
         icon = Icons.Default.FilterList,
-        title = "Organize & Filter",
-        description = "Sort by priority, filter by date, and search through your reminders"
+        title = "스마트 필터링",
+        description = "우선순위, 카테고리, 태그로 작업을 정리하세요. 고급 필터와 저장된 필터로 빠르게 찾을 수 있습니다."
     ),
     OnboardingPage(
         icon = Icons.Default.Cloud,
-        title = "Cloud Sync",
-        description = "Sign in to sync your reminders across all your devices (optional)"
+        title = "실시간 동기화",
+        description = "Firebase로 모든 기기에서 실시간 동기화됩니다. 언제 어디서나 작업을 이어가세요."
     )
 )
 

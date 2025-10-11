@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.58.0] - 2025-10-11
+
+### Changed
+- 🎓 **온보딩 화면 개선** - 주요 기능 소개 고도화
+  - **6개 페이지로 확장**
+    - Welcome: 앱 소개 및 핵심 가치 제안
+    - Notifications: 알림, 반복 작업, 위치 기반 알림 설명
+    - Eisenhower Matrix: 중요도×긴급도 매트릭스, AI 긴급도 예측 소개
+    - Focus Mode: 집중 타이머, 방해 금지 모드 자동 활성화 안내
+    - Smart Filtering: 필터링, 카테고리, 태그 시스템 설명
+    - Real-time Sync: Firebase 실시간 동기화 소개
+  - **한국어로 완전 번역**
+    - 모든 페이지 제목 및 설명 한국어화
+    - 사용자 친화적인 표현으로 작성
+  - **신규 기능 강조**
+    - Eisenhower Matrix (v1.47.0 기능)
+    - AI 긴급도 자동 예측 (v1.48.0 기능)
+    - Focus Mode (v1.51.0 기능)
+    - DND 자동 활성화 (v1.54.0 기능)
+
+### Onboarding Pages
+1. **환영합니다!** - 스마트한 리마인더 앱 소개
+2. **알림과 리마인더** - 알람, 반복, 위치 기반 알림
+3. **아이젠하워 매트릭스** - 중요도×긴급도 4개 쿼드런트, AI 예측
+4. **포커스 모드** - 집중 타이머, 방해 금지 모드
+5. **스마트 필터링** - 우선순위, 카테고리, 태그 필터
+6. **실시간 동기화** - Firebase 멀티 디바이스 동기화
+
+### User Experience
+- **Progressive Disclosure**: 사용자가 앱을 처음 실행할 때 핵심 기능을 단계적으로 소개
+- **Visual Icons**: 각 페이지마다 직관적인 Material Icon 사용
+- **Smooth Animation**: HorizontalPager와 page indicator로 부드러운 전환
+- **Skip Option**: 모든 페이지에서 Skip 버튼 제공 (마지막 페이지는 "Get Started")
+
 ## [1.57.0] - 2025-10-11
 
 ### Changed

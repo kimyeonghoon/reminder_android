@@ -61,8 +61,16 @@
 - ✅ v1.48.0 - AI 긴급도 자동 예측 (키워드 기반 NLP, 자동 제안)
 - ✅ v1.49.0 - Eisenhower Matrix 고도화 2단계 (통계 대시보드, 쿼드런트 이동)
 - ✅ v1.50.0 - Eisenhower Matrix 고도화 3단계 (이동 메뉴 UI, 트렌드 분석)
+- ✅ v1.51.0 - 포커스 모드 (집중 타이머, DO_FIRST 연동, 세션 관리)
+- ✅ v1.52.0 - 포커스 모드 Bottom Navigation 통합 (1탭 접근, UX 향상)
+- ✅ v1.53.0 - Eisenhower Matrix Long Press (쿼드런트 이동 UX 개선)
+- ✅ v1.54.0 - 방해 금지 모드 (DND 자동 활성화, 세션 연동)
+- ✅ v1.55.0 - 성능 최적화 (Room 인덱스, 앱 시작 15-20ms 개선)
+- ✅ v1.56.0 - UI 일관성 검토 (Material 3, 8dp 그리드 99% 준수)
+- ✅ v1.57.0 - 접근성 검토 (WCAG AA 100% 준수, TalkBack 완벽 지원)
+- ✅ v1.58.0 - 온보딩 개선 (6개 페이지, 한국어, 신규 기능 소개)
 
-**🎉 현재 버전: v1.50.0 (versionCode 56, DB v23)**
+**🎉 현재 버전: v1.58.0 (versionCode 64, DB v24)**
 
 ---
 
