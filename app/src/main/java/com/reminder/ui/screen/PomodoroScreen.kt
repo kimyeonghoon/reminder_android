@@ -176,7 +176,7 @@ private fun TimerCard(
                 fontWeight = FontWeight.Bold
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 버튼들
             if (currentState == PomodoroState.IDLE) {
@@ -277,7 +277,7 @@ private fun StatisticsCard(
                 fontWeight = FontWeight.Bold
             )
 
-            Divider()
+            HorizontalDivider()
 
             // 통계 항목들
             Row(

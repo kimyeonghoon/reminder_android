@@ -178,7 +178,7 @@ fun CompletionRateCard(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 LinearProgressIndicator(
-                    progress = statistics.completionRate,
+                    progress = { statistics.completionRate },
                     modifier = Modifier
                         .weight(1f)
                         .height(24.dp)

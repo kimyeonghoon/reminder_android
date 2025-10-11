@@ -1,15 +1,15 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.46.0 완료)
+> 마지막 업데이트: 2025-10-11 (v1.46.2 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.46.0 (versionCode 49)
+- **최신 버전**: v1.46.2 (versionCode 50)
 - **DB 버전**: v22
-- **총 릴리즈**: 47개 버전
+- **총 릴리즈**: 50개 버전
 - **테스트 커버리지**: 213/213 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
@@ -37,19 +37,20 @@
 - ✅ Habit Tracker (습관 추적 및 Streak 관리)
 - ✅ Pomodoro Timer (25/5/15분 집중/휴식 타이머)
 - ✅ 테스트 안정화 (v1.45.1: Fake 구현 패턴, 213개 테스트 100% 통과)
+- ✅ Bottom Navigation Bar (v1.46.0~v1.46.2: 5개 메인 탭, UI 정리 완료)
 
 ---
 
-## 🔥 다음 버전 계획 (v1.46.0 이후)
+## 🔥 다음 버전 계획 (v1.46.2 이후)
 
 ### 🎯 향후 개발 방향
 
-현재 v1.45.0까지 완료되어 핵심 기능이 모두 구현되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
+현재 v1.46.2까지 완료되어 핵심 기능과 Bottom Navigation 통합이 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
 
-#### 1. UI/UX 개선 및 통합
-- v1.45.0 Pomodoro Timer의 MainActivity 통합 및 네비게이션 추가
-- v1.44.0 Habit Tracker의 메인 화면 통합
-- 전체 화면 일관성 개선 및 Material 3 디자인 정교화
+#### 1. 코드 품질 및 안정성 개선
+- Deprecation warnings 수정 (Divider → HorizontalDivider, LinearProgressIndicator 람다)
+- 전체 화면 일관성 최종 검토 및 Material 3 디자인 정교화
+- 성능 최적화 및 메모리 누수 점검
 
 #### 2. 고급 생산성 기능
 - 포커스 모드 (방해 금지 모드, 특정 앱 차단)
@@ -100,21 +101,28 @@
 ### v1.45.1: 테스트 안정화 ✅
 **완료됨** - Fake 구현 패턴 도입, 213/213 테스트 통과 (100%)
 
-### v1.46.0: Bottom Navigation Bar ✅
-**완료됨** - 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합, 사용자 경험 대폭 향상
+### v1.46.0~v1.46.2: Bottom Navigation Bar & UI 정리 ✅
+**완료됨**
+- v1.46.0: 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
+- v1.46.1: HomeScreen UI 정리 (중복 버튼 제거)
+- v1.46.2: Bottom Navigation 화면 UI 정리 (뒤로가기 버튼, 중복 메뉴 제거)
 
 ---
 
 ## 📅 다음 세션 제안
 
-v1.46.0까지 Bottom Navigation Bar 통합 완료! 다음 세션에서는:
+v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션에서는:
 
-1. **UI/UX 정리 및 개선** (권장)
-   - 각 화면 일관성 검토 및 리팩토링
-   - Bottom Bar가 있는 화면들의 UI 조정 (패딩, 레이아웃)
+1. **코드 품질 개선** (권장, 빠른 작업)
+   - Deprecation warnings 수정 (Divider → HorizontalDivider)
+   - LinearProgressIndicator 람다 변환
+   - 최신 Compose API 적용
+
+2. **추가 UI/UX 개선**
    - 네비게이션 애니메이션 튜닝
+   - Bottom Navigation 화면 패딩/레이아웃 미세 조정
 
-2. **Wear OS 앱 구현** (고급 기능)
+3. **Wear OS 앱 구현** (고급 기능)
    - 스마트워치 지원으로 사용성 대폭 향상
    - 새 wear 모듈 생성
    - 예상 시간: 6-7시간
@@ -184,18 +192,18 @@ v1.46.0까지 Bottom Navigation Bar 통합 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.45.1까지 46개 버전, 22개 DB 마이그레이션을 완료했습니다. 이제 앱은 매우 강력한 생산성 도구가 되었습니다!_
+_v1.46.2까지 50개 버전, 22개 DB 마이그레이션을 완료했습니다. 이제 앱은 매우 강력한 생산성 도구가 되었습니다!_
 
 **주요 성과**:
-- ✅ 47개 버전 릴리즈
+- ✅ 50개 버전 릴리즈 (v1.0.0 ~ v1.46.2)
 - ✅ 22번의 데이터베이스 마이그레이션
 - ✅ TDD 기반 안정적인 코드베이스 (213개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
 - ✅ AI/ML 기반 스마트 추천
 - ✅ 포모도로 & 습관 추적
-- ✅ Bottom Navigation Bar (5개 메인 탭)
+- ✅ Bottom Navigation Bar (5개 메인 탭, UI 일관성 완벽 정리)
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
-**다음 목표**: UI/UX 완성도 향상, 또는 Wear OS 확장!
+**다음 목표**: 코드 품질 개선 (Deprecation warnings), 또는 Wear OS 확장!
