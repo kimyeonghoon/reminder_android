@@ -127,12 +127,18 @@ fun HomeScreen(
         topBar = {
             if (showSearchBar) {
                 SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { viewModel.updateSearchQuery(it) },
-                    onSearch = { },
-                    active = true,
-                    onActiveChange = { if (!it) showSearchBar = false },
-                    placeholder = { Text("Search reminders...") },
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = searchQuery,
+                            onQueryChange = { viewModel.updateSearchQuery(it) },
+                            onSearch = { },
+                            expanded = true,
+                            onExpandedChange = { if (!it) showSearchBar = false },
+                            placeholder = { Text("Search reminders...") }
+                        )
+                    },
+                    expanded = true,
+                    onExpandedChange = { if (!it) showSearchBar = false },
                     modifier = Modifier.fillMaxWidth()
                 ) {}
             } else if (isSelectionMode) {
