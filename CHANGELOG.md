@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.60.0] - 2025-10-11
+
+### Changed
+- 🧹 **최종 코드 정리** - 남은 Android Lint 경고 완전 제거
+  - **ObsoleteSdkInt 경고 완전 해결 (11개 추가 수정)**
+    - FocusModeScreen.kt - SDK 버전 체크 제거 (2개)
+    - FocusModeViewModel.kt - @RequiresApi 어노테이션 및 SDK 체크 제거 (5개)
+    - LocaleHelper.kt - Android N 이전 fallback 코드 제거 (3개)
+    - ReminderApplication.kt - DND Repository nullable 제거 (1개)
+    - minSdk 26 기준으로 모든 불필요한 SDK 버전 체크 제거
+  - **코드 단순화**
+    - 모든 DND 기능이 항상 사용 가능하도록 변경
+    - LocaleHelper의 deprecated API 사용 코드 제거
+    - Configuration.locales API 직접 사용
+
+### Technical Debt
+- **Lint 경고 완전 제거**: ObsoleteSdkInt 0개 (v1.59.0 이후 26개 → v1.60.0: 0개)
+- **코드 라인 감소**: 불필요한 조건문 및 fallback 코드 제거
+- **API 일관성**: Android O+ 전용 API로 통일
+
+### Code Quality
+- 모든 SDK 버전 체크 로직 제거로 코드 가독성 향상
+- Nullable DndRepository 제거로 null 안전성 개선
+- 최신 Android API 전용 사용으로 유지보수성 향상
+
 ## [1.59.0] - 2025-10-11
 
 ### Changed

@@ -111,15 +111,13 @@ fun FocusModeScreen(
                 )
             }
 
-            // v1.54.0: DND 설정 카드 (API 23+)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                item {
-                    DndSettingsCard(
-                        settings = dndSettings,
-                        onSettingsChange = { viewModel.updateDndSettings(it) },
-                        onRequestPermission = { showDndPermissionDialog = true }
-                    )
-                }
+            // v1.54.0: DND 설정 카드
+            item {
+                DndSettingsCard(
+                    settings = dndSettings,
+                    onSettingsChange = { viewModel.updateDndSettings(it) },
+                    onRequestPermission = { showDndPermissionDialog = true }
+                )
             }
 
             // 타이머 카드
@@ -554,7 +552,6 @@ private fun getFocusTypeLabel(type: FocusType): String {
 /**
  * v1.54.0: DND 설정 카드
  */
-@androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.M)
 @Composable
 private fun DndSettingsCard(
     settings: com.reminder.data.DndSettings,

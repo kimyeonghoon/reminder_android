@@ -71,10 +71,8 @@ class FocusModeViewModel(
             _currentSession.value = insertedSession
             _focusState.value = FocusState.ACTIVE
 
-            // v1.54.0: DND 자동 활성화 (API 23+)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                dndRepository?.enableDnd()
-            }
+            // v1.54.0: DND 자동 활성화
+            dndRepository?.enableDnd()
         }
     }
 
@@ -102,10 +100,8 @@ class FocusModeViewModel(
                 _currentSession.value = completedSession
                 _focusState.value = FocusState.COMPLETED
 
-                // v1.54.0: DND 자동 비활성화 (API 23+)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    dndRepository?.disableDnd()
-                }
+                // v1.54.0: DND 자동 비활성화
+                dndRepository?.disableDnd()
             }
         }
     }
@@ -123,10 +119,8 @@ class FocusModeViewModel(
                 _currentSession.value = interruptedSession
                 _focusState.value = FocusState.INTERRUPTED
 
-                // v1.54.0: DND 자동 비활성화 (API 23+)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    dndRepository?.disableDnd()
-                }
+                // v1.54.0: DND 자동 비활성화
+                dndRepository?.disableDnd()
             }
         }
     }
@@ -203,7 +197,6 @@ class FocusModeViewModel(
     /**
      * DND 권한이 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun hasDndPermission(): Boolean {
         return dndRepository?.hasPermission() ?: false
     }
@@ -223,7 +216,6 @@ class FocusModeViewModel(
     /**
      * 현재 DND가 활성화되어 있는지 확인
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun isDndEnabled(): Boolean {
         return dndRepository?.isEnabled() ?: false
     }

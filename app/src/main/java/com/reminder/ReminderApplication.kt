@@ -118,11 +118,7 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
     // v1.54.0: 방해 금지 모드
     val dndRepository by lazy {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            com.reminder.data.repository.DndRepository(this)
-        } else {
-            null
-        }
+        com.reminder.data.repository.DndRepository(this)
     }
 
     /**

@@ -29,13 +29,7 @@ object LocaleHelper {
         val configuration = Configuration(context.resources.configuration)
         configuration.setLocale(locale)
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.createConfigurationContext(configuration)
-        } else {
-            @Suppress("DEPRECATION")
-            context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
-            context
-        }
+        return context.createConfigurationContext(configuration)
     }
 
     /**
@@ -45,12 +39,7 @@ object LocaleHelper {
      * @return 현재 언어 코드 (예: "ko", "en", "zh")
      */
     fun getCurrentLocale(context: Context): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.resources.configuration.locales[0].language
-        } else {
-            @Suppress("DEPRECATION")
-            context.resources.configuration.locale.language
-        }
+        return context.resources.configuration.locales[0].language
     }
 
     /**
@@ -75,11 +64,6 @@ object LocaleHelper {
      * @return 시스템 기본 Locale
      */
     fun getSystemDefaultLocale(): Locale {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Configuration().locales[0]
-        } else {
-            @Suppress("DEPRECATION")
-            Locale.getDefault()
-        }
+        return Configuration().locales[0]
     }
 }
