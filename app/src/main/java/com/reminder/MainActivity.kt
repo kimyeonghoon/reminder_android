@@ -41,6 +41,7 @@ import com.reminder.data.preferences.ThemeMode
 import com.reminder.ui.screen.AddEditReminderScreen
 import com.reminder.ui.screen.ArchiveScreen
 import com.reminder.ui.screen.CalendarSyncScreen
+import com.reminder.ui.screen.EisenhowerMatrixScreen
 import com.reminder.ui.screen.HabitTrackerScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
@@ -347,6 +348,7 @@ fun ReminderAppContent(
                     selectedReminder = reminder
                     navController.navigate("add_edit")
                 },
+                onEisenhowerMatrixClick = { navController.navigate("eisenhower_matrix") },
                 simpleMode = userPreferences.simpleMode
             )
         }
@@ -675,6 +677,43 @@ fun ReminderAppContent(
         ) {
             PomodoroScreen(
                 viewModel = pomodoroViewModel
+            )
+        }
+        // v1.47.0: EisenhowerMatrixScreen 라우트
+        composable(
+            "eisenhower_matrix",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            EisenhowerMatrixScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onReminderClick = { reminder ->
+                    selectedReminder = reminder
+                    navController.navigate("add_edit")
+                }
             )
         }
         }

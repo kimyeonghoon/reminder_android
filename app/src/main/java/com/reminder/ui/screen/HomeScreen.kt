@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.*
@@ -44,6 +45,7 @@ fun HomeScreen(
     viewModel: ReminderViewModel,
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
+    onEisenhowerMatrixClick: () -> Unit = {},
     simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
@@ -180,6 +182,13 @@ fun HomeScreen(
                     actions = {
                         // 간편 모드에서는 필터와 검색 숨기기
                         if (!simpleMode) {
+                            // v1.47.0: Eisenhower Matrix 버튼
+                            IconButton(onClick = {
+                                haptic.click()
+                                onEisenhowerMatrixClick()
+                            }) {
+                                Icon(Icons.Default.GridOn, contentDescription = "Eisenhower Matrix")
+                            }
                             // v1.32.0: 고급 필터 버튼
                             IconButton(onClick = { showFilterBottomSheet = true }) {
                                 Icon(Icons.Default.FilterList, contentDescription = "필터")
