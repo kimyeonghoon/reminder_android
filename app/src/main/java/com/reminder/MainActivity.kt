@@ -73,6 +73,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import androidx.compose.material.icons.filled.Adjust
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Home
@@ -266,12 +267,13 @@ fun ReminderAppContent(
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
     // v1.46.0: Bottom Navigation Items
+    // v1.52.0: Settings 제거, Focus Mode 추가
     val bottomNavItems = listOf(
         BottomNavItem("home", Icons.Default.Home, "홈"),
         BottomNavItem("statistics", Icons.Default.BarChart, "통계"),
         BottomNavItem("pomodoro", Icons.Default.Timer, "포모도로"),
-        BottomNavItem("habit_tracker", Icons.Default.CheckBox, "습관"),
-        BottomNavItem("settings", Icons.Default.Settings, "설정")
+        BottomNavItem("focus_mode", Icons.Default.Adjust, "집중"),
+        BottomNavItem("habit_tracker", Icons.Default.CheckBox, "습관")
     )
 
     // 현재 라우트 추적
@@ -350,6 +352,7 @@ fun ReminderAppContent(
                     navController.navigate("add_edit")
                 },
                 onEisenhowerMatrixClick = { navController.navigate("eisenhower_matrix") },
+                onSettingsClick = { navController.navigate("settings") }, // v1.52.0
                 simpleMode = userPreferences.simpleMode
             )
         }

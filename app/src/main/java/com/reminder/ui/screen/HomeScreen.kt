@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelectAll
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,6 +47,7 @@ fun HomeScreen(
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
     onEisenhowerMatrixClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}, // v1.52.0: Settings 버튼 추가
     simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
@@ -203,7 +205,13 @@ fun HomeScreen(
                                 Icon(Icons.Default.Search, contentDescription = "검색")
                             }
                         }
-                        // v1.46.0: 통계와 설정은 Bottom Navigation에 있으므로 제거
+                        // v1.52.0: Settings 버튼 추가 (Bottom Navigation에서 제거됨)
+                        IconButton(onClick = {
+                            haptic.click()
+                            onSettingsClick()
+                        }) {
+                            Icon(Icons.Default.Settings, contentDescription = "설정")
+                        }
                     }
                 )
             }

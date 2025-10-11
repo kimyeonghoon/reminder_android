@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.52.0] - 2025-10-11
+
+### Added
+- 🎯 **포커스 모드 Bottom Navigation 통합** - 사용자 접근성 대폭 향상
+  - **Bottom Navigation 개선**
+    - 포커스 모드를 Bottom Navigation 4번째 탭으로 추가
+    - Settings 탭 제거 → HomeScreen TopAppBar로 이동
+    - 5개 탭 유지: Home, Statistics, Pomodoro, Focus, Habits
+    - Focus 아이콘: Adjust (타겟 포커스)
+  - **Settings 접근성 개선**
+    - HomeScreen TopAppBar에 Settings 버튼 추가
+    - 어디서나 쉽게 설정 접근 가능
+    - 간편 모드에서도 설정 접근 가능
+  - **사용자 경험 개선**
+    - 포커스 모드 접근이 2번 탭 → 1번 탭으로 단축 (Eisenhower Matrix 경유 불필요)
+    - Bottom Navigation에서 바로 접근 가능
+    - 포모도로와 포커스 모드를 같은 레벨에 배치하여 명확성 향상
+
+### Changed
+- **Navigation 구조 재구성**
+  - Bottom Navigation: `home`, `statistics`, `pomodoro`, `focus_mode`, `habit_tracker`
+  - Settings는 독립 라우트로 유지하되 TopAppBar에서 접근
+
+### Technical Details
+- **파일 수정** (3개)
+  - `MainActivity.kt`: bottomNavItems 수정, Settings 제거, Focus 추가
+  - `HomeScreen.kt`: TopAppBar actions에 Settings 버튼 추가, onSettingsClick 콜백 추가
+  - `app/build.gradle.kts`: versionCode 57→58, versionName "1.51.0"→"1.52.0"
+- **UI/UX**
+  - Material Icons: `Icons.Default.Adjust` (Focus 아이콘)
+  - Settings 버튼: 햅틱 피드백 지원
+  - 일관된 Navigation 패턴
+
+### Testing
+- **모든 테스트 통과** ✅
+  - 기존 276개 테스트 100% 통과
+  - 빌드 성공 (Debug/Release)
+  - Navigation 라우팅 검증 완료
+
+### Notes
+- MINOR 버전 업데이트 (UI 구조 개선)
+- 하위 호환성 유지 (Settings 라우트는 여전히 유효)
+- 사용자 피드백 반영: 포커스 모드 접근성 개선
+- 향후 고도화: 방해 금지 모드 (DND), 앱 차단 기능 예정
+
 ## [1.51.0] - 2025-10-11
 
 ### Added
