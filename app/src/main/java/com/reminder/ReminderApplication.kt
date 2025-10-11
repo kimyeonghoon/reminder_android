@@ -113,6 +113,9 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     // v1.45.0: 포모도로 타이머
     val pomodoroManager by lazy { com.reminder.pomodoro.PomodoroManager(database.pomodoroSessionDao()) }
 
+    // v1.51.0: 포커스 모드
+    val focusSessionRepository by lazy { com.reminder.data.repository.FocusSessionRepository(database.focusSessionDao()) }
+
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
      */

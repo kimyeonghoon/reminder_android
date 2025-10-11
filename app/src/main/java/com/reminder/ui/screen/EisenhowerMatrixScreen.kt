@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ fun EisenhowerMatrixScreen(
     viewModel: ReminderViewModel,
     onNavigateBack: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
+    onNavigateToFocusMode: () -> Unit = {}, // v1.51.0: 포커스 모드로 이동
     modifier: Modifier = Modifier
 ) {
     val allReminders by viewModel.allReminders.collectAsStateWithLifecycle()
@@ -111,6 +113,7 @@ fun EisenhowerMatrixScreen(
                         count = quadrantCounts[Quadrant.DO_FIRST] ?: 0,
                         viewModel = viewModel,
                         onReminderClick = onReminderClick,
+                        onNavigateToFocusMode = onNavigateToFocusMode, // v1.51.0
                         modifier = Modifier.weight(1f)
                     )
 
@@ -204,6 +207,7 @@ private fun QuadrantCard(
     count: Int,
     viewModel: ReminderViewModel,
     onReminderClick: (ReminderEntity) -> Unit,
+    onNavigateToFocusMode: () -> Unit = {}, // v1.51.0
     modifier: Modifier = Modifier
 ) {
     val info = quadrant.getInfo()
@@ -266,6 +270,22 @@ private fun QuadrantCard(
                 if (stats.totalCount > 0) {
                     Spacer(modifier = Modifier.height(6.dp))
                     StatisticsRow(stats)
+                }
+
+                // v1.51.0: DO_FIRST 쿼드런트에 포커스 모드 시작 버튼 추가
+                if (quadrant == Quadrant.DO_FIRST && count > 0) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = onNavigateToFocusMode,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(info.color)
+                        )
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("집중 시작", color = Color.White)
+                    }
                 }
             }
 

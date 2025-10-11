@@ -1,0 +1,188 @@
+package com.reminder.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.reminder.data.entity.FocusSessionEntity
+import com.reminder.data.entity.FocusType
+import com.reminder.data.repository.FocusSessionRepository
+import com.reminder.domain.focus.*
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+
+/**
+ * v1.51.0: 포커스 모드 ViewModel
+ *
+ * 포커스 세션 관리 및 타이머 기능
+ */
+class FocusModeViewModel(
+    private val repository: FocusSessionRepository
+) : ViewModel() {
+
+    // 현재 진행 중인 세션
+    private val _currentSession = MutableStateFlow<FocusSessionEntity?>(null)
+    val currentSession: StateFlow<FocusSessionEntity?> = _currentSession.asStateFlow()
+
+    // 포커스 모드 상태
+    private val _focusState = MutableStateFlow(FocusState.IDLE)
+    val focusState: StateFlow<FocusState> = _focusState.asStateFlow()
+
+    // 모든 세션 목록
+    val allSessions: StateFlow<List<FocusSessionEntity>> = repository.getAllSessions()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // 완료된 세션 목록
+    val completedSessions: StateFlow<List<FocusSessionEntity>> = repository.getCompletedSessions()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // 활성 세션 목록
+    val activeSessions: StateFlow<List<FocusSessionEntity>> = repository.getActiveSessions()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /**
+     * 포커스 세션 시작
+     */
+    fun startFocusSession(
+        targetMinutes: Int,
+        focusType: FocusType = FocusType.DEEP_WORK,
+        reminderId: Long? = null
+    ) {
+        viewModelScope.launch {
+            val session = FocusSessionEntity(
+                reminderId = reminderId,
+                focusType = focusType,
+                targetDurationMinutes = targetMinutes
+            )
+
+            val sessionId = repository.insertSession(session)
+            val insertedSession = repository.getSessionById(sessionId)
+
+            _currentSession.value = insertedSession
+            _focusState.value = FocusState.ACTIVE
+        }
+    }
+
+    /**
+     * 리마인더와 연결하여 세션 시작
+     */
+    fun startFocusSessionForReminder(
+        reminderId: Long,
+        targetMinutes: Int,
+        focusType: FocusType = FocusType.DO_FIRST
+    ) {
+        startFocusSession(targetMinutes, focusType, reminderId)
+    }
+
+    /**
+     * 세션 완료
+     */
+    fun completeSession() {
+        viewModelScope.launch {
+            _currentSession.value?.let { session ->
+                val completedSession = session.complete()
+                repository.updateSession(completedSession)
+
+                _currentSession.value = completedSession
+                _focusState.value = FocusState.COMPLETED
+            }
+        }
+    }
+
+    /**
+     * 세션 중단
+     */
+    fun interruptSession() {
+        viewModelScope.launch {
+            _currentSession.value?.let { session ->
+                val interruptedSession = session.interrupt()
+                repository.updateSession(interruptedSession)
+
+                _currentSession.value = interruptedSession
+                _focusState.value = FocusState.INTERRUPTED
+            }
+        }
+    }
+
+    /**
+     * 세션 초기화 (다음 세션 준비)
+     */
+    fun resetSession() {
+        _currentSession.value = null
+        _focusState.value = FocusState.IDLE
+    }
+
+    /**
+     * 남은 시간 계산 (분)
+     */
+    fun getRemainingMinutes(): Int {
+        return _currentSession.value?.getRemainingMinutes() ?: 0
+    }
+
+    /**
+     * 진행률 계산 (0-100%)
+     */
+    fun getProgress(): Int {
+        return _currentSession.value?.getProgress() ?: 0
+    }
+
+    /**
+     * 오늘의 총 집중 시간 (Flow)
+     */
+    fun getTodayFocusMinutes(): Flow<Int> {
+        val today = LocalDateTime.now()
+        val startOfDay = today.toLocalDate().atStartOfDay()
+        val endOfDay = today.toLocalDate().atTime(23, 59, 59)
+
+        return repository.getSessionsBetweenDates(startOfDay, endOfDay)
+            .map { sessions -> sessions.calculateTotalFocusMinutes() }
+    }
+
+    /**
+     * 현재 Streak 계산 (Flow)
+     */
+    fun getCurrentStreak(): Flow<Int> {
+        return allSessions.map { sessions -> sessions.calculateStreak() }
+    }
+
+    /**
+     * 특정 리마인더의 세션 히스토리 조회
+     */
+    fun getSessionsForReminder(reminderId: Long): Flow<List<FocusSessionEntity>> {
+        return repository.getSessionsByReminderId(reminderId)
+    }
+
+    /**
+     * 세션 삭제
+     */
+    fun deleteSession(session: FocusSessionEntity) {
+        viewModelScope.launch {
+            repository.deleteSession(session)
+        }
+    }
+
+    /**
+     * 오래된 세션 정리 (90일 이상)
+     */
+    fun cleanupOldSessions() {
+        viewModelScope.launch {
+            val cutoffDate = LocalDateTime.now().minusDays(90)
+            repository.deleteOldSessions(cutoffDate)
+        }
+    }
+
+    // 테스트용: 현재 세션 설정
+    internal fun setCurrentSession(session: FocusSessionEntity) {
+        _currentSession.value = session
+        _focusState.value = if (session.isActive()) FocusState.ACTIVE else FocusState.IDLE
+    }
+}
+
+/**
+ * 포커스 모드 상태
+ */
+enum class FocusState {
+    IDLE,       // 세션 없음
+    ACTIVE,     // 진행 중
+    COMPLETED,  // 완료
+    INTERRUPTED // 중단
+}

@@ -5,6 +5,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.51.0] - 2025-10-11
+
+### Added
+- 🎯 **포커스 모드 (Focus Mode)** - Eisenhower Matrix DO_FIRST 작업을 위한 집중 타이머
+  - **포커스 세션 관리**
+    - 세션 시작/완료/중단 기능
+    - 목표 시간 설정 (25분, 50분, 90분)
+    - 실시간 타이머 및 진행률 표시
+    - 세션 타입 선택 (긴급 중요 작업, 깊은 작업, 포모도로, 휴식)
+  - **통계 및 기록**
+    - 오늘의 총 집중 시간 표시
+    - 연속 기록 (Streak) 추적
+    - 세션 히스토리 목록
+    - 완료/중단된 세션 상세 정보
+  - **Eisenhower Matrix 통합**
+    - DO_FIRST 쿼드런트에 "집중 시작" 버튼 추가
+    - 긴급하고 중요한 작업에 집중 모드 바로 실행
+  - **UI/UX**
+    - 원형 프로그레스 타이머 (Canvas 기반)
+    - Material 3 디자인
+    - 상태별 화면 전환 (대기/진행중/완료/중단)
+    - 세션 타입별 라벨 한글화
+
+### Technical Details
+- **TDD 방식 개발**: 테스트 먼저 작성 후 구현
+  - `FocusSessionTest.kt`: 12개 도메인 로직 테스트
+    - 세션 시작/완료/중단/진행 확인
+    - 남은 시간 및 진행률 계산
+    - 총 집중 시간 및 Streak 계산
+  - `FocusSessionDaoTest.kt`: 11개 DAO 통합 테스트
+    - CRUD 작업 (삽입/조회/업데이트/삭제)
+    - Flow 기반 반응형 쿼리
+    - 날짜 범위 쿼리
+  - `FocusModeViewModelTest.kt`: 11개 ViewModel 테스트
+    - 세션 라이프사이클 관리
+    - 통계 조회
+    - StateFlow 상태 관리
+- **데이터 모델**
+  - `FocusSessionEntity`: Room 엔티티 (focus_sessions 테이블)
+  - `FocusType` enum: DO_FIRST, DEEP_WORK, POMODORO, BREAK
+  - Database v23→v24 마이그레이션
+- **아키텍처**
+  - MVVM 패턴 유지
+  - Repository 패턴
+  - StateFlow 기반 반응형 UI
+  - Extension functions으로 도메인 로직 분리
+- **새로 생성된 파일** (8개)
+  - `FocusSessionEntity.kt`: 데이터 모델
+  - `FocusSession.kt`: 도메인 로직 (7개 확장 함수)
+  - `FocusSessionDao.kt`: DAO 인터페이스 (11개 쿼리)
+  - `FocusSessionRepository.kt`: Repository
+  - `FocusModeViewModel.kt`: ViewModel
+  - `FocusModeViewModelFactory.kt`: Factory
+  - `FocusModeScreen.kt`: Compose UI (500+ 줄)
+  - 테스트 파일 3개
+
+### Testing
+- **모든 테스트 통과** ✅
+  - 포커스 모드 테스트 34개 추가
+  - 기존 테스트 242개 모두 통과
+  - 총 276개 테스트 100% 통과
+- **빌드 검증** ✅
+  - Debug/Release 빌드 성공
+  - 함수 가시성 충돌 해결 (StatItem private 처리)
+
+### Notes
+- MINOR 버전 업데이트 (새로운 기능 추가)
+- 하위 호환성 유지
+- DB v23→v24 마이그레이션 (focus_sessions 테이블 추가)
+- Eisenhower Matrix와의 자연스러운 통합
+- 생산성 향상을 위한 집중 시간 관리 기능
+
 ## [1.50.0] - 2025-10-11
 
 ### Added
