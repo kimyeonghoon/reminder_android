@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.46.1] - 2025-10-11
+
+### Changed
+- 🧹 **HomeScreen UI 정리** - Bottom Navigation Bar 도입 후 중복 버튼 제거
+  - HomeScreen TopBar에서 통계/설정 버튼 제거
+    - 이제 Bottom Navigation Bar에서 접근 가능
+    - 필터와 검색 버튼은 HomeScreen 전용 기능으로 유지
+  - 함수 시그니처 정리
+    - `onStatisticsClick`, `onSettingsClick` 파라미터 제거
+    - 사용되지 않는 아이콘 import 제거 (BarChart, Settings)
+  - MainActivity.kt 호출 지점 업데이트
+
+### Technical Details
+- **Files Modified**: 2개
+  - `HomeScreen.kt` (TopBar actions, 함수 파라미터, imports 정리)
+  - `MainActivity.kt` (HomeScreen 호출 지점 업데이트)
+- **Lines Changed**: -8 (중복 제거)
+- **Tests**: 모든 테스트 통과 ✅ (213/213)
+- **Build**: 성공 (BUILD SUCCESSFUL)
+
+### Quality Improvements
+- UI 일관성 향상 (Bottom Navigation Bar와 중복 제거)
+- 코드 품질 개선 (사용되지 않는 파라미터 제거)
+- 사용자 경험 개선 (통계/설정은 하단 네비게이션에서만 접근)
+
 ## [1.46.0] - 2025-10-11
 
 ### Added

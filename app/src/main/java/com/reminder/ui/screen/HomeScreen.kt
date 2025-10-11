@@ -20,9 +20,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,8 +44,6 @@ fun HomeScreen(
     viewModel: ReminderViewModel,
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
-    onStatisticsClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {},
     simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
@@ -182,24 +178,17 @@ fun HomeScreen(
                 TopAppBar(
                     title = { Text("Reminder") },
                     actions = {
-                        // 간편 모드에서는 통계와 검색 숨기기
+                        // 간편 모드에서는 필터와 검색 숨기기
                         if (!simpleMode) {
-                            IconButton(onClick = onStatisticsClick) {
-                                Icon(Icons.Default.BarChart, contentDescription = "통계")
-                            }
                             // v1.32.0: 고급 필터 버튼
                             IconButton(onClick = { showFilterBottomSheet = true }) {
                                 Icon(Icons.Default.FilterList, contentDescription = "필터")
                             }
-                        }
-                        IconButton(onClick = onSettingsClick) {
-                            Icon(Icons.Default.Settings, contentDescription = "설정")
-                        }
-                        if (!simpleMode) {
                             IconButton(onClick = { showSearchBar = true }) {
                                 Icon(Icons.Default.Search, contentDescription = "검색")
                             }
                         }
+                        // v1.46.0: 통계와 설정은 Bottom Navigation에 있으므로 제거
                     }
                 )
             }

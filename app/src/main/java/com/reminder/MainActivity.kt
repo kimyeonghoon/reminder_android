@@ -347,8 +347,6 @@ fun ReminderAppContent(
                     selectedReminder = reminder
                     navController.navigate("add_edit")
                 },
-                onStatisticsClick = { navController.navigate("statistics") },
-                onSettingsClick = { navController.navigate("settings") },
                 simpleMode = userPreferences.simpleMode
             )
         }
