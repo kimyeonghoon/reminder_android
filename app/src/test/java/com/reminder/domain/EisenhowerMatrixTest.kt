@@ -238,6 +238,120 @@ class EisenhowerMatrixTest {
         assertEquals(Urgency.LOW, moved.urgency)
     }
 
+    /**
+     * v1.50.0: 쿼드런트 트렌드 분석 테스트
+     */
+    @Test
+    fun `주간 트렌드를 계산할 수 있다`() {
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            // 오늘 완료 2개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now),
+            // 2일 전 완료 1개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now.minusDays(2)),
+            // 7일 전 완료 1개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now.minusDays(7)),
+            // 8일 전 완료 (범위 밖)
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now.minusDays(8)),
+            // 미완료 (제외)
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false)
+        )
+
+        val trend = reminders.calculateQuadrantTrend(Quadrant.DO_FIRST, TrendPeriod.WEEKLY)
+
+        assertEquals(8, trend.dataPoints.size) // 오늘부터 7일 전까지 = 8개
+        assertEquals(2, trend.dataPoints[0].count) // 오늘
+        assertEquals(0, trend.dataPoints[1].count) // 어제
+        assertEquals(1, trend.dataPoints[2].count) // 2일 전
+        assertEquals(1, trend.dataPoints[7].count) // 7일 전
+        assertEquals(4, trend.totalCompleted) // 8일 전 제외
+    }
+
+    @Test
+    fun `월간 트렌드를 계산할 수 있다`() {
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now),
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now.minusDays(15)),
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now.minusDays(29)),
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now.minusDays(30)),
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now.minusDays(31)) // 범위 밖
+        )
+
+        val trend = reminders.calculateQuadrantTrend(Quadrant.SCHEDULE, TrendPeriod.MONTHLY)
+
+        assertEquals(31, trend.dataPoints.size) // 오늘부터 30일 전까지 = 31개
+        assertEquals(1, trend.dataPoints[0].count) // 오늘
+        assertEquals(1, trend.dataPoints[15].count) // 15일 전
+        assertEquals(1, trend.dataPoints[29].count) // 29일 전
+        assertEquals(1, trend.dataPoints[30].count) // 30일 전
+        assertEquals(4, trend.totalCompleted) // 31일 전 제외
+    }
+
+    @Test
+    fun `완료된 리마인더가 없으면 트렌드는 모두 0`() {
+        val reminders = listOf(
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false)
+        )
+
+        val trend = reminders.calculateQuadrantTrend(Quadrant.DO_FIRST, TrendPeriod.WEEKLY)
+
+        assertEquals(8, trend.dataPoints.size) // 오늘부터 7일 전까지 = 8개
+        assertEquals(0, trend.totalCompleted)
+        trend.dataPoints.forEach { dataPoint ->
+            assertEquals(0, dataPoint.count)
+        }
+    }
+
+    @Test
+    fun `다른 쿼드런트의 리마인더는 트렌드에 포함되지 않는다`() {
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            // DO_FIRST 2개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, updatedAt = now),
+            // SCHEDULE 1개
+            createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now)
+        )
+
+        val doFirstTrend = reminders.calculateQuadrantTrend(Quadrant.DO_FIRST, TrendPeriod.WEEKLY)
+        val scheduleTrend = reminders.calculateQuadrantTrend(Quadrant.SCHEDULE, TrendPeriod.WEEKLY)
+
+        assertEquals(2, doFirstTrend.totalCompleted)
+        assertEquals(1, scheduleTrend.totalCompleted)
+    }
+
+    @Test
+    fun `시간대별 쿼드런트 분포를 계산할 수 있다`() {
+        val now = LocalDateTime.now()
+        val reminders = listOf(
+            // 오전 (0-11시): 2개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(9).withMinute(0)),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(11).withMinute(30)),
+            // 오후 (12-17시): 3개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(14).withMinute(0)),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(16).withMinute(30)),
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(17).withMinute(0)),
+            // 저녁 (18-23시): 1개
+            createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true,
+                updatedAt = now.withHour(20).withMinute(0))
+        )
+
+        val distribution = reminders.calculateTimeDistribution(Quadrant.DO_FIRST)
+
+        assertEquals(2, distribution.morning) // 0-11시
+        assertEquals(3, distribution.afternoon) // 12-17시
+        assertEquals(1, distribution.evening) // 18-23시
+        assertEquals(0, distribution.night) // 24-5시
+    }
+
     // Helper 함수
     private fun createReminder(
         priority: Priority,

@@ -191,3 +191,105 @@ fun ReminderEntity.moveToQuadrant(targetQuadrant: Quadrant): ReminderEntity {
         updatedAt = java.time.LocalDateTime.now()
     )
 }
+
+/**
+ * v1.50.0: 트렌드 분석 기간
+ */
+enum class TrendPeriod(val days: Int) {
+    WEEKLY(7),
+    MONTHLY(30)
+}
+
+/**
+ * v1.50.0: 트렌드 데이터 포인트
+ */
+data class TrendDataPoint(
+    val date: java.time.LocalDate,
+    val count: Int
+)
+
+/**
+ * v1.50.0: 쿼드런트 트렌드 데이터
+ */
+data class QuadrantTrend(
+    val quadrant: Quadrant,
+    val period: TrendPeriod,
+    val dataPoints: List<TrendDataPoint>,
+    val totalCompleted: Int
+)
+
+/**
+ * v1.50.0: 시간대별 분포
+ */
+data class TimeDistribution(
+    val morning: Int,    // 0-11시
+    val afternoon: Int,  // 12-17시
+    val evening: Int,    // 18-23시
+    val night: Int       // 0-5시
+)
+
+/**
+ * v1.50.0: 쿼드런트별 트렌드 계산
+ *
+ * @param quadrant 분석할 쿼드런트
+ * @param period 기간 (WEEKLY 또는 MONTHLY)
+ * @return QuadrantTrend - 날짜별 완료 개수
+ */
+fun List<ReminderEntity>.calculateQuadrantTrend(
+    quadrant: Quadrant,
+    period: TrendPeriod
+): QuadrantTrend {
+    val now = java.time.LocalDateTime.now()
+    val startDate = now.minusDays(period.days.toLong()).toLocalDate()
+
+    // 해당 쿼드런트의 완료된 리마인더만 필터링
+    val completedReminders = this
+        .filterByQuadrant(quadrant)
+        .filter { it.isCompleted }
+        .filter { it.updatedAt.toLocalDate() >= startDate }
+
+    // 날짜별 그룹화
+    val dateGroups = completedReminders.groupBy { it.updatedAt.toLocalDate() }
+
+    // 데이터 포인트 생성 (기간 내 모든 날짜)
+    val dataPoints = (0..period.days).map { daysAgo ->
+        val date = now.minusDays(daysAgo.toLong()).toLocalDate()
+        val count = dateGroups[date]?.size ?: 0
+        TrendDataPoint(date, count)
+    }
+
+    return QuadrantTrend(
+        quadrant = quadrant,
+        period = period,
+        dataPoints = dataPoints,
+        totalCompleted = completedReminders.size
+    )
+}
+
+/**
+ * v1.50.0: 시간대별 쿼드런트 분포 계산
+ *
+ * @param quadrant 분석할 쿼드런트
+ * @return TimeDistribution - 시간대별 완료 개수
+ */
+fun List<ReminderEntity>.calculateTimeDistribution(quadrant: Quadrant): TimeDistribution {
+    val completedReminders = this
+        .filterByQuadrant(quadrant)
+        .filter { it.isCompleted }
+
+    val distribution = completedReminders.groupBy { reminder ->
+        when (reminder.updatedAt.hour) {
+            in 0..5 -> "night"
+            in 6..11 -> "morning"
+            in 12..17 -> "afternoon"
+            else -> "evening"
+        }
+    }
+
+    return TimeDistribution(
+        morning = distribution["morning"]?.size ?: 0,
+        afternoon = distribution["afternoon"]?.size ?: 0,
+        evening = distribution["evening"]?.size ?: 0,
+        night = distribution["night"]?.size ?: 0
+    )
+}

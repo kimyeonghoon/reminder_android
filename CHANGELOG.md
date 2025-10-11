@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.50.0] - 2025-10-11
+
+### Added
+- 📊 **Eisenhower Matrix 고도화 3단계** - 쿼드런트 이동 UI 및 트렌드 분석
+  - **쿼드런트 이동 메뉴**
+    - 각 리마인더 카드에 이동 메뉴 버튼 추가
+    - 드롭다운 메뉴로 다른 쿼드런트 선택 가능
+    - 색상 인디케이터로 쿼드런트 구분
+    - 현재 쿼드런트는 메뉴에서 제외
+  - **트렌드 분석 다이얼로그**
+    - TopAppBar에 트렌드 분석 버튼 추가 (TrendingUp 아이콘)
+    - 쿼드런트별 완료 트렌드 시각화
+    - 주간/월간 기간 선택 가능
+    - 간단한 막대 그래프로 최근 7일 데이터 표시
+    - 시간대별 완료 분포 (오전/오후/저녁/심야)
+  - **트렌드 분석 도메인 로직**
+    - `TrendPeriod` enum: WEEKLY(7일), MONTHLY(30일)
+    - `TrendDataPoint`: 날짜와 완료 개수
+    - `QuadrantTrend`: 트렌드 데이터 (dataPoints, totalCompleted)
+    - `TimeDistribution`: 시간대별 분포 (morning, afternoon, evening, night)
+    - `calculateQuadrantTrend()`: 주간/월간 트렌드 계산
+    - `calculateTimeDistribution()`: 시간대별 분포 계산
+
+### Technical Details
+- **TDD 방식 개발**: 테스트 먼저 작성 후 구현
+  - `EisenhowerMatrixTest.kt`: 6개 새 테스트 추가
+    - 주간 트렌드 계산 (8일간 데이터 포인트)
+    - 월간 트렌드 계산 (31일간 데이터 포인트)
+    - 완료된 리마인더가 없을 때 처리
+    - 다른 쿼드런트 리마인더 필터링
+    - 시간대별 분포 계산 (4개 시간대)
+  - `EisenhowerMatrix.kt`: 도메인 로직 구현
+    - 5개 새 데이터 클래스 추가
+    - 2개 확장 함수 추가
+  - `EisenhowerMatrixScreen.kt`: UI 업데이트
+    - `QuadrantReminderCard()`: 이동 메뉴 포함 커스텀 카드
+    - `TrendAnalysisDialog()`: 트렌드 분석 다이얼로그 (118줄)
+    - `SimpleTrendChart()`: 간단한 막대 그래프 (39줄)
+    - `TimeDistributionItem()`: 시간대별 분포 표시 (18줄)
+    - AutoMirrored 아이콘 사용 (TrendingUp)
+
+### Testing
+- **모든 테스트 통과** ✅
+  - Eisenhower Matrix 테스트 6개 추가
+  - 기존 테스트 247개 모두 통과
+  - 총 253개 테스트 100% 통과
+- **빌드 검증** ✅
+  - Deprecation warning 수정 (TrendingUp → AutoMirrored)
+  - Debug/Release 빌드 성공
+
+### Notes
+- MINOR 버전 업데이트 (새로운 기능 추가)
+- 하위 호환성 유지
+- Eisenhower Matrix 고도화 완료
+- 실용적인 이동 메뉴로 사용성 대폭 향상
+- 데이터 기반 생산성 분석 가능
+
 ## [1.49.0] - 2025-10-11
 
 ### Added
