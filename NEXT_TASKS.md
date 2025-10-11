@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-11 (v1.46.2 완료)
+> 마지막 업데이트: 2025-10-11 (v1.47.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.46.2 (versionCode 50)
-- **DB 버전**: v22
-- **총 릴리즈**: 50개 버전
-- **테스트 커버리지**: 213/213 통과 (100% ✅)
+- **최신 버전**: v1.47.0 (versionCode 53)
+- **DB 버전**: v23
+- **총 릴리즈**: 53개 버전
+- **테스트 커버리지**: 223/223 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -38,46 +38,100 @@
 - ✅ Pomodoro Timer (25/5/15분 집중/휴식 타이머)
 - ✅ 테스트 안정화 (v1.45.1: Fake 구현 패턴, 213개 테스트 100% 통과)
 - ✅ Bottom Navigation Bar (v1.46.0~v1.46.2: 5개 메인 탭, UI 정리 완료)
+- ✅ **Eisenhower Matrix (v1.47.0: 중요도×긴급도 매트릭스, TDD)** 🎯
 
 ---
 
-## 🔥 다음 버전 계획 (v1.46.2 이후)
+## 🔥 다음 버전 계획 (v1.47.0 이후)
 
 ### 🎯 향후 개발 방향
 
-현재 v1.46.2까지 완료되어 핵심 기능과 Bottom Navigation 통합이 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
+현재 v1.47.0까지 완료되어 핵심 기능, Bottom Navigation 통합, 그리고 Eisenhower Matrix 생산성 기능이 모두 구현되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
 
-#### 1. 코드 품질 및 안정성 개선
-- Deprecation warnings 수정 (Divider → HorizontalDivider, LinearProgressIndicator 람다)
+#### 1. Navigation 통합 (우선순위 높음) 🔴
+- **Eisenhower Matrix 화면을 MainActivity Navigation에 추가**
+  - 현재: EisenhowerMatrixScreen.kt 구현 완료, Navigation 미통합
+  - 필요: MainActivity.kt에서 navController 라우팅 추가
+  - Bottom Navigation 또는 메뉴에 진입점 추가
+  - 예상 시간: 30분~1시간
+
+#### 2. 코드 품질 및 안정성 개선
+- Deprecation warnings 수정 (남은 경고들):
+  - `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳)
+  - `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack deprecated
+  - 기타 deprecated API 업데이트
 - 전체 화면 일관성 최종 검토 및 Material 3 디자인 정교화
 - 성능 최적화 및 메모리 누수 점검
 
-#### 2. 고급 생산성 기능
-- 포커스 모드 (방해 금지 모드, 특정 앱 차단)
-- 목표 기반 리마인더 (장기 목표 → 하위 작업 자동 생성)
-- Eisenhower Matrix (중요도-긴급도 매트릭스)
+#### 3. 고급 생산성 기능
+- **포커스 모드** (방해 금지 모드, 특정 앱 차단)
+  - Eisenhower Matrix의 DO_FIRST 쿼드런트와 연동
+  - 집중해야 할 시간에 방해 요소 차단
+- **목표 기반 리마인더** (장기 목표 → 하위 작업 자동 생성)
+  - AI 기반 작업 분해 제안
+  - Eisenhower Matrix로 우선순위 자동 배정
+- **시간 블로킹** (Time Blocking)
+  - 캘린더와 통합하여 작업 시간 예약
+  - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
 
-#### 3. 소셜 및 협업 강화
+#### 4. 소셜 및 협업 강화
 - 팀 작업 공간 (기존 협업 기능 확장)
 - 댓글 및 멘션 시스템
 - 활동 피드 (누가 무엇을 했는지)
+- Eisenhower Matrix 공유 (팀원들과 우선순위 공유)
 
-#### 4. 웨어러블 및 크로스 플랫폼
+#### 5. 웨어러블 및 크로스 플랫폼
 - Wear OS 앱 (스마트워치 지원)
 - 태블릿 최적화 (2단 레이아웃)
 - 웹 버전 (PWA)
 
-#### 5. 인공지능 고도화
+#### 6. 인공지능 고도화
 - 자연어 처리 (NLP) 기반 리마인더 생성
 - 일정 최적화 제안 (스케줄링 AI)
 - 음성 어시스턴트 통합 (Google Assistant, Bixby)
+- **Eisenhower Matrix 자동 분류 개선**:
+  - 제목/설명 분석으로 긴급도 자동 예측
+  - 과거 데이터 학습으로 정확도 향상
+
+---
+
+## 🚧 최근 완료 이력 (v1.46.0 ~ v1.47.0)
+
+### v1.46.0: Bottom Navigation Bar ✅
+**완료됨** - 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
+
+### v1.46.1: HomeScreen UI 정리 ✅
+**완료됨** - 중복 버튼 제거, Bottom Navigation 일관성 향상
+
+### v1.46.2: Bottom Navigation 화면 UI 정리 ✅
+**완료됨** - 뒤로가기 버튼 제거, 중복 메뉴 제거
+
+### v1.46.3: Compose API 최신화 ✅
+**완료됨** - Divider → HorizontalDivider, LinearProgressIndicator 람다 변환
+
+### v1.46.4: 컴파일 경고 수정 ✅
+**완료됨** - menuAnchor() deprecated 수정, 사용하지 않는 파라미터 제거
+
+### v1.47.0: Eisenhower Matrix ✅ 🎯
+**완료됨** - TDD 방식으로 생산성 매트릭스 구현
+- **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
+- **4개 쿼드런트 자동 분류**:
+  - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
+  - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
+  - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
+  - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
+- **EisenhowerMatrixScreen.kt**: 2×2 그리드 UI (280줄)
+- **쿼드런트별 색상 구분**: 빨강/파랑/노랑/초록
+- **TDD**: EisenhowerMatrixTest.kt (10개 테스트 추가)
+- **DB 마이그레이션**: v22 → v23 (urgency 컬럼, 인덱스 추가)
+- **테스트 통과**: 223/223 (기존 213 + 신규 10)
+- **⚠️ 미완료**: MainActivity Navigation 통합 (다음 작업으로 권장)
 
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
 
 ### v1.37.0: AI 스마트 추천 🤖 ✅
-
 **완료됨** - ML 기반 우선순위/카테고리 예측 시스템 구현
 
 ### v1.38.0 ~ v1.39.0: 오프라인 모드 & 첨부파일 고도화 ✅
@@ -101,35 +155,40 @@
 ### v1.45.1: 테스트 안정화 ✅
 **완료됨** - Fake 구현 패턴 도입, 213/213 테스트 통과 (100%)
 
-### v1.46.0~v1.46.2: Bottom Navigation Bar & UI 정리 ✅
-**완료됨**
-- v1.46.0: 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
-- v1.46.1: HomeScreen UI 정리 (중복 버튼 제거)
-- v1.46.2: Bottom Navigation 화면 UI 정리 (뒤로가기 버튼, 중복 메뉴 제거)
-
 ---
 
 ## 📅 다음 세션 제안
 
-v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션에서는:
+v1.47.0까지 Eisenhower Matrix 구현 완료! 다음 세션에서는:
 
-1. **코드 품질 개선** (권장, 빠른 작업)
-   - Deprecation warnings 수정 (Divider → HorizontalDivider)
-   - LinearProgressIndicator 람다 변환
-   - 최신 Compose API 적용
+### 1. **Eisenhower Matrix Navigation 통합** (최우선 권장) 🔴
+- MainActivity.kt에 EisenhowerMatrixScreen 라우팅 추가
+- Bottom Navigation 또는 메뉴 진입점 추가
+- 예상 시간: 30분~1시간
+- **현재 상태**: UI 구현 완료, 접근 방법만 추가하면 즉시 사용 가능!
 
-2. **추가 UI/UX 개선**
-   - 네비게이션 애니메이션 튜닝
-   - Bottom Navigation 화면 패딩/레이아웃 미세 조정
+### 2. **코드 품질 개선** (권장, 빠른 작업)
+- 남은 Deprecation warnings 수정:
+  - `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳)
+  - `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack deprecated
+- 최신 Compose API 적용
+- 예상 시간: 30분
 
-3. **Wear OS 앱 구현** (고급 기능)
-   - 스마트워치 지원으로 사용성 대폭 향상
-   - 새 wear 모듈 생성
-   - 예상 시간: 6-7시간
+### 3. **Eisenhower Matrix 고도화**
+- AI 기반 긴급도 자동 예측 (제목/설명 분석)
+- 쿼드런트 간 드래그 앤 드롭 이동
+- 쿼드런트별 통계 대시보드
+- 예상 시간: 3-4시간
 
-3. **사용자 피드백 기반 개선**
-   - 실제 사용자 테스트 후 개선사항 반영
-   - 성능 최적화 및 버그 수정
+### 4. **포커스 모드 구현** (고급 기능)
+- Eisenhower Matrix DO_FIRST와 연동
+- 방해 금지 모드, 앱 차단 기능
+- 예상 시간: 4-5시간
+
+### 5. **Wear OS 앱 구현** (장기 프로젝트)
+- 스마트워치 지원으로 사용성 대폭 향상
+- 새 wear 모듈 생성
+- 예상 시간: 6-7시간
 
 ---
 
@@ -144,9 +203,10 @@ v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션�
 
 **또는 특정 작업 지정:**
 ```
-"Pomodoro와 Habit Tracker를 MainActivity에 통합해줘"
+"Eisenhower Matrix를 MainActivity에 통합해줘"
+"남은 deprecated warnings 수정해줘"
+"포커스 모드 구현해줘 (TDD로)"
 "Wear OS 앱 구현해줘 (TDD로)"
-"다음 작업 제안해줘"
 ```
 
 **⚠️ 주의**: "다음 작업 진행해줘"는 자동으로 테스트를 먼저 실행합니다!
@@ -158,7 +218,7 @@ v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션�
 - **TDD 필수**: 모든 새 기능은 테스트 먼저 작성
 - **커밋 메시지**: `type(scope): 한글 제목` 형식
 - **버전 업데이트**: `app/build.gradle.kts`에서 versionCode/versionName 수정
-- **문서화**: CHANGELOG.md, CLAUDE.md 동기화
+- **문서화**: CHANGELOG.md, CLAUDE.md, README.md 동기화
 - **API 키 관리**: local.properties에 저장 (절대 커밋 금지)
 
 ---
@@ -170,8 +230,9 @@ v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션�
 - **오프라인 모드**: 동기화 충돌 시나리오 테스트 필요
 - **첨부파일**: Firebase Storage 무료 티어 5GB 제한
 - **캘린더 통합**: Google Calendar API 10,000 requests/day 제한
-- **Pomodoro Timer**: MainActivity 통합 미완료 (Future Work)
-- **Habit Tracker**: 메인 네비게이션 미통합 (Future Work)
+- **Pomodoro Timer**: Bottom Navigation 통합 완료 ✅
+- **Habit Tracker**: Bottom Navigation 통합 완료 ✅
+- **Eisenhower Matrix**: Navigation 통합 미완료 (다음 작업 권장) 🔴
 
 ### Wear OS 구현 시 고려사항
 - Wear OS 기기 테스트 필수
@@ -186,24 +247,31 @@ v1.46.2까지 Bottom Navigation Bar 통합 및 UI 정리 완료! 다음 세션�
 - **프로젝트 가이드**: `CLAUDE.md` ⭐ (먼저 읽기)
 - **변경 이력**: `CHANGELOG.md`
 - **빌드 설정**: `app/build.gradle.kts`
-- **아키텍처**: `ARCHITECTURE.md`
+- **다음 작업**: `NEXT_TASKS.md` (현재 파일)
+- **사용자 문서**: `README.md`
 
 ---
 
 **Happy Coding! 🚀**
 
-_v1.46.2까지 50개 버전, 22개 DB 마이그레이션을 완료했습니다. 이제 앱은 매우 강력한 생산성 도구가 되었습니다!_
+_v1.47.0까지 53개 버전, 23개 DB 마이그레이션을 완료했습니다. Eisenhower Matrix로 생산성이 한 단계 더 업그레이드되었습니다!_
 
 **주요 성과**:
-- ✅ 50개 버전 릴리즈 (v1.0.0 ~ v1.46.2)
-- ✅ 22번의 데이터베이스 마이그레이션
-- ✅ TDD 기반 안정적인 코드베이스 (213개 테스트 100% 통과)
+- ✅ 53개 버전 릴리즈 (v1.0.0 ~ v1.47.0)
+- ✅ 23번의 데이터베이스 마이그레이션
+- ✅ TDD 기반 안정적인 코드베이스 (223개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
 - ✅ AI/ML 기반 스마트 추천
 - ✅ 포모도로 & 습관 추적
 - ✅ Bottom Navigation Bar (5개 메인 탭, UI 일관성 완벽 정리)
+- ✅ **Eisenhower Matrix (중요도×긴급도 매트릭스)** 🎯
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
-**다음 목표**: 코드 품질 개선 (Deprecation warnings), 또는 Wear OS 확장!
+**다음 우선순위**:
+1. 🔴 **Eisenhower Matrix Navigation 통합** (30분, 즉시 사용 가능하게!)
+2. 🟡 코드 품질 개선 (Deprecation warnings)
+3. 🟢 포커스 모드 또는 Wear OS 확장
+
+**⭐ v1.47.0 하이라이트**: Eisenhower Matrix로 생산성 혁명! 중요하고 긴급한 일을 한눈에 파악하고 효율적으로 관리하세요.
