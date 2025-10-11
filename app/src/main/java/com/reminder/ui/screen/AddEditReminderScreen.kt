@@ -34,6 +34,7 @@ import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.SubTask
+import com.reminder.data.entity.Urgency
 import com.reminder.ui.components.DatePickerField
 import com.reminder.ui.components.RecurrenceSelector
 import com.reminder.ui.components.SubTaskItem
@@ -60,9 +61,11 @@ fun AddEditReminderScreen(
     var description by remember { mutableStateOf(reminder?.description ?: "") }
     var category by remember { mutableStateOf(reminder?.category ?: "") }
     var priority by remember { mutableStateOf(reminder?.priority ?: Priority.MEDIUM) }
+    var urgency by remember { mutableStateOf(reminder?.urgency ?: Urgency.MEDIUM) }  // v1.47.0
     var selectedDate by remember { mutableStateOf(reminder?.dueDateTime?.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(reminder?.dueDateTime?.toLocalTime()) }
-    var expanded by remember { mutableStateOf(false) }
+    var priorityExpanded by remember { mutableStateOf(false) }
+    var urgencyExpanded by remember { mutableStateOf(false) }  // v1.47.0
 
     // v1.22.0: 위치 관련
     var locationLatitude by remember { mutableStateOf(reminder?.locationLatitude?.toString() ?: "") }
@@ -295,30 +298,62 @@ fun AddEditReminderScreen(
             }
 
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                expanded = priorityExpanded,
+                onExpandedChange = { priorityExpanded = !priorityExpanded }
             ) {
                 OutlinedTextField(
                     value = priority.name,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Priority") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    label = { Text("Priority (중요도)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor()
                 )
 
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = priorityExpanded,
+                    onDismissRequest = { priorityExpanded = false }
                 ) {
                     Priority.entries.forEach { p ->
                         DropdownMenuItem(
                             text = { Text(p.name) },
                             onClick = {
                                 priority = p
-                                expanded = false
+                                priorityExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // v1.47.0: Urgency (긴급도) 선택
+            ExposedDropdownMenuBox(
+                expanded = urgencyExpanded,
+                onExpandedChange = { urgencyExpanded = !urgencyExpanded }
+            ) {
+                OutlinedTextField(
+                    value = urgency.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Urgency (긴급도)") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = urgencyExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = urgencyExpanded,
+                    onDismissRequest = { urgencyExpanded = false }
+                ) {
+                    Urgency.entries.forEach { u ->
+                        DropdownMenuItem(
+                            text = { Text(u.name) },
+                            onClick = {
+                                urgency = u
+                                urgencyExpanded = false
                             }
                         )
                     }
@@ -666,6 +701,7 @@ fun AddEditReminderScreen(
                                 title = title,
                                 description = description,
                                 priority = priority,
+                                urgency = urgency,  // v1.47.0
                                 category = category,
                                 dueDateTime = dueDateTime,
                                 updatedAt = LocalDateTime.now(),

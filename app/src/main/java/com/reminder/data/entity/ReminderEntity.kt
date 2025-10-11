@@ -14,10 +14,12 @@ import java.time.LocalDateTime
         Index(value = ["isArchived"]),  // v1.43.0: 아카이브 인덱스
         Index(value = ["dueDateTime"]),
         Index(value = ["priority"]),
+        Index(value = ["urgency"]),     // v1.47.0: 긴급도 인덱스
         Index(value = ["category"]),
         Index(value = ["updatedAt"]),
         Index(value = ["isCompleted", "dueDateTime"]),  // 복합 인덱스 (가장 자주 사용되는 쿼리)
-        Index(value = ["isCompleted", "isArchived"])     // v1.43.0: 완료+아카이브 복합 인덱스
+        Index(value = ["isCompleted", "isArchived"]),    // v1.43.0: 완료+아카이브 복합 인덱스
+        Index(value = ["priority", "urgency"])           // v1.47.0: Eisenhower Matrix용 복합 인덱스
     ]
 )
 data class ReminderEntity(
@@ -27,6 +29,7 @@ data class ReminderEntity(
     val description: String = "",
     val dueDateTime: LocalDateTime? = null,
     val priority: Priority = Priority.MEDIUM,
+    val urgency: Urgency = Urgency.MEDIUM,  // v1.47.0: 긴급도 (Eisenhower Matrix용)
     val category: String = "",
     val tags: String = "", // 콤마로 구분된 태그 (예: "work,urgent,meeting")
     val isCompleted: Boolean = false,
@@ -72,4 +75,13 @@ enum class Priority {
     LOW,
     MEDIUM,
     HIGH
+}
+
+/**
+ * v1.47.0: 긴급도 (Urgency) - Eisenhower Matrix용
+ */
+enum class Urgency {
+    LOW,      // 긴급하지 않음
+    MEDIUM,   // 보통 긴급
+    HIGH      // 매우 긴급
 }

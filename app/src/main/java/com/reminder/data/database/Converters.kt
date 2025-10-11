@@ -9,6 +9,7 @@ import com.reminder.data.entity.FileType
 import com.reminder.data.entity.MLDataType
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.RecurrencePattern
+import com.reminder.data.entity.Urgency
 import com.reminder.data.entity.ResolutionStrategy
 import com.reminder.data.entity.SessionType
 import com.reminder.data.entity.SyncDirection
@@ -49,6 +50,26 @@ class Converters {
             2 -> Priority.MEDIUM
             3 -> Priority.HIGH
             else -> Priority.MEDIUM
+        }
+    }
+
+    // v1.47.0: Urgency converters (Eisenhower Matrix)
+    @TypeConverter
+    fun fromUrgency(value: Urgency): Int {
+        return when (value) {
+            Urgency.LOW -> 1
+            Urgency.MEDIUM -> 2
+            Urgency.HIGH -> 3
+        }
+    }
+
+    @TypeConverter
+    fun toUrgency(value: Int): Urgency {
+        return when (value) {
+            1 -> Urgency.LOW
+            2 -> Urgency.MEDIUM
+            3 -> Urgency.HIGH
+            else -> Urgency.MEDIUM
         }
     }
 

@@ -5,6 +5,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.47.0] - 2025-10-11
+
+### Added
+- 🎯 **Eisenhower Matrix 기능** - 생산성 향상을 위한 중요도×긴급도 매트릭스
+  - **긴급도(Urgency) 필드 추가**
+    - 기존 Priority(중요도)에 더해 Urgency(긴급도) enum 추가 (LOW, MEDIUM, HIGH)
+    - AddEditReminderScreen에 Urgency 선택 UI 구현
+    - DB 마이그레이션 v22→v23 (urgency 컬럼 및 인덱스 추가)
+  - **4개 쿼드런트 시스템**
+    - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
+    - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
+    - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
+    - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
+  - **Eisenhower Matrix 화면**
+    - 2×2 그리드 레이아웃으로 4개 쿼드런트 시각화
+    - 각 쿼드런트별 리마인더 자동 분류 및 개수 표시
+    - 쿼드런트별 색상 구분 (빨강/파랑/노랑/초록)
+    - 드래그 없이 완료/삭제 가능한 간편한 UI
+
+### Technical Details
+- **TDD 방식 개발**: 테스트 먼저 작성 후 구현
+  - `EisenhowerMatrixTest.kt`: 9개 조합 + 필터링/카운트 테스트
+  - `EisenhowerMatrix.kt`: Quadrant enum 및 계산 로직
+- **데이터 모델 변경**:
+  - `ReminderEntity.kt`: urgency 필드 추가
+  - `Converters.kt`: Urgency TypeConverter 구현
+  - `ReminderDatabase.kt`: MIGRATION_22_23 추가
+  - DB 인덱스: `urgency`, `priority+urgency` 복합 인덱스
+- **UI 컴포넌트**:
+  - `EisenhowerMatrixScreen.kt`: 메인 화면 (280줄)
+  - `AddEditReminderScreen.kt`: Urgency 선택 드롭다운 추가
+- **비즈니스 로직**:
+  - `getQuadrant()`: ReminderEntity의 Priority×Urgency 기반 쿼드런트 계산
+  - `filterByQuadrant()`: 쿼드런트별 필터링
+  - `countByQuadrant()`: 쿼드런트별 개수 집계
+
+### Testing
+- **모든 테스트 통과** ✅
+  - Eisenhower Matrix 로직 테스트 10개 추가
+  - 기존 테스트 213개 모두 통과
+  - 빌드 성공 (BUILD SUCCESSFUL)
+
+### Quality Improvements
+- TDD 원칙 준수 (Red-Green-Refactor 사이클)
+- 복합 인덱스로 쿼리 성능 최적화
+- Material 3 디자인 가이드라인 준수
+- 한국어 UI 레이블 (중요도/긴급도)
+
+### Notes
+- DB 버전: v22 → v23 (자동 마이그레이션)
+- 기존 데이터의 urgency는 자동으로 MEDIUM 설정
+- 하위 호환성 유지
+- MINOR 버전 업데이트 (새로운 기능 추가)
+
 ## [1.46.4] - 2025-10-11
 
 ### Changed
