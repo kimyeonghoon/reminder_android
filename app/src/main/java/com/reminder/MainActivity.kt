@@ -18,8 +18,15 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
@@ -64,6 +71,24 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
+
+/**
+ * v1.46.0: Bottom Navigation 아이템 정의
+ */
+data class BottomNavItem(
+    val route: String,
+    val icon: ImageVector,
+    val label: String
+)
 
 class MainActivity : ComponentActivity() {
 
@@ -238,7 +263,55 @@ fun ReminderAppContent(
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
-    NavHost(navController = navController, startDestination = "home") {
+    // v1.46.0: Bottom Navigation Items
+    val bottomNavItems = listOf(
+        BottomNavItem("home", Icons.Default.Home, "홈"),
+        BottomNavItem("statistics", Icons.Default.BarChart, "통계"),
+        BottomNavItem("pomodoro", Icons.Default.Timer, "포모도로"),
+        BottomNavItem("habit_tracker", Icons.Default.CheckBox, "습관"),
+        BottomNavItem("settings", Icons.Default.Settings, "설정")
+    )
+
+    // 현재 라우트 추적
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Bottom Bar를 표시할 라우트 목록
+    val bottomBarRoutes = bottomNavItems.map { it.route }
+    val showBottomBar = currentRoute in bottomBarRoutes
+
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                NavigationBar {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) },
+                            selected = navBackStackEntry?.destination?.hierarchy?.any { it.route == item.route } == true,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    // 백스택을 정리하여 시작 화면으로 돌아갈 때 중복 방지
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    // 같은 아이템을 다시 선택했을 때 중복 방지
+                                    launchSingleTop = true
+                                    // 이전 상태 복원
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = "home",
+            modifier = Modifier.padding(paddingValues)
+        ) {
         composable(
             "home",
             enterTransition = {
@@ -611,6 +684,7 @@ fun ReminderAppContent(
                 viewModel = pomodoroViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
+        }
         }
     }
 }

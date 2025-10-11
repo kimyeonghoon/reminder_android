@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.46.0] - 2025-10-11
+
+### Added
+- 🧭 **Bottom Navigation Bar** - 주요 기능에 빠른 접근을 위한 하단 네비게이션 바 추가
+  - **5개 메인 탭**:
+    - 🏠 홈 (Home): 리마인더 목록
+    - 📊 통계 (Statistics): 생산성 통계 및 목표
+    - 🍅 포모도로 (Pomodoro): 포모도로 타이머 (v1.45.0)
+    - ✅ 습관 (Habits): 습관 추적기 (v1.44.0)
+    - ⚙️ 설정 (Settings): 앱 설정
+  - **BottomNavItem** 데이터 클래스 추가
+  - **스마트 네비게이션**:
+    - 백스택 자동 관리 (popUpTo + saveState + restoreState)
+    - 중복 네비게이션 방지 (launchSingleTop)
+    - 탭 전환 시 이전 상태 유지
+  - **조건부 표시**:
+    - 메인 탭(home, statistics, pomodoro, habit_tracker, settings)에서만 표시
+    - 하위 화면(add_edit, help, archive 등)에서는 자동 숨김
+  - **Material 3 디자인**:
+    - NavigationBar & NavigationBarItem 사용
+    - 선택된 탭 하이라이트 효과
+    - 아이콘 + 라벨 표시
+
+### Changed
+- 🏗️ **MainActivity 리팩토링**
+  - ReminderAppContent에 Scaffold + BottomNavigationBar 추가
+  - NavHost를 Scaffold 내부로 이동 (paddingValues 적용)
+  - 현재 라우트 추적 (currentBackStackEntryAsState)
+  - showBottomBar 로직 추가 (메인 탭 여부 판단)
+- 🧭 **Navigation 개선**
+  - Pomodoro와 Habit Tracker에 직접 접근 가능
+  - Settings 화면 접근 편의성 향상
+  - 탭 간 빠른 전환
+- 📦 **Import 추가**
+  - NavigationBar, NavigationBarItem, Scaffold
+  - Icons (Home, BarChart, Timer, CheckBox, Settings)
+  - NavDestination.hierarchy, NavGraph.findStartDestination
+  - currentBackStackEntryAsState
+- 🔢 버전 업데이트: `versionCode = 49`, `versionName = "1.46.0"`
+
+### Technical Details
+- **Files Modified**: 2개
+  - `MainActivity.kt` (Bottom Navigation Bar 통합)
+  - `build.gradle.kts` (버전 업데이트 예정)
+- **Data Class Created**: 1개
+  - `BottomNavItem` (route, icon, label)
+- **Lines Changed**: +80 (approx.)
+- **Tests**: 모든 테스트 통과 ✅ (213/213)
+- **Build**: 성공 (BUILD SUCCESSFUL)
+
+### Quality Improvements
+- 사용자 경험 대폭 향상 (주요 기능 빠른 접근)
+- Pomodoro와 Habit Tracker 기능 활용도 증대
+- Material 3 디자인 일관성 유지
+- 직관적인 네비게이션 구조
+
+### Future Work
+- 각 탭별 뱃지 카운트 표시 (미완료 리마인더 개수 등)
+- 탭 길게 눌러서 빠른 액션 (예: 홈 탭 길게 누르면 빠른 추가)
+- 네비게이션 제스처 지원 (스와이프로 탭 전환)
+
 ## [1.45.1] - 2025-10-11
 
 ### Fixed
