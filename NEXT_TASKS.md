@@ -46,20 +46,21 @@
 
 ### 🎯 향후 개발 방향
 
-현재 v1.47.0까지 완료되어 핵심 기능, Bottom Navigation 통합, 그리고 Eisenhower Matrix 생산성 기능이 모두 구현되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
+현재 v1.47.0까지 완료되어 핵심 기능, Bottom Navigation 통합, Eisenhower Matrix 생산성 기능, 그리고 Navigation 통합이 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
 
-#### 1. Navigation 통합 (우선순위 높음) 🔴
-- **Eisenhower Matrix 화면을 MainActivity Navigation에 추가**
-  - 현재: EisenhowerMatrixScreen.kt 구현 완료, Navigation 미통합
-  - 필요: MainActivity.kt에서 navController 라우팅 추가
-  - Bottom Navigation 또는 메뉴에 진입점 추가
-  - 예상 시간: 30분~1시간
+#### 1. ~~Navigation 통합~~ ✅ 완료됨 (v1.47.0)
+- ~~**Eisenhower Matrix 화면을 MainActivity Navigation에 추가**~~
+  - ✅ MainActivity.kt에서 navController 라우팅 추가 완료
+  - ✅ HomeScreen TopAppBar에 GridOn 아이콘 버튼 진입점 추가
+  - ✅ 화면 전환 애니메이션 (슬라이드 + 페이드) 적용
 
-#### 2. 코드 품질 및 안정성 개선
-- Deprecation warnings 수정 (남은 경고들):
-  - `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳)
-  - `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack deprecated
-  - 기타 deprecated API 업데이트
+#### 2. ~~코드 품질 및 안정성 개선~~ ✅ 완료됨 (v1.47.0)
+- ✅ Deprecation warnings 수정 완료:
+  - ✅ `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳) → 수정 완료
+  - ✅ `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack → AutoMirrored 수정 완료
+  - ✅ 기타 5개 화면 ArrowBack 아이콘 업데이트 (총 7개 파일)
+  - ✅ `SharedListsScreen.kt`: Icons.Default.List → AutoMirrored 수정 완료
+  - ✅ `SortDropdown.kt`: menuAnchor() deprecated 수정 완료
 - 전체 화면 일관성 최종 검토 및 Material 3 디자인 정교화
 - 성능 최적화 및 메모리 누수 점검
 
@@ -112,8 +113,8 @@
 ### v1.46.4: 컴파일 경고 수정 ✅
 **완료됨** - menuAnchor() deprecated 수정, 사용하지 않는 파라미터 제거
 
-### v1.47.0: Eisenhower Matrix ✅ 🎯
-**완료됨** - TDD 방식으로 생산성 매트릭스 구현
+### v1.47.0: Eisenhower Matrix + Navigation 통합 + 코드 품질 개선 ✅ 🎯
+**완료됨** - TDD 방식으로 생산성 매트릭스 구현 및 전체 통합
 - **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
 - **4개 쿼드런트 자동 분류**:
   - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
@@ -125,7 +126,14 @@
 - **TDD**: EisenhowerMatrixTest.kt (10개 테스트 추가)
 - **DB 마이그레이션**: v22 → v23 (urgency 컬럼, 인덱스 추가)
 - **테스트 통과**: 223/223 (기존 213 + 신규 10)
-- **⚠️ 미완료**: MainActivity Navigation 통합 (다음 작업으로 권장)
+- **✅ Navigation 통합 완료**:
+  - MainActivity.kt에 eisenhower_matrix 라우트 추가
+  - HomeScreen TopAppBar에 GridOn 아이콘 버튼 진입점 추가
+  - 화면 전환 애니메이션 (슬라이드 + 페이드 300ms)
+- **✅ 코드 품질 개선 완료**:
+  - 7개 파일 Deprecation warnings 수정
+  - Material 3 최신 API 마이그레이션 (AutoMirrored 아이콘, MenuAnchorType)
+  - RTL 언어 지원 개선
 
 ---
 
@@ -159,22 +167,18 @@
 
 ## 📅 다음 세션 제안
 
-v1.47.0까지 Eisenhower Matrix 구현 완료! 다음 세션에서는:
+v1.47.0까지 Eisenhower Matrix 구현, Navigation 통합, 코드 품질 개선 모두 완료! 다음 세션에서는:
 
-### 1. **Eisenhower Matrix Navigation 통합** (최우선 권장) 🔴
-- MainActivity.kt에 EisenhowerMatrixScreen 라우팅 추가
-- Bottom Navigation 또는 메뉴 진입점 추가
-- 예상 시간: 30분~1시간
-- **현재 상태**: UI 구현 완료, 접근 방법만 추가하면 즉시 사용 가능!
+### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨
+- ✅ MainActivity.kt에 EisenhowerMatrixScreen 라우팅 추가 완료
+- ✅ HomeScreen TopAppBar에 GridOn 아이콘 진입점 추가 완료
+- ✅ 화면 전환 애니메이션 적용 완료
 
-### 2. **코드 품질 개선** (권장, 빠른 작업)
-- 남은 Deprecation warnings 수정:
-  - `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳)
-  - `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack deprecated
-- 최신 Compose API 적용
-- 예상 시간: 30분
+### 2. ~~**코드 품질 개선**~~ ✅ 완료됨
+- ✅ Deprecation warnings 수정 완료 (7개 파일)
+- ✅ 최신 Compose API 적용 (AutoMirrored 아이콘, MenuAnchorType)
 
-### 3. **Eisenhower Matrix 고도화**
+### 3. **Eisenhower Matrix 고도화** (다음 우선순위 권장) 🔴
 - AI 기반 긴급도 자동 예측 (제목/설명 분석)
 - 쿼드런트 간 드래그 앤 드롭 이동
 - 쿼드런트별 통계 대시보드
@@ -270,8 +274,8 @@ _v1.47.0까지 53개 버전, 23개 DB 마이그레이션을 완료했습니다. 
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **Eisenhower Matrix Navigation 통합** (30분, 즉시 사용 가능하게!)
-2. 🟡 코드 품질 개선 (Deprecation warnings)
-3. 🟢 포커스 모드 또는 Wear OS 확장
+1. 🔴 **Eisenhower Matrix 고도화** (AI 예측, 드래그 앤 드롭, 통계)
+2. 🟡 포커스 모드 구현 (DO_FIRST 연동, 방해 금지)
+3. 🟢 Wear OS 앱 구현 (스마트워치 지원)
 
-**⭐ v1.47.0 하이라이트**: Eisenhower Matrix로 생산성 혁명! 중요하고 긴급한 일을 한눈에 파악하고 효율적으로 관리하세요.
+**⭐ v1.47.0 하이라이트**: Eisenhower Matrix로 생산성 혁명! 중요하고 긴급한 일을 한눈에 파악하고 효율적으로 관리하세요. Navigation 통합 완료로 즉시 사용 가능!
