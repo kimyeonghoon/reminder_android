@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
  * Firestore 기반 협업 권한 관리
  * 컬렉션 구조: shared_reminders/{reminderId}/collaborators/{userId}
  */
-class PermissionManager(
+open class PermissionManager(
     private val firestore: FirebaseFirestore
 ) {
 
@@ -26,7 +26,7 @@ class PermissionManager(
      * @param required 요구되는 권한 레벨
      * @return 권한 보유 여부
      */
-    suspend fun hasPermission(
+    open suspend fun hasPermission(
         userId: String,
         reminderId: String,
         required: Permission
@@ -61,7 +61,7 @@ class PermissionManager(
      * @param permission 부여할 권한
      * @param grantedBy 권한을 부여한 사용자 ID (optional)
      */
-    suspend fun grantPermission(
+    open suspend fun grantPermission(
         userId: String,
         reminderId: String,
         permission: Permission,
@@ -88,7 +88,7 @@ class PermissionManager(
      * @param userId 권한을 회수할 사용자 ID
      * @param reminderId 리마인더 ID
      */
-    suspend fun revokePermission(
+    open suspend fun revokePermission(
         userId: String,
         reminderId: String
     ) {
@@ -107,7 +107,7 @@ class PermissionManager(
      * @param reminderId 리마인더 ID
      * @return 협업자 목록
      */
-    suspend fun getCollaborators(reminderId: String): List<Collaborator> {
+    open suspend fun getCollaborators(reminderId: String): List<Collaborator> {
         return try {
             val snapshot = firestore
                 .collection(COLLECTION_SHARED_REMINDERS)
@@ -142,7 +142,7 @@ class PermissionManager(
      * @param userId 사용자 ID
      * @return 공유 리마인더 ID 목록
      */
-    suspend fun getSharedReminders(userId: String): List<String> {
+    open suspend fun getSharedReminders(userId: String): List<String> {
         return try {
             val snapshot = firestore
                 .collectionGroup(COLLECTION_COLLABORATORS)
@@ -166,7 +166,7 @@ class PermissionManager(
      * @param reminderId 리마인더 ID
      * @return 권한 수정 가능 여부
      */
-    suspend fun canModifyPermissions(
+    open suspend fun canModifyPermissions(
         userId: String,
         reminderId: String
     ): Boolean {
@@ -180,7 +180,7 @@ class PermissionManager(
      * @param currentOwnerId 현재 소유자 ID
      * @param newOwnerId 새 소유자 ID
      */
-    suspend fun transferOwnership(
+    open suspend fun transferOwnership(
         reminderId: String,
         currentOwnerId: String,
         newOwnerId: String

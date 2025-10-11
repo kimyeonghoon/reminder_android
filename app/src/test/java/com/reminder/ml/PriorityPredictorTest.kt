@@ -9,27 +9,22 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import java.time.LocalDateTime
 
 /**
  * PriorityPredictor 테스트
  * TDD Red 단계 - 테스트 먼저 작성
+ *
+ * Fake 구현체 사용으로 Mockito suspend 함수 문제 해결
  */
 class PriorityPredictorTest {
 
-    @Mock
-    private lateinit var mlDao: MLTrainingDataDao
-
+    private lateinit var mlDao: FakeMLTrainingDataDao
     private lateinit var predictor: PriorityPredictor
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        mlDao = FakeMLTrainingDataDao()
         predictor = PriorityPredictor(mlDao)
     }
 
@@ -38,8 +33,7 @@ class PriorityPredictorTest {
         // Given
         val title = "새로운 작업"
         val description = "처음 보는 작업"
-        `when`(mlDao.findSimilarData(MLDataType.PRIORITY, "$title $description", 10))
-            .thenReturn(emptyList())
+        // 데이터 없음 - 기본 상태
 
         // When
         val result = predictor.predictPriority(title, description)
@@ -54,7 +48,7 @@ class PriorityPredictorTest {
         // Given
         val title = "회의 준비"
         val description = "프로젝트 회의"
-        val trainingData = listOf(
+        mlDao.addTrainingData(
             MLTrainingDataEntity(
                 id = 1,
                 dataType = MLDataType.PRIORITY,
@@ -66,9 +60,6 @@ class PriorityPredictorTest {
                 lastUsedAt = LocalDateTime.now()
             )
         )
-
-        `when`(mlDao.findSimilarData(MLDataType.PRIORITY, "$title $description", 10))
-            .thenReturn(trainingData)
 
         // When
         val result = predictor.predictPriority(title, description)
@@ -83,7 +74,7 @@ class PriorityPredictorTest {
         // Given
         val title = "장보기"
         val description = ""
-        val trainingData = listOf(
+        mlDao.addTrainingData(
             MLTrainingDataEntity(
                 id = 1,
                 dataType = MLDataType.PRIORITY,
@@ -93,7 +84,9 @@ class PriorityPredictorTest {
                 confidence = 0.8f,
                 createdAt = LocalDateTime.now(),
                 lastUsedAt = LocalDateTime.now()
-            ),
+            )
+        )
+        mlDao.addTrainingData(
             MLTrainingDataEntity(
                 id = 2,
                 dataType = MLDataType.PRIORITY,
@@ -105,9 +98,6 @@ class PriorityPredictorTest {
                 lastUsedAt = LocalDateTime.now()
             )
         )
-
-        `when`(mlDao.findSimilarData(MLDataType.PRIORITY, "$title $description", 10))
-            .thenReturn(trainingData)
 
         // When
         val result = predictor.predictPriority(title, description)
@@ -123,13 +113,15 @@ class PriorityPredictorTest {
         val title = "보고서 작성"
         val description = "월간 보고서"
         val priority = Priority.HIGH
-        `when`(mlDao.insert(any())).thenReturn(1L)
 
         // When
         predictor.learn(title, description, priority)
 
         // Then
-        verify(mlDao).insert(any())
+        val inserted = mlDao.getAllTestData()
+        assertEquals(1, inserted.size)
+        assertTrue(inserted[0].inputText.contains(title))
+        assertEquals("HIGH", inserted[0].outputLabel)
     }
 
     @Test
@@ -137,7 +129,7 @@ class PriorityPredictorTest {
         // Given
         val title = "운동"
         val description = ""
-        val trainingDataHighUsage = listOf(
+        mlDao.addTrainingData(
             MLTrainingDataEntity(
                 id = 1,
                 dataType = MLDataType.PRIORITY,
@@ -150,7 +142,12 @@ class PriorityPredictorTest {
             )
         )
 
-        val trainingDataLowUsage = listOf(
+        // When
+        val resultHighUsage = predictor.predictPriority(title, description)
+
+        // 데이터 변경
+        mlDao.clearData()
+        mlDao.addTrainingData(
             MLTrainingDataEntity(
                 id = 2,
                 dataType = MLDataType.PRIORITY,
@@ -162,18 +159,89 @@ class PriorityPredictorTest {
                 lastUsedAt = LocalDateTime.now()
             )
         )
-
-        // When
-        `when`(mlDao.findSimilarData(MLDataType.PRIORITY, "$title $description", 10))
-            .thenReturn(trainingDataHighUsage)
-        val resultHighUsage = predictor.predictPriority(title, description)
-
-        `when`(mlDao.findSimilarData(MLDataType.PRIORITY, "$title $description", 10))
-            .thenReturn(trainingDataLowUsage)
         val resultLowUsage = predictor.predictPriority(title, description)
 
         // Then
         assertTrue(resultHighUsage.confidence > resultLowUsage.confidence)
+    }
+}
+
+/**
+ * 테스트용 Fake MLTrainingDataDao
+ * Mockito suspend 함수 문제를 우회하기 위한 in-memory 구현체
+ */
+class FakeMLTrainingDataDao : MLTrainingDataDao {
+    private val data = mutableListOf<MLTrainingDataEntity>()
+    private var nextId = 1L
+
+    fun addTrainingData(entity: MLTrainingDataEntity) {
+        data.add(entity)
+    }
+
+    fun clearData() {
+        data.clear()
+    }
+
+    fun getAllTestData() = data.toList()
+
+    override suspend fun insert(entity: MLTrainingDataEntity): Long {
+        val id = nextId++
+        data.add(entity.copy(id = id))
+        return id
+    }
+
+    override suspend fun update(entity: MLTrainingDataEntity) {
+        val index = data.indexOfFirst { it.id == entity.id }
+        if (index >= 0) {
+            data[index] = entity
+        }
+    }
+
+    override fun getDataByType(dataType: MLDataType) = kotlinx.coroutines.flow.flowOf(emptyList<MLTrainingDataEntity>())
+
+    override suspend fun findSimilarData(
+        dataType: MLDataType,
+        searchText: String,
+        limit: Int
+    ): List<MLTrainingDataEntity> {
+        return data
+            .filter { it.dataType == dataType }
+            .filter { entity ->
+                // 단어 단위로 매칭 (더 관대한 검색)
+                val searchWords = searchText.split(" ", "\n", "\t").filter { it.isNotBlank() }
+                val inputWords = entity.inputText.split(" ", "\n", "\t").filter { it.isNotBlank() }
+                searchWords.any { searchWord ->
+                    inputWords.any { inputWord ->
+                        searchWord.contains(inputWord, ignoreCase = true) || inputWord.contains(searchWord, ignoreCase = true)
+                    }
+                }
+            }
+            .sortedByDescending { it.usageCount }
+            .take(limit)
+    }
+
+    override suspend fun getDataByTypeAndCategory(dataType: MLDataType, category: String) = emptyList<MLTrainingDataEntity>()
+
+    override suspend fun getNotificationTimeByDayOfWeek(dayOfWeek: Int, limit: Int) = emptyList<MLTrainingDataEntity>()
+
+    override suspend fun incrementUsageCount(id: Long, currentTime: String) {
+        val index = data.indexOfFirst { it.id == id }
+        if (index >= 0) {
+            val entity = data[index]
+            data[index] = entity.copy(usageCount = entity.usageCount + 1)
+        }
+    }
+
+    override suspend fun deleteLowConfidenceData(threshold: Float) = 0
+
+    override suspend fun deleteOldData(thresholdDate: String) = 0
+
+    override fun getAllData() = kotlinx.coroutines.flow.flowOf(data.toList())
+
+    override suspend fun getDataCount(dataType: MLDataType) = data.count { it.dataType == dataType }
+
+    override suspend fun deleteAll() {
+        data.clear()
     }
 }
 

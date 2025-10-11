@@ -18,7 +18,8 @@ import java.time.temporal.ChronoUnit
 
 class StatisticsViewModel(
     private val repository: ReminderRepository,
-    private val goalDao: GoalDao
+    private val goalDao: GoalDao,
+    private val currentTimeProvider: () -> LocalDateTime = { LocalDateTime.now() }
 ) : ViewModel() {
 
     // v1.33.0: 목표 추적 및 인사이트
@@ -79,8 +80,7 @@ class StatisticsViewModel(
         reminders: List<com.reminder.data.entity.ReminderEntity>,
         days: Int
     ): List<Int> {
-        val now = LocalDateTime.now()
-        val today = now.toLocalDate()
+        val today = currentTimeProvider().toLocalDate()
 
         // 완료된 리마인더만 필터링
         val completedReminders = reminders.filter { it.isCompleted }

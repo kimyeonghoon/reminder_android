@@ -1,5 +1,6 @@
 package com.reminder.viewmodel
 
+import com.reminder.data.dao.GoalDao
 import com.reminder.data.entity.Priority
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
@@ -21,6 +22,7 @@ import java.time.LocalDateTime
 class StatisticsViewModelTest {
 
     private lateinit var repository: ReminderRepository
+    private lateinit var goalDao: GoalDao
     private lateinit var viewModel: StatisticsViewModel
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -28,9 +30,11 @@ class StatisticsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = mock(ReminderRepository::class.java)
+        goalDao = mock(GoalDao::class.java)
         // 기본 빈 리스트로 초기화
         `when`(repository.allReminders).thenReturn(flowOf(emptyList()))
-        viewModel = StatisticsViewModel(repository)
+        `when`(goalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        viewModel = StatisticsViewModel(repository, goalDao)
     }
 
     @After
@@ -60,7 +64,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         assertEquals(3, testViewModel.statistics.value.totalReminders)
@@ -78,7 +84,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         assertEquals(2, testViewModel.statistics.value.completedReminders)
@@ -96,7 +104,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         assertEquals(2, testViewModel.statistics.value.pendingReminders)
@@ -115,7 +125,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         assertEquals(0.5f, testViewModel.statistics.value.completionRate, 0.001f)
@@ -128,7 +140,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(emptyList()))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         assertEquals(0f, testViewModel.statistics.value.completionRate)
@@ -147,7 +161,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         val statistics = testViewModel.statistics.value
@@ -171,7 +187,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         val distribution = testViewModel.statistics.value.categoryDistribution
@@ -192,7 +210,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         val distribution = testViewModel.statistics.value.categoryDistribution
@@ -211,10 +231,10 @@ class StatisticsViewModelTest {
             createReminder(id = 2, isCompleted = true, updatedAt = now.minusHours(2)),
             // 2일 전 완료된 리마인더 1개
             createReminder(id = 3, isCompleted = true, updatedAt = now.minusDays(2)),
-            // 5일 전 완료된 리마인더 3개
+            // 5일 전 완료된 리마인더 3개 (같은 날짜가 되도록 시간 조정)
             createReminder(id = 4, isCompleted = true, updatedAt = now.minusDays(5)),
-            createReminder(id = 5, isCompleted = true, updatedAt = now.minusDays(5).minusHours(3)),
-            createReminder(id = 6, isCompleted = true, updatedAt = now.minusDays(5).minusHours(10)),
+            createReminder(id = 5, isCompleted = true, updatedAt = now.minusDays(5).plusHours(3)),
+            createReminder(id = 6, isCompleted = true, updatedAt = now.minusDays(5).minusHours(2)),
             // 미완료 리마인더 (카운트 안됨)
             createReminder(id = 7, isCompleted = false, updatedAt = now),
             // 8일 전 완료 (범위 밖)
@@ -224,7 +244,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao, currentTimeProvider = { now })
 
         // Then
         val weeklyCompleted = testViewModel.statistics.value.weeklyCompleted
@@ -257,7 +279,9 @@ class StatisticsViewModelTest {
         `when`(testRepository.allReminders).thenReturn(flowOf(reminders))
 
         // When
-        val testViewModel = StatisticsViewModel(testRepository)
+        val testGoalDao = mock(GoalDao::class.java)
+        `when`(testGoalDao.getAllActiveGoals()).thenReturn(flowOf(emptyList()))
+        val testViewModel = StatisticsViewModel(testRepository, testGoalDao)
 
         // Then
         val monthlyCompleted = testViewModel.statistics.value.monthlyCompleted
