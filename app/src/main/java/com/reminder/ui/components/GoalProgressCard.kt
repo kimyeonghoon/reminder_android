@@ -20,7 +20,6 @@ import com.reminder.goal.GoalProgress
 fun GoalProgressCard(
     goal: GoalEntity,
     progress: GoalProgress,
-    onDelete: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(

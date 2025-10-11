@@ -21,7 +21,6 @@ import com.reminder.sharing.Permission
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareScreen(
-    reminderId: Long,
     currentUserId: String,
     collaborators: List<Collaborator>,
     onInviteClick: (String, Permission) -> Unit,

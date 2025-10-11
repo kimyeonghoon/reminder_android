@@ -74,8 +74,7 @@ fun GoalSettingScreen(
                     val progress by viewModel.getGoalProgress(goal).collectAsState()
                     GoalProgressCard(
                         goal = goal,
-                        progress = progress,
-                        onDelete = { viewModel.deleteGoal(goal) }
+                        progress = progress
                     )
                 }
             }

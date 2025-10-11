@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.46.4] - 2025-10-11
+
+### Changed
+- 🧹 **컴파일 경고 수정** - 코드 품질 향상
+  - **menuAnchor() deprecated 수정**
+    - `RecurrenceSelector.kt`: `menuAnchor()` → `menuAnchor(MenuAnchorType.PrimaryNotEditable)`
+    - Material 3 최신 API 준수
+  - **사용하지 않는 파라미터 제거** (3개 파일)
+    - `GoalProgressCard.kt`: `onDelete` 파라미터 제거 (미사용)
+    - `GoalSettingScreen.kt`: `onDelete` 호출 지점 제거
+    - `ShareScreen.kt`: `reminderId` 파라미터 제거 (미사용)
+
+### Technical Details
+- **Files Modified**: 4개
+  - `RecurrenceSelector.kt` (1줄 변경)
+  - `GoalProgressCard.kt` (1줄 제거)
+  - `GoalSettingScreen.kt` (1줄 제거)
+  - `ShareScreen.kt` (1줄 제거)
+- **Warnings Fixed**:
+  - `menuAnchor()` deprecated ✅
+  - Parameter 'onDelete' is never used ✅
+  - Parameter 'reminderId' is never used ✅
+- **Tests**: 모든 테스트 통과 ✅ (213/213)
+- **Build**: 성공 (BUILD SUCCESSFUL)
+
+### Quality Improvements
+- 컴파일 경고 3개 해결
+- 불필요한 코드 제거 (4줄 감소)
+- API 준수성 향상
+- 코드 가독성 및 유지보수성 개선
+
+### Notes
+- 기능 변경 없음 (순수 코드 정리)
+- 하위 호환성 유지 (PATCH 버전 업데이트)
+- 남은 경고: `ArrowBack` deprecated (향후 수정 예정)
+
 ## [1.46.3] - 2025-10-11
 
 ### Changed
