@@ -116,6 +116,15 @@ class ReminderApplication : Application(), ImageLoaderFactory {
     // v1.51.0: 포커스 모드
     val focusSessionRepository by lazy { com.reminder.data.repository.FocusSessionRepository(database.focusSessionDao()) }
 
+    // v1.54.0: 방해 금지 모드
+    val dndRepository by lazy {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            com.reminder.data.repository.DndRepository(this)
+        } else {
+            null
+        }
+    }
+
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
      */

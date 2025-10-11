@@ -1,9 +1,13 @@
 package com.reminder.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reminder.data.DndSettings
 import com.reminder.data.entity.FocusSessionEntity
 import com.reminder.data.entity.FocusType
+import com.reminder.data.repository.DndRepository
 import com.reminder.data.repository.FocusSessionRepository
 import com.reminder.domain.focus.*
 import kotlinx.coroutines.flow.*
@@ -12,11 +16,13 @@ import java.time.LocalDateTime
 
 /**
  * v1.51.0: 포커스 모드 ViewModel
+ * v1.54.0: 방해 금지 모드 통합
  *
  * 포커스 세션 관리 및 타이머 기능
  */
 class FocusModeViewModel(
-    private val repository: FocusSessionRepository
+    private val repository: FocusSessionRepository,
+    private val dndRepository: DndRepository? = null // v1.54.0: DND 지원 (API 23+)
 ) : ViewModel() {
 
     // 현재 진행 중인 세션
@@ -39,8 +45,13 @@ class FocusModeViewModel(
     val activeSessions: StateFlow<List<FocusSessionEntity>> = repository.getActiveSessions()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    // v1.54.0: DND 설정
+    val dndSettings: StateFlow<DndSettings> = dndRepository?.dndSettings
+        ?: MutableStateFlow(DndSettings()).asStateFlow()
+
     /**
      * 포커스 세션 시작
+     * v1.54.0: DND 자동 활성화
      */
     fun startFocusSession(
         targetMinutes: Int,
@@ -59,6 +70,11 @@ class FocusModeViewModel(
 
             _currentSession.value = insertedSession
             _focusState.value = FocusState.ACTIVE
+
+            // v1.54.0: DND 자동 활성화 (API 23+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                dndRepository?.enableDnd()
+            }
         }
     }
 
@@ -75,6 +91,7 @@ class FocusModeViewModel(
 
     /**
      * 세션 완료
+     * v1.54.0: DND 자동 비활성화
      */
     fun completeSession() {
         viewModelScope.launch {
@@ -84,12 +101,18 @@ class FocusModeViewModel(
 
                 _currentSession.value = completedSession
                 _focusState.value = FocusState.COMPLETED
+
+                // v1.54.0: DND 자동 비활성화 (API 23+)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    dndRepository?.disableDnd()
+                }
             }
         }
     }
 
     /**
      * 세션 중단
+     * v1.54.0: DND 자동 비활성화
      */
     fun interruptSession() {
         viewModelScope.launch {
@@ -99,6 +122,11 @@ class FocusModeViewModel(
 
                 _currentSession.value = interruptedSession
                 _focusState.value = FocusState.INTERRUPTED
+
+                // v1.54.0: DND 자동 비활성화 (API 23+)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    dndRepository?.disableDnd()
+                }
             }
         }
     }
@@ -168,6 +196,36 @@ class FocusModeViewModel(
             val cutoffDate = LocalDateTime.now().minusDays(90)
             repository.deleteOldSessions(cutoffDate)
         }
+    }
+
+    // v1.54.0: DND 관련 함수들
+
+    /**
+     * DND 권한이 있는지 확인
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun hasDndPermission(): Boolean {
+        return dndRepository?.hasPermission() ?: false
+    }
+
+    /**
+     * DND 권한 요청 Intent 가져오기
+     */
+    fun getDndPermissionIntent() = dndRepository?.getPermissionIntent()
+
+    /**
+     * DND 설정 업데이트
+     */
+    fun updateDndSettings(settings: DndSettings) {
+        dndRepository?.updateSettings(settings)
+    }
+
+    /**
+     * 현재 DND가 활성화되어 있는지 확인
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun isDndEnabled(): Boolean {
+        return dndRepository?.isEnabled() ?: false
     }
 
     // 테스트용: 현재 세션 설정

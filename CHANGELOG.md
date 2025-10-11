@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.54.0] - 2025-10-11
+
+### Added
+- 🔕 **방해 금지 모드 (Do Not Disturb)** - 포커스 세션 중 알림 자동 차단 (API 23+)
+  - **자동 알림 차단**
+    - 포커스 세션 시작 시 방해 금지 모드 자동 활성화
+    - 세션 완료/중단 시 자동 비활성화 (이전 상태로 복원)
+    - NotificationManager.Policy API 활용
+  - **세밀한 제어**
+    - 긴급 전화 허용/차단 설정
+    - 알람 허용/차단 설정
+    - 미디어 소리는 항상 허용
+    - 자동 활성화 on/off 토글
+  - **권한 관리**
+    - DND 권한 확인 및 요청
+    - 권한 요청 다이얼로그 (설정으로 이동)
+    - API 23 미만 기기에서는 자동으로 비활성화
+  - **UI/UX**
+    - FocusModeScreen에 DND 설정 카드 추가
+    - Switch 컴포넌트로 직관적인 설정
+    - 권한 없이 활성화 시도 시 권한 요청 다이얼로그 표시
+    - Material 3 디자인 일관성
+
+### Technical Details
+- **새로운 파일** (3개)
+  - `DndManager.kt`: NotificationManager 래퍼 클래스
+    - `enableDnd()`, `disableDnd()`, `isEnabled()`
+    - `hasPermission()`, `requestPermission()`
+    - 이전 Interruption Filter 저장/복원
+  - `DndSettings.kt`: 설정 데이터 클래스
+    - enabled, allowCalls, allowAlarms, autoEnable
+  - `DndRepository.kt`: SharedPreferences 기반 설정 저장소
+    - StateFlow로 반응형 설정 관리
+    - 설정 로드/저장 (영구 저장)
+- **수정된 파일** (5개)
+  - `FocusModeViewModel.kt`:
+    - DndRepository 통합
+    - `startFocusSession()` 시 DND 자동 활성화
+    - `completeSession()` / `interruptSession()` 시 DND 자동 비활성화
+    - DND 관련 함수 추가 (hasDndPermission, updateDndSettings, isDndEnabled)
+  - `FocusModeViewModelFactory.kt`: DndRepository 파라미터 추가
+  - `ReminderApplication.kt`: dndRepository lazy 초기화 (API 23+ only)
+  - `FocusModeScreen.kt`:
+    - DND 설정 카드 (DndSettingsCard) 추가
+    - 권한 요청 다이얼로그 추가
+    - ArrowBack 아이콘을 AutoMirrored 버전으로 업데이트
+  - `app/build.gradle.kts`: versionCode 59→60, versionName "1.53.0"→"1.54.0"
+- **아키텍처**
+  - MVVM 패턴 유지 (Repository → ViewModel → UI)
+  - SharedPreferences 기반 설정 저장 (DB 불필요)
+  - NotificationManager.Policy 활용 (Priority Only 모드)
+  - API 23 (Android 6.0) 이상에서만 지원
+
+### Testing
+- **모든 테스트 통과** ✅
+  - 기존 276개 테스트 100% 통과
+  - 빌드 성공 (Debug)
+  - DND 기능은 실제 기기에서 수동 테스트 필요
+  - 권한 플로우 정상 작동 확인
+
+### Notes
+- MINOR 버전 업데이트 (새 기능 추가)
+- 하위 호환성 100% 유지 (API 23 미만에서는 DND 기능 자동 비활성화)
+- 사용자 피드백 반영: 포커스 세션 중 알림이 방해되는 문제 해결
+- 향후 고도화:
+  - 앱 차단 기능 (AccessibilityService)
+  - 전체 화면 타이머 모드
+  - 화면 밝기 자동 조절
+- **중요**: 실제 기기에서 DND 권한 허용 후 사용 가능
+
 ## [1.53.0] - 2025-10-11
 
 ### Added

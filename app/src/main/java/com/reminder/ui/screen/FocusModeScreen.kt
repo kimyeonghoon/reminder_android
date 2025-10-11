@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,6 +29,7 @@ import java.time.format.DateTimeFormatter
 
 /**
  * v1.51.0: 포커스 모드 화면
+ * v1.54.0: 방해 금지 모드 통합
  *
  * 집중 모드 타이머 및 세션 관리 화면
  */
@@ -38,7 +40,10 @@ fun FocusModeScreen(
     onNavigateBack: () -> Unit
 ) {
     val viewModel: FocusModeViewModel = viewModel(
-        factory = FocusModeViewModelFactory(application.focusSessionRepository)
+        factory = FocusModeViewModelFactory(
+            application.focusSessionRepository,
+            application.dndRepository // v1.54.0: DND 지원
+        )
     )
 
     val focusState by viewModel.focusState.collectAsState()
@@ -46,6 +51,10 @@ fun FocusModeScreen(
     val todayFocusMinutes by viewModel.getTodayFocusMinutes().collectAsState(initial = 0)
     val currentStreak by viewModel.getCurrentStreak().collectAsState(initial = 0)
     val completedSessions by viewModel.completedSessions.collectAsState()
+
+    // v1.54.0: DND 설정
+    val dndSettings by viewModel.dndSettings.collectAsState()
+    var showDndPermissionDialog by remember { mutableStateOf(false) }
 
     // 타이머 업데이트 (매 초)
     var remainingMinutes by remember { mutableStateOf(0) }
@@ -81,7 +90,7 @@ fun FocusModeScreen(
                 title = { Text("집중 모드") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, "뒤로 가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "뒤로 가기")
                     }
                 }
             )
@@ -100,6 +109,17 @@ fun FocusModeScreen(
                     todayMinutes = todayFocusMinutes,
                     streak = currentStreak
                 )
+            }
+
+            // v1.54.0: DND 설정 카드 (API 23+)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                item {
+                    DndSettingsCard(
+                        settings = dndSettings,
+                        onSettingsChange = { viewModel.updateDndSettings(it) },
+                        onRequestPermission = { showDndPermissionDialog = true }
+                    )
+                }
             }
 
             // 타이머 카드
@@ -132,6 +152,39 @@ fun FocusModeScreen(
                 SessionHistoryItem(session)
             }
         }
+    }
+
+    // v1.54.0: DND 권한 요청 다이얼로그
+    if (showDndPermissionDialog) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        AlertDialog(
+            onDismissRequest = { showDndPermissionDialog = false },
+            title = { Text("방해 금지 모드 권한 필요") },
+            text = {
+                Text(
+                    "포커스 세션 중 알림을 차단하려면 방해 금지 모드 권한이 필요합니다. " +
+                            "설정에서 권한을 허용해주세요."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val intent = viewModel.getDndPermissionIntent()
+                        if (intent != null) {
+                            context.startActivity(intent)
+                        }
+                        showDndPermissionDialog = false
+                    }
+                ) {
+                    Text("설정으로 이동")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDndPermissionDialog = false }) {
+                    Text("취소")
+                }
+            }
+        )
     }
 }
 
@@ -495,5 +548,118 @@ private fun getFocusTypeLabel(type: FocusType): String {
         FocusType.DEEP_WORK -> "깊은 작업"
         FocusType.POMODORO -> "포모도로"
         FocusType.BREAK -> "휴식"
+    }
+}
+
+/**
+ * v1.54.0: DND 설정 카드
+ */
+@androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.M)
+@Composable
+private fun DndSettingsCard(
+    settings: com.reminder.data.DndSettings,
+    onSettingsChange: (com.reminder.data.DndSettings) -> Unit,
+    onRequestPermission: () -> Unit
+) {
+    val viewModel: FocusModeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val hasPermission = remember { viewModel.hasDndPermission() }
+
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "방해 금지 모드",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "포커스 세션 중 알림 차단",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = settings.enabled,
+                    onCheckedChange = { enabled ->
+                        if (enabled && !hasPermission) {
+                            onRequestPermission()
+                        } else {
+                            onSettingsChange(settings.copy(enabled = enabled))
+                        }
+                    }
+                )
+            }
+
+            if (settings.enabled) {
+                HorizontalDivider()
+
+                // 긴급 전화 허용
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "긴급 전화 허용",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Switch(
+                        checked = settings.allowCalls,
+                        onCheckedChange = { onSettingsChange(settings.copy(allowCalls = it)) }
+                    )
+                }
+
+                // 알람 허용
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "알람 허용",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Switch(
+                        checked = settings.allowAlarms,
+                        onCheckedChange = { onSettingsChange(settings.copy(allowAlarms = it)) }
+                    )
+                }
+
+                // 자동 활성화
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "자동 활성화",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            "세션 시작 시 자동으로 DND 활성화",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = settings.autoEnable,
+                        onCheckedChange = { onSettingsChange(settings.copy(autoEnable = it)) }
+                    )
+                }
+            }
+        }
     }
 }
