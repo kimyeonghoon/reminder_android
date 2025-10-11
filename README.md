@@ -465,20 +465,38 @@ fun ReminderCard(
 ## 📦 릴리즈 & 버전
 
 ### v1.47.0 (최신) - 2025-10-11
-- 🎯 **Eisenhower Matrix 기능** - 생산성 향상을 위한 중요도×긴급도 매트릭스
-  - **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
-  - **4개 쿼드런트 자동 분류**:
-    - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
-    - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
-    - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
-    - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
-  - **Eisenhower Matrix 화면**: 2×2 그리드로 시각화
-  - **쿼드런트별 색상 구분**: 빨강/파랑/노랑/초록
-  - **TDD 개발**: 테스트 먼저 작성 후 구현 (10개 테스트 추가)
-- 💾 **데이터베이스 마이그레이션**: v22 → v23
+
+#### 🎯 Eisenhower Matrix 생산성 매트릭스 구현
+- **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
+- **4개 쿼드런트 자동 분류**:
+  - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
+  - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
+  - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
+  - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
+- **Eisenhower Matrix 화면**: 2×2 그리드로 시각화
+- **쿼드런트별 색상 구분**: 빨강/파랑/노랑/초록
+- **TDD 개발**: 테스트 먼저 작성 후 구현 (10개 테스트 추가)
+
+#### 🔗 Navigation 통합
+- **홈 화면에서 Eisenhower Matrix 접근 가능**
+  - TopAppBar에 그리드 아이콘 버튼 추가
+  - 매끄러운 화면 전환 애니메이션 (슬라이드 + 페이드)
+- **완벽한 통합**: 쿼드런트에서 리마인더 클릭 → 편집 화면 이동
+
+#### 🔧 코드 품질 개선
+- **Material 3 최신 API 마이그레이션**
+  - menuAnchor() → menuAnchor(MenuAnchorType.PrimaryNotEditable) (3곳)
+  - Icons.Default.ArrowBack → Icons.AutoMirrored.Filled.ArrowBack (5곳)
+  - Icons.Default.List → Icons.AutoMirrored.Filled.List (1곳)
+- **RTL 언어 지원 개선**: AutoMirrored 아이콘으로 우→좌 언어 지원
+- **타입 안전성 향상**: MenuAnchorType 명시로 컴파일 타임 안전성 증대
+
+#### 💾 기술 세부사항
+- **데이터베이스 마이그레이션**: v22 → v23
   - urgency 컬럼 추가 (기본값: MEDIUM)
   - urgency 인덱스 및 priority+urgency 복합 인덱스 추가
 - ✅ **모든 테스트 통과**: 223개/223개 (기존 213 + 신규 10)
+- 🏗️ **7개 파일 리팩토링**: Deprecated API 제거로 미래 호환성 확보
 
 ### v1.27.1 - 2025-10-10
 - 🧪 **UI 테스트 확장** - v1.22.0~v1.26.0 신규 기능 UI 테스트 추가 (33개)
