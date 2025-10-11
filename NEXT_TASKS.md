@@ -55,12 +55,17 @@
   - ✅ 화면 전환 애니메이션 (슬라이드 + 페이드) 적용
 
 #### 2. ~~코드 품질 및 안정성 개선~~ ✅ 완료됨 (v1.47.0)
-- ✅ Deprecation warnings 수정 완료:
-  - ✅ `AddEditReminderScreen.kt`: menuAnchor() deprecated (2곳) → 수정 완료
-  - ✅ `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack → AutoMirrored 수정 완료
-  - ✅ 기타 5개 화면 ArrowBack 아이콘 업데이트 (총 7개 파일)
-  - ✅ `SharedListsScreen.kt`: Icons.Default.List → AutoMirrored 수정 완료
-  - ✅ `SortDropdown.kt`: menuAnchor() deprecated 수정 완료
+- ✅ **모든 UI Deprecation warnings 수정 완료** (9개 파일):
+  - ✅ `AddEditReminderScreen.kt`: menuAnchor() → MenuAnchorType.PrimaryNotEditable (2곳)
+  - ✅ `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack → AutoMirrored
+  - ✅ 기타 5개 화면 ArrowBack 아이콘 업데이트
+  - ✅ `SharedListsScreen.kt`: Icons.Default.List → AutoMirrored
+  - ✅ `SortDropdown.kt`: menuAnchor() → MenuAnchorType.PrimaryNotEditable
+  - ✅ `FilterChips.kt`: Icons.Default.VolumeUp → AutoMirrored
+  - ✅ `FilterScreen.kt`: Icons.Default.VolumeUp → AutoMirrored
+  - ✅ `HomeScreen.kt`: SearchBar API 마이그레이션 (inputField 파라미터)
+- ✅ Material 3 최신 API 100% 적용
+- ✅ RTL 언어 지원 개선 (AutoMirrored 아이콘)
 - 전체 화면 일관성 최종 검토 및 Material 3 디자인 정교화
 - 성능 최적화 및 메모리 누수 점검
 
@@ -131,8 +136,11 @@
   - HomeScreen TopAppBar에 GridOn 아이콘 버튼 진입점 추가
   - 화면 전환 애니메이션 (슬라이드 + 페이드 300ms)
 - **✅ 코드 품질 개선 완료**:
-  - 7개 파일 Deprecation warnings 수정
-  - Material 3 최신 API 마이그레이션 (AutoMirrored 아이콘, MenuAnchorType)
+  - 9개 파일 모든 UI Deprecation warnings 수정
+  - Material 3 최신 API 100% 마이그레이션
+    - AutoMirrored 아이콘 (ArrowBack, List, VolumeUp)
+    - MenuAnchorType.PrimaryNotEditable
+    - SearchBar inputField 파라미터
   - RTL 언어 지원 개선
 
 ---
@@ -175,8 +183,9 @@ v1.47.0까지 Eisenhower Matrix 구현, Navigation 통합, 코드 품질 개선 
 - ✅ 화면 전환 애니메이션 적용 완료
 
 ### 2. ~~**코드 품질 개선**~~ ✅ 완료됨
-- ✅ Deprecation warnings 수정 완료 (7개 파일)
-- ✅ 최신 Compose API 적용 (AutoMirrored 아이콘, MenuAnchorType)
+- ✅ 모든 UI Deprecation warnings 수정 완료 (9개 파일)
+- ✅ Material 3 최신 API 100% 적용
+  - AutoMirrored 아이콘, MenuAnchorType, SearchBar inputField
 
 ### 3. **Eisenhower Matrix 고도화** (다음 우선순위 권장) 🔴
 - AI 기반 긴급도 자동 예측 (제목/설명 분석)
