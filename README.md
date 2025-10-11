@@ -483,12 +483,15 @@ fun ReminderCard(
   - 매끄러운 화면 전환 애니메이션 (슬라이드 + 페이드)
 - **완벽한 통합**: 쿼드런트에서 리마인더 클릭 → 편집 화면 이동
 
-#### 🔧 코드 품질 개선
-- **Material 3 최신 API 마이그레이션**
+#### 🔧 코드 품질 개선 (100% 완료)
+- **Material 3 최신 API 마이그레이션** (9개 파일):
   - menuAnchor() → menuAnchor(MenuAnchorType.PrimaryNotEditable) (3곳)
   - Icons.Default.ArrowBack → Icons.AutoMirrored.Filled.ArrowBack (5곳)
   - Icons.Default.List → Icons.AutoMirrored.Filled.List (1곳)
-- **RTL 언어 지원 개선**: AutoMirrored 아이콘으로 우→좌 언어 지원
+  - Icons.Default.VolumeUp → Icons.AutoMirrored.Filled.VolumeUp (2곳)
+  - SearchBar API → inputField 파라미터 방식 (1곳)
+- **모든 UI Deprecation 경고 제거**: 깨끗한 빌드 달성
+- **RTL 언어 지원 개선**: AutoMirrored 아이콘으로 우→좌 언어 완벽 지원
 - **타입 안전성 향상**: MenuAnchorType 명시로 컴파일 타임 안전성 증대
 
 #### 💾 기술 세부사항
@@ -496,7 +499,7 @@ fun ReminderCard(
   - urgency 컬럼 추가 (기본값: MEDIUM)
   - urgency 인덱스 및 priority+urgency 복합 인덱스 추가
 - ✅ **모든 테스트 통과**: 223개/223개 (기존 213 + 신규 10)
-- 🏗️ **7개 파일 리팩토링**: Deprecated API 제거로 미래 호환성 확보
+- 🏗️ **9개 파일 리팩토링**: 모든 UI Deprecation 제거로 미래 호환성 확보
 
 ### v1.27.1 - 2025-10-10
 - 🧪 **UI 테스트 확장** - v1.22.0~v1.26.0 신규 기능 UI 테스트 추가 (33개)
