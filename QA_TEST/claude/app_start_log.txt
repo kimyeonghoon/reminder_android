@@ -1,0 +1,6 @@
+Starting: Intent { cmp=com.reminder/.MainActivity }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: com.reminder/.MainActivity
+WaitTime: 3047
+Complete

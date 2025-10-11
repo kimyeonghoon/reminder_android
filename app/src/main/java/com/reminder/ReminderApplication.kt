@@ -123,25 +123,27 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
+     * v1.62.1: BUG_001 수정 - DataStore 접근을 onCreate로 이동 (attachBaseContext에서는 applicationContext가 null)
      */
     override fun attachBaseContext(base: Context?) {
-        if (base == null) {
-            super.attachBaseContext(base)
-            return
-        }
-
-        // DataStore에서 언어 설정 읽기 (동기적으로)
-        val preferences = runBlocking {
-            PreferencesRepository.create(base).userPreferences.first()
-        }
-
-        // 저장된 언어로 Context 업데이트
-        val updatedContext = LocaleHelper.updateLocale(base, preferences.language)
-        super.attachBaseContext(updatedContext)
+        // attachBaseContext에서는 DataStore 사용 불가 (applicationContext가 아직 null)
+        // 언어 설정은 onCreate에서 적용하거나, Activity에서 적용되도록 함
+        super.attachBaseContext(base)
     }
 
     override fun onCreate() {
         super.onCreate()
+
+        // v1.62.1: BUG_001 수정 - 언어 설정을 onCreate에서 로드 (DataStore가 안전하게 사용 가능한 시점)
+        applicationScope.launch {
+            try {
+                val preferences = preferencesRepository.userPreferences.first()
+                // 언어 설정은 Activity에서 LocaleHelper를 통해 적용됨
+                Log.d("ReminderApp", "Loaded language preference: ${preferences.language}")
+            } catch (e: Exception) {
+                Log.e("ReminderApp", "Failed to load language preferences", e)
+            }
+        }
 
         // Firebase Crashlytics 초기화
         setupCrashlytics()
