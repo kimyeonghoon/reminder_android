@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,7 +50,8 @@ fun HomeScreen(
     onReminderClick: (ReminderEntity) -> Unit,
     onEisenhowerMatrixClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}, // v1.52.0: Settings 버튼 추가
-    simpleMode: Boolean = false
+    simpleMode: Boolean = false,
+    onTopAppBarContent: (@Composable () -> Unit) -> Unit = {} // Expose TopAppBar to MainActivity
 ) {
     val context = LocalContext.current
     val haptic = rememberHapticFeedback()
@@ -125,9 +128,9 @@ fun HomeScreen(
         context.startActivity(shareIntent)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // TopAppBar content
+    // Expose TopAppBar content to MainActivity
+    LaunchedEffect(showSearchBar, isSelectionMode, selectedReminders.size, simpleMode) {
+        onTopAppBarContent {
             if (showSearchBar) {
                 SearchBar(
                     inputField = {
@@ -216,7 +219,12 @@ fun HomeScreen(
                     }
                 )
             }
+        }
+    }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Content
+        Column(modifier = Modifier.fillMaxSize()) {
             // Content
             Column(
                 modifier = Modifier.weight(1f)

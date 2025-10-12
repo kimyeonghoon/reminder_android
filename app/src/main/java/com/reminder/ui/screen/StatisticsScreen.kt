@@ -33,15 +33,10 @@ fun StatisticsScreen(
 ) {
     val statistics by viewModel.statistics.collectAsState()
 
+    // Content
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // TopAppBar
-        TopAppBar(
-            title = { Text("통계") }
-        )
-
-        // Content
         Column(
             modifier = Modifier
                 .fillMaxSize()

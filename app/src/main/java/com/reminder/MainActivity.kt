@@ -20,6 +20,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -79,6 +80,8 @@ import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -225,6 +228,7 @@ fun ReminderApp() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderAppContent(
     settingsViewModel: SettingsViewModel
@@ -285,7 +289,43 @@ fun ReminderAppContent(
     val bottomBarRoutes = bottomNavItems.map { it.route }
     val showBottomBar = currentRoute in bottomBarRoutes
 
+    // HomeScreen state (for TopAppBar)
+    var homeScreenTopAppBarContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+
     Scaffold(
+        topBar = {
+            // Centralized TopAppBar based on current route
+            when (currentRoute) {
+                "home" -> {
+                    // HomeScreen's TopAppBar (complex: SearchBar, SelectionMode, Normal)
+                    homeScreenTopAppBarContent?.invoke()
+                }
+                "statistics" -> {
+                    TopAppBar(
+                        title = { Text("통계") }
+                    )
+                }
+                "pomodoro" -> {
+                    TopAppBar(
+                        title = { Text("포모도로 타이머") },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                }
+                "focus_mode" -> {
+                    TopAppBar(
+                        title = { Text("집중 모드") }
+                    )
+                }
+                "habit_tracker" -> {
+                    TopAppBar(
+                        title = { Text("습관 추적기") }
+                    )
+                }
+            }
+        },
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar {
@@ -354,7 +394,10 @@ fun ReminderAppContent(
                 },
                 onEisenhowerMatrixClick = { navController.navigate("eisenhower_matrix") },
                 onSettingsClick = { navController.navigate("settings") }, // v1.52.0
-                simpleMode = userPreferences.simpleMode
+                simpleMode = userPreferences.simpleMode,
+                onTopAppBarContent = { content ->
+                    homeScreenTopAppBarContent = content
+                }
             )
         }
         composable(

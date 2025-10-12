@@ -52,17 +52,8 @@ fun HabitTrackerScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // TopAppBar
-            TopAppBar(
-                title = { Text(stringResource(R.string.habit_tracker_title)) }
-            )
-
-            // Content
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-            when {
+        // Content
+        when {
                 isLoading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
@@ -94,8 +85,6 @@ fun HabitTrackerScreen(
                     }
                 }
             }
-            }
-        }
 
         // FAB
         FloatingActionButton(

@@ -84,13 +84,8 @@ fun FocusModeScreen(
         }
     }
 
+    // Content
     Column(modifier = Modifier.fillMaxSize()) {
-        // TopAppBar
-        TopAppBar(
-            title = { Text("집중 모드") }
-        )
-
-        // Content
         LazyColumn(
             modifier = Modifier
                 .weight(1f)

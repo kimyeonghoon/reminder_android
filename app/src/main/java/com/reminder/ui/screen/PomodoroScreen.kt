@@ -59,23 +59,12 @@ fun PomodoroScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // TopAppBar
-            TopAppBar(
-                title = { Text("포모도로 타이머") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-
-            // Content
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+        // Content
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             // 타이머 표시
             item {
                 TimerCard(
@@ -117,7 +106,6 @@ fun PomodoroScreen(
                 items(todaySessions) { session ->
                     SessionCard(session = session)
                 }
-            }
             }
         }
 
