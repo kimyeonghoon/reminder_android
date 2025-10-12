@@ -303,10 +303,14 @@ fun AddEditReminderScreen(
                 onExpandedChange = { priorityExpanded = !priorityExpanded }
             ) {
                 OutlinedTextField(
-                    value = priority.name,
+                    value = when (priority) {
+                        Priority.HIGH -> "높음"
+                        Priority.MEDIUM -> "중간"
+                        Priority.LOW -> "낮음"
+                    },
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Priority (중요도)") },
+                    label = { Text("중요도") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -319,7 +323,11 @@ fun AddEditReminderScreen(
                 ) {
                     Priority.entries.forEach { p ->
                         DropdownMenuItem(
-                            text = { Text(p.name) },
+                            text = { Text(when (p) {
+                                Priority.HIGH -> "높음"
+                                Priority.MEDIUM -> "중간"
+                                Priority.LOW -> "낮음"
+                            }) },
                             onClick = {
                                 priority = p
                                 priorityExpanded = false
@@ -335,10 +343,14 @@ fun AddEditReminderScreen(
                 onExpandedChange = { urgencyExpanded = !urgencyExpanded }
             ) {
                 OutlinedTextField(
-                    value = urgency.name,
+                    value = when (urgency) {
+                        Urgency.HIGH -> "높음"
+                        Urgency.MEDIUM -> "중간"
+                        Urgency.LOW -> "낮음"
+                    },
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Urgency (긴급도)") },
+                    label = { Text("긴급도") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = urgencyExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -351,7 +363,11 @@ fun AddEditReminderScreen(
                 ) {
                     Urgency.entries.forEach { u ->
                         DropdownMenuItem(
-                            text = { Text(u.name) },
+                            text = { Text(when (u) {
+                                Urgency.HIGH -> "높음"
+                                Urgency.MEDIUM -> "중간"
+                                Urgency.LOW -> "낮음"
+                            }) },
                             onClick = {
                                 urgency = u
                                 urgencyExpanded = false
@@ -379,7 +395,12 @@ fun AddEditReminderScreen(
                         Column(
                             horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
                         ) {
-                            Text("🤖 AI 제안: ${predicted.name} 긴급도")
+                            val urgencyText = when (predicted) {
+                                Urgency.HIGH -> "높음"
+                                Urgency.MEDIUM -> "중간"
+                                Urgency.LOW -> "낮음"
+                            }
+                            Text("🤖 AI 제안: $urgencyText 긴급도")
                             Text(
                                 text = reason,
                                 style = MaterialTheme.typography.bodySmall,
