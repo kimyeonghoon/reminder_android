@@ -233,7 +233,7 @@ private fun getPatternDisplayName(pattern: RecurrencePattern): String {
     }
 }
 
-private fun getIntervalUnit(pattern: RecurrencePattern, interval: Int): String {
+private fun getIntervalUnit(pattern: RecurrencePattern, @Suppress("UNUSED_PARAMETER") interval: Int): String {
     return when (pattern) {
         RecurrencePattern.DAILY -> "일"
         RecurrencePattern.WEEKLY -> "주"

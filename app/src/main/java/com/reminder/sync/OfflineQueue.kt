@@ -111,7 +111,7 @@ class OfflineQueue(
      * 재시도 실패 작업 제거 (재시도 횟수 4회 이상)
      */
     suspend fun clearFailedActions() {
-        val allActions = pendingActionDao.getAllPendingActions()
         // Note: This is a simplified version. In production, you'd use a better query
+        // TODO: Implement clearFailedActions logic
     }
 }

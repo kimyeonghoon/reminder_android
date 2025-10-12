@@ -794,8 +794,7 @@ fun ReminderAppContent(
             }
         ) {
             FocusModeScreen(
-                application = app,
-                onNavigateBack = { navController.popBackStack() }
+                application = app
             )
         }
         }

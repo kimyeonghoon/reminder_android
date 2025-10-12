@@ -61,9 +61,10 @@ class GoalTracker {
         // 목표 기간 내에 완료된 리마인더 필터링
         val completedInPeriod = reminders.filter { reminder ->
             reminder.isCompleted &&
-                    reminder.completedAt != null &&
-                    isWithinPeriod(reminder.completedAt!!, goal.startDate, goal.endDate) &&
-                    matchesCategory(reminder, goal.category)
+                    reminder.completedAt?.let { completedAt ->
+                        isWithinPeriod(completedAt, goal.startDate, goal.endDate) &&
+                        matchesCategory(reminder, goal.category)
+                    } == true
         }
 
         val currentCount = completedInPeriod.size

@@ -75,7 +75,7 @@ class ReminderMessagingService : FirebaseMessagingService() {
             )
 
             // 이미지가 있으면 리치 알림, 없으면 액션 버튼 알림 표시
-            val notification = if (!imageUri.isNullOrBlank()) {
+            if (!imageUri.isNullOrBlank()) {
                 notificationHelper.buildRichNotification(reminder)
             } else {
                 notificationHelper.buildNotificationWithActions(reminder)

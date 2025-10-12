@@ -27,7 +27,6 @@ class GoalTrackerTest {
         val today = LocalDate.now()
         val thisWeek = today.minusDays(3)
         // 이번 달 범위 내에서 날짜 설정 (flaky test 방지)
-        val thisMonthStart = today.withDayOfMonth(1)
         val thisMonthMid = today.withDayOfMonth(15) // 이번 달 중순
 
         testReminders = listOf(

@@ -116,7 +116,7 @@ class RecurrenceScheduler {
      */
     private fun calculateNextDate(
         rule: RecurrenceRule,
-        start: LocalDate,
+        @Suppress("UNUSED_PARAMETER") start: LocalDate,
         current: LocalDate
     ): LocalDate {
         return when (rule.type) {

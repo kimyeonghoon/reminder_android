@@ -180,11 +180,12 @@ class StatisticsViewModel(
     val insights = combine(
         statistics,
         repository.allReminders
-    ) { stats, reminders ->
+    ) { _, reminders ->
         // Statistics 객체를 ProductivityInsights용 Statistics로 변환
         val completedThisWeek = reminders.count {
-            it.isCompleted && it.completedAt != null &&
-                    ChronoUnit.DAYS.between(it.completedAt?.toLocalDate(), LocalDate.now()) < 7
+            it.isCompleted && it.completedAt?.let { completedAt ->
+                ChronoUnit.DAYS.between(completedAt.toLocalDate(), LocalDate.now()) < 7
+            } == true
         }
         val totalThisWeek = reminders.count {
             ChronoUnit.DAYS.between(it.createdAt.toLocalDate(), LocalDate.now()) < 7
@@ -192,8 +193,9 @@ class StatisticsViewModel(
         val thisWeekRate = if (totalThisWeek > 0) completedThisWeek.toDouble() / totalThisWeek else 0.0
 
         val completedLastWeek = reminders.count {
-            it.isCompleted && it.completedAt != null &&
-                    ChronoUnit.DAYS.between(it.completedAt?.toLocalDate(), LocalDate.now()) in 7..13
+            it.isCompleted && it.completedAt?.let { completedAt ->
+                ChronoUnit.DAYS.between(completedAt.toLocalDate(), LocalDate.now()) in 7..13
+            } == true
         }
         val totalLastWeek = reminders.count {
             val daysSince = ChronoUnit.DAYS.between(it.createdAt.toLocalDate(), LocalDate.now())

@@ -85,9 +85,6 @@ fun AddEditReminderScreen(
     // v1.25.0: 카테고리 제안
     var categorySuggestions by remember { mutableStateOf<List<String>>(emptyList()) }
 
-    // v1.26.0: 최적 시간 제안
-    var showOptimalTimeSuggestion by remember { mutableStateOf(false) }
-
     // 카테고리 자동 제안 (title이나 description 변경 시)
     LaunchedEffect(title, description) {
         if (title.isNotBlank() || description.isNotBlank()) {

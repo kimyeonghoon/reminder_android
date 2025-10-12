@@ -36,8 +36,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FocusModeScreen(
-    application: ReminderApplication,
-    onNavigateBack: () -> Unit
+    application: ReminderApplication
 ) {
     val viewModel: FocusModeViewModel = viewModel(
         factory = FocusModeViewModelFactory(

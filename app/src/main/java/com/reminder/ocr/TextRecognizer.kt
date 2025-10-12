@@ -18,7 +18,7 @@ class TextRecognizer {
      * @param bitmap 이미지 비트맵
      * @return 추출된 텍스트, 실패 시 null
      */
-    suspend fun recognizeText(bitmap: Bitmap): String? {
+    suspend fun recognizeText(@Suppress("UNUSED_PARAMETER") bitmap: Bitmap): String? {
         return try {
             // TODO: ML Kit Text Recognition API 통합
             // val image = InputImage.fromBitmap(bitmap, 0)
@@ -37,7 +37,7 @@ class TextRecognizer {
     /**
      * 파일 경로에서 텍스트 추출
      */
-    suspend fun recognizeTextFromFile(filePath: String): String? {
+    suspend fun recognizeTextFromFile(@Suppress("UNUSED_PARAMETER") filePath: String): String? {
         return try {
             // TODO: 파일에서 비트맵 로드 후 텍스트 추출
             null
