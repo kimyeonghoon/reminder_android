@@ -480,7 +480,70 @@ fun ReminderCard(
 
 ## 📦 릴리즈 & 버전
 
-### v1.48.0 (최신) - 2025-10-11
+### v1.63.1 (최신) - 2025-10-12
+
+#### 🐛 UI 한글화 및 타이머 구현
+- **반복 설정 UI 완전 한글화**
+  - RecurrenceSelector.kt - 모든 반복 패턴 한글 표시 ("없음", "일", "주", "월", "년")
+  - 사용자 친화적인 한글 인터페이스
+- **Pomodoro & Focus 타이머 카운트다운 구현**
+  - 실시간 타이머 표시 (분:초 형식)
+  - 진행률 바 및 세션 완료 자동 전환
+  - 일시정지/재개 기능 보강
+- **AddEditReminderScreen 스크롤 문제 수정**
+  - 다국어 지원 제거로 코드 단순화
+  - 스크롤 동작 안정성 향상
+
+#### ✅ UI 테스트 강화
+- **RecurrenceSelector 한글화 검증 테스트** (18개 테스트 함수)
+- **UI 스크린 테스트 재작성** (6개 파일, 100개 테스트)
+  - AddEditReminderScreenTest.kt (21개)
+  - FilterScreenTest.kt (22개)
+  - HabitTrackerScreenTest.kt (14개)
+  - HomeScreenTest.kt (16개)
+  - PomodoroScreenTest.kt (13개)
+  - StatisticsScreenTest.kt (14개)
+
+#### ♻️ 테스트 함수명 표준화 (대규모 리팩토링)
+- **38개 파일, 370+ 함수 변환**: 한글 함수명 → 영어 함수명 + 한글 주석
+- **변경 이유**: 한글 함수명 사용 시 테스트 실패 문제 해결
+- **새로운 패턴**:
+  ```kotlin
+  /** 한글 설명 */
+  @Test
+  fun englishFunctionName() { ... }
+  ```
+- **CLAUDE.md 업데이트**: 테스트 명명 규칙 공식 반영
+- **코드 품질**: 테스트 안정성 향상, 코드 일관성 통일
+- ✅ 모든 유닛 테스트 통과 (213개)
+
+### v1.63.0 - 2025-10-12
+
+#### 🎨 Bottom Navigation 통합 및 TopAppBar 아키텍처 개선
+- **중복 TopAppBar 제거**
+  - MainActivity의 ReminderApp에서 통합 TopAppBar 제공
+  - 각 화면에서 개별 TopAppBar 제거 (중복 방지)
+  - 일관된 상단 바 UI 제공
+- **Bottom Navigation 일관성 향상**
+  - 모든 화면에서 Bottom Navigation 표시
+  - 뒤로가기 버튼 제거 (Bottom Navigation으로 통합)
+  - 5개 탭 간 원활한 전환
+- **UI 정리**
+  - HomeScreen: 중복 플로팅 버튼 제거
+  - HelpScreen, CompletionHistoryScreen, StatisticsScreen: 중복 TopAppBar 제거
+  - AddEditReminderScreen, SettingsScreen: 뒤로가기 버튼 제거
+
+#### 🎯 사용자 경험 향상
+- **네비게이션 일관성**: 모든 화면에서 동일한 네비게이션 경험
+- **UI 깔끔함**: 중복 요소 제거로 화면 정리
+- **접근성 향상**: Bottom Navigation으로 주요 화면 1탭 접근
+
+#### 🏗️ 아키텍처 개선
+- **단일 TopAppBar 아키텍처**: MainActivity에서 중앙 집중 관리
+- **Scaffold 구조 단순화**: 각 화면의 Scaffold 제거 또는 단순화
+- **코드 일관성**: 모든 화면이 동일한 네비게이션 패턴 따름
+
+### v1.48.0 - 2025-10-11
 
 #### 🤖 AI 긴급도 자동 예측 기능 구현
 - **UrgencyPredictor 클래스**: 키워드 기반 NLP 분석 엔진

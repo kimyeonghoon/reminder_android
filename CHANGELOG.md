@@ -5,6 +5,95 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.63.1] - 2025-10-12
+
+### Fixed
+- 🐛 **UI 한글화 및 타이머 구현** - 사용자 경험 개선
+  - **반복 설정 UI 완전 한글화**
+    - RecurrenceSelector.kt - 모든 반복 패턴 한글 표시
+    - "없음", "일", "주", "월", "년" 레이블 적용
+    - 사용자 친화적인 한글 인터페이스
+  - **AddEditReminderScreen 스크롤 문제 수정**
+    - 다국어 지원 제거로 코드 단순화
+    - 스크롤 동작 안정성 향상
+  - **Pomodoro 타이머 카운트다운 구현**
+    - 실시간 타이머 표시 (분:초 형식)
+    - 세션 완료 시 자동 전환
+    - 테스트 코드 수정 (countdownFormat 추가)
+  - **Focus 모드 타이머 카운트다운 구현**
+    - 남은 시간 실시간 표시
+    - 진행률 바 추가
+    - 일시정지/재개 기능 보강
+
+### Added
+- ✅ **UI 테스트 강화**
+  - **RecurrenceSelector 한글화 검증 테스트**
+    - RecurrenceSelectorTest.kt 추가
+    - 모든 반복 패턴 한글 표시 검증
+    - 18개 테스트 함수 작성
+  - **UI 스크린 테스트 재작성 (6개 파일)**
+    - AddEditReminderScreenTest.kt (21개 테스트)
+    - FilterScreenTest.kt (22개 테스트)
+    - HabitTrackerScreenTest.kt (14개 테스트)
+    - HomeScreenTest.kt (16개 테스트)
+    - PomodoroScreenTest.kt (13개 테스트)
+    - StatisticsScreenTest.kt (14개 테스트)
+    - 총 100개의 UI 테스트 함수 작성
+
+### Changed
+- ♻️ **테스트 함수명 표준화** - 코드 품질 및 안정성 개선
+  - **모든 테스트 함수명을 영어 + 한글 주석 패턴으로 변경**
+    - 38개 파일, 370+ 함수 변환
+    - androidTest 폴더: 9개 파일 (~100개 함수)
+    - test 폴더: 29개 파일 (~270개 함수)
+  - **변경 이유**: 한글 함수명 사용 시 테스트 실패 문제 해결
+  - **새로운 패턴**:
+    ```kotlin
+    /** 한글 설명 */
+    @Test
+    fun englishFunctionName() { ... }
+    ```
+  - **CLAUDE.md 업데이트**: 테스트 명명 규칙 공식 반영
+
+### Code Quality
+- **테스트 안정성 향상**: 한글 함수명 → 영어 함수명 전환으로 테스트 실행 안정성 확보
+- **코드 일관성**: 전체 테스트 코드베이스의 명명 규칙 통일
+- **문서화 개선**: 한글 주석으로 테스트 의도 명확히 표현
+- **모든 유닛 테스트 통과** (213개)
+- **변경 규모**: 1096 insertions(+), 579 deletions(-)
+
+### Testing
+- **UI 테스트 커버리지 대폭 확장**: 6개 주요 화면 완전 테스트
+- **한글화 검증**: RecurrenceSelector UI 한글 표시 자동 검증
+- **회귀 테스트 방지**: 주요 사용자 시나리오 테스트 자동화
+
+## [1.63.0] - 2025-10-12
+
+### Changed
+- 🎨 **Bottom Navigation 통합 및 TopAppBar 아키텍처 개선**
+  - **중복 TopAppBar 제거**
+    - MainActivity의 ReminderApp에서 통합 TopAppBar 제공
+    - 각 화면에서 개별 TopAppBar 제거 (중복 방지)
+    - 일관된 상단 바 UI 제공
+  - **Bottom Navigation 일관성 향상**
+    - 모든 화면에서 Bottom Navigation 표시
+    - 뒤로가기 버튼 제거 (Bottom Navigation으로 통합)
+    - 5개 탭 간 원활한 전환
+  - **UI 정리**
+    - HomeScreen: 중복 플로팅 버튼 제거
+    - HelpScreen, CompletionHistoryScreen, StatisticsScreen: 중복 TopAppBar 제거
+    - AddEditReminderScreen, SettingsScreen: 뒤로가기 버튼 제거
+
+### User Experience
+- **네비게이션 일관성**: 모든 화면에서 동일한 네비게이션 경험
+- **UI 깔끔함**: 중복 요소 제거로 화면 정리
+- **접근성 향상**: Bottom Navigation으로 주요 화면 1탭 접근
+
+### Architecture
+- **단일 TopAppBar 아키텍처**: MainActivity에서 중앙 집중 관리
+- **Scaffold 구조 단순화**: 각 화면의 Scaffold 제거 또는 단순화
+- **코드 일관성**: 모든 화면이 동일한 네비게이션 패턴 따름
+
 ## [1.62.0] - 2025-10-11
 
 ### Fixed
