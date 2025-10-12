@@ -222,7 +222,7 @@ fun AddEditReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (reminder == null) "New Reminder" else "Edit Reminder") },
+                title = { Text(if (reminder == null) "새 리마인더" else "리마인더 수정") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
@@ -245,7 +245,7 @@ fun AddEditReminderScreen(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title") },
+                    label = { Text("제목") },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
@@ -266,7 +266,7 @@ fun AddEditReminderScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text("설명") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 5
@@ -277,7 +277,7 @@ fun AddEditReminderScreen(
                 OutlinedTextField(
                     value = category,
                     onValueChange = { category = it },
-                    label = { Text("Category") },
+                    label = { Text("카테고리") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -757,7 +757,7 @@ fun AddEditReminderScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = title.isNotBlank()
             ) {
-                Text(if (reminder == null) "Add Reminder" else "Update Reminder")
+                Text(if (reminder == null) "리마인더 추가" else "리마인더 수정")
             }
         }
     }

@@ -42,8 +42,11 @@ class PendingActionDaoTest {
         database.close()
     }
 
+    /**
+     * 대기 작업을 삽입하고 ID를 반환한다
+     */
     @Test
-    fun `대기 작업을 삽입하고 ID를 반환한다`() = runTest {
+    fun insertPendingActionAndReturnId() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -58,8 +61,11 @@ class PendingActionDaoTest {
         assertTrue("ID should be greater than 0", id > 0)
     }
 
+    /**
+     * 모든 대기 작업을 조회한다
+     */
     @Test
-    fun `모든 대기 작업을 조회한다`() = runTest {
+    fun getAllPendingActions() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -82,8 +88,11 @@ class PendingActionDaoTest {
         assertEquals("First action should be oldest", ActionType.INSERT, actions[0].actionType)
     }
 
+    /**
+     * 특정 리마인더의 대기 작업을 조회한다
+     */
     @Test
-    fun `특정 리마인더의 대기 작업을 조회한다`() = runTest {
+    fun getPendingActionsByReminderId() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -112,8 +121,11 @@ class PendingActionDaoTest {
         assertTrue("All actions should be for reminder 1", actions.all { it.reminderId == 1L })
     }
 
+    /**
+     * 재시도 횟수가 낮은 작업만 조회한다
+     */
     @Test
-    fun `재시도 횟수가 낮은 작업만 조회한다`() = runTest {
+    fun getPendingActionsWithLowRetryCount() = runTest {
         // Given
         val action1 = PendingActionEntity(
             reminderId = 1L,
@@ -138,8 +150,11 @@ class PendingActionDaoTest {
         assertEquals("Should be action with low retry count", 1, actions[0].retryCount)
     }
 
+    /**
+     * 대기 작업의 필드를 업데이트한다
+     */
     @Test
-    fun `대기 작업의 필드를 업데이트한다`() = runTest {
+    fun updatePendingActionFields() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -165,8 +180,11 @@ class PendingActionDaoTest {
         assertNotNull("Last retry time should be set", actions[0].lastRetryAt)
     }
 
+    /**
+     * 대기 작업을 삭제한다
+     */
     @Test
-    fun `대기 작업을 삭제한다`() = runTest {
+    fun deletePendingAction() = runTest {
         // Given
         val action = PendingActionEntity(
             reminderId = 1L,
@@ -183,8 +201,11 @@ class PendingActionDaoTest {
         assertEquals("Should have no actions", 0, actions.size)
     }
 
+    /**
+     * 모든 대기 작업을 삭제한다
+     */
     @Test
-    fun `모든 대기 작업을 삭제한다`() = runTest {
+    fun deleteAllPendingActions() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -201,8 +222,11 @@ class PendingActionDaoTest {
         assertEquals("Should have no actions", 0, actions.size)
     }
 
+    /**
+     * 특정 리마인더의 대기 작업을 삭제한다
+     */
     @Test
-    fun `특정 리마인더의 대기 작업을 삭제한다`() = runTest {
+    fun deletePendingActionsByReminderId() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -223,8 +247,11 @@ class PendingActionDaoTest {
         assertEquals("Remaining action should be for reminder 2", 2L, actions[0].reminderId)
     }
 
+    /**
+     * 대기 작업 수를 정확하게 반환한다
+     */
     @Test
-    fun `대기 작업 수를 정확하게 반환한다`() = runTest {
+    fun getPendingActionsCountAccurately() = runTest {
         // Given
         pendingActionDao.insertPendingAction(
             PendingActionEntity(reminderId = 1L, actionType = ActionType.INSERT, createdAt = LocalDateTime.now())
@@ -240,8 +267,11 @@ class PendingActionDaoTest {
         assertEquals("Count should be 2", 2, count)
     }
 
+    /**
+     * 작업 타입이 올바르게 저장된다
+     */
     @Test
-    fun `작업 타입이 올바르게 저장된다`() = runTest {
+    fun actionTypesAreSavedCorrectly() = runTest {
         // Given
         val insertAction = PendingActionEntity(
             reminderId = 1L,

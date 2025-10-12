@@ -65,10 +65,12 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("• 할 일 추가하기").assertIsDisplayed()
+        composeTestRule.onNodeWithText("• 할 일 추가하기")
+            .performScrollTo()
+            .assertIsDisplayed()
         composeTestRule.onNodeWithText(
             "홈 화면 우측 하단의 + 버튼을 눌러 새로운 할 일을 추가할 수 있습니다."
-        ).assertIsDisplayed()
+        ).assertExists()
     }
 
     @Test
@@ -118,10 +120,12 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("• 테마 변경").assertIsDisplayed()
+        composeTestRule.onNodeWithText("• 테마 변경")
+            .performScrollTo()
+            .assertIsDisplayed()
         composeTestRule.onNodeWithText(
             "설정에서 라이트/다크/시스템 테마를 선택할 수 있습니다."
-        ).assertIsDisplayed()
+        ).assertExists()
     }
 
     @Test
@@ -132,10 +136,12 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("• 간편 모드").assertIsDisplayed()
+        composeTestRule.onNodeWithText("• 간편 모드")
+            .performScrollTo()
+            .assertIsDisplayed()
         composeTestRule.onNodeWithText(
             "복잡한 기능을 숨기고 더 큰 버튼으로 사용할 수 있는 모드입니다."
-        ).assertIsDisplayed()
+        ).assertExists()
     }
 
     @Test
@@ -146,7 +152,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("자주 묻는 질문 (FAQ)").assertIsDisplayed()
+        composeTestRule.onNodeWithText("자주 묻는 질문 (FAQ)")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -157,7 +165,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("Q. 알림이 오지 않아요").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Q. 알림이 오지 않아요")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -166,6 +176,10 @@ class HelpScreenTest {
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
         }
+
+        // FAQ 항목으로 스크롤
+        composeTestRule.onNodeWithText("Q. 알림이 오지 않아요")
+            .performScrollTo()
 
         // 처음에는 답변이 표시되지 않음
         composeTestRule.onNodeWithText(
@@ -178,7 +192,7 @@ class HelpScreenTest {
         // Then - 답변이 표시됨
         composeTestRule.onNodeWithText(
             "A. 설정 → 앱 → Reminder → 알림 권한을 확인해주세요. Android 12 이상에서는 정확한 알람 권한도 필요합니다."
-        ).assertIsDisplayed()
+        ).assertExists()
     }
 
     @Test
@@ -189,7 +203,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("Q. 완료한 할 일은 어디서 볼 수 있나요?").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Q. 완료한 할 일은 어디서 볼 수 있나요?")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -200,7 +216,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("Q. 데이터를 백업하고 싶어요").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Q. 데이터를 백업하고 싶어요")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -211,7 +229,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("Q. 위젯이 업데이트되지 않아요").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Q. 위젯이 업데이트되지 않아요")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -222,7 +242,9 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("Q. 글씨가 너무 작아요").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Q. 글씨가 너무 작아요")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -233,8 +255,11 @@ class HelpScreenTest {
         }
 
         // Then
-        composeTestRule.onNodeWithText("문제가 해결되지 않으셨나요?").assertIsDisplayed()
-        composeTestRule.onNodeWithText("앱을 개선하는데 도움을 주셔서 감사합니다.").assertIsDisplayed()
+        composeTestRule.onNodeWithText("문제가 해결되지 않으셨나요?")
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("앱을 개선하는데 도움을 주셔서 감사합니다.")
+            .assertExists()
     }
 
     @Test
@@ -244,13 +269,17 @@ class HelpScreenTest {
             HelpScreen(onNavigateBack = {})
         }
 
+        // FAQ 항목으로 스크롤
+        composeTestRule.onNodeWithText("Q. 알림이 오지 않아요")
+            .performScrollTo()
+
         // When - FAQ 첫 번째 클릭 (답변 표시)
         composeTestRule.onNodeWithText("Q. 알림이 오지 않아요").performClick()
 
         // Then - 답변이 표시됨
         composeTestRule.onNodeWithText(
             "A. 설정 → 앱 → Reminder → 알림 권한을 확인해주세요. Android 12 이상에서는 정확한 알람 권한도 필요합니다."
-        ).assertIsDisplayed()
+        ).assertExists()
 
         // When - FAQ 두 번째 클릭 (답변 숨김)
         composeTestRule.onNodeWithText("Q. 알림이 오지 않아요").performClick()

@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 68
-        versionName = "1.62.0"
+        versionCode = 69
+        versionName = "1.63.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -139,6 +139,7 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")

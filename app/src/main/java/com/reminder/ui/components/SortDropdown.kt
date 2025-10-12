@@ -28,7 +28,7 @@ fun SortDropdown(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Sort by",
+            text = "정렬",
             style = MaterialTheme.typography.labelMedium
         )
 
@@ -84,13 +84,13 @@ fun SortDropdown(
 
 private fun getSortOptionLabel(option: SortOption): String {
     return when (option) {
-        SortOption.BY_DATE_ASC -> "Date (Earliest)"
-        SortOption.BY_DATE_DESC -> "Date (Latest)"
-        SortOption.BY_PRIORITY_HIGH_FIRST -> "Priority (High First)"
-        SortOption.BY_PRIORITY_LOW_FIRST -> "Priority (Low First)"
-        SortOption.BY_TITLE_ASC -> "Title (A-Z)"
-        SortOption.BY_TITLE_DESC -> "Title (Z-A)"
-        SortOption.BY_CREATED_ASC -> "Created (Oldest)"
-        SortOption.BY_CREATED_DESC -> "Created (Newest)"
+        SortOption.BY_DATE_ASC -> "날짜 (빠른 순)"
+        SortOption.BY_DATE_DESC -> "날짜 (늦은 순)"
+        SortOption.BY_PRIORITY_HIGH_FIRST -> "중요도 (높은 순)"
+        SortOption.BY_PRIORITY_LOW_FIRST -> "중요도 (낮은 순)"
+        SortOption.BY_TITLE_ASC -> "제목 (ㄱ-ㅎ)"
+        SortOption.BY_TITLE_DESC -> "제목 (ㅎ-ㄱ)"
+        SortOption.BY_CREATED_ASC -> "생성일 (오래된 순)"
+        SortOption.BY_CREATED_DESC -> "생성일 (최근 순)"
     }
 }

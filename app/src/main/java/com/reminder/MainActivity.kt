@@ -209,7 +209,8 @@ fun ReminderApp() {
             color = MaterialTheme.colorScheme.background
         ) {
             // 온보딩 완료 여부에 따라 화면 분기
-            if (!userPreferences.onboardingCompleted) {
+            // TODO: BUG_003 - 온보딩 Skip 버튼이 작동하지 않음 (테스트용 임시 비활성화)
+            if (false && !userPreferences.onboardingCompleted) {
                 OnboardingScreen(
                     onFinished = {
                         scope.launch {

@@ -30,7 +30,7 @@ fun FilterChips(
     ) {
         // Priority filters
         Text(
-            text = "Priority",
+            text = "중요도",
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -46,10 +46,10 @@ fun FilterChips(
                     label = {
                         Text(
                             text = when (filter) {
-                                FilterPriority.ALL -> "All"
-                                FilterPriority.HIGH -> "High"
-                                FilterPriority.MEDIUM -> "Medium"
-                                FilterPriority.LOW -> "Low"
+                                FilterPriority.ALL -> "전체"
+                                FilterPriority.HIGH -> "높음"
+                                FilterPriority.MEDIUM -> "중간"
+                                FilterPriority.LOW -> "낮음"
                             }
                         )
                     }
@@ -59,7 +59,7 @@ fun FilterChips(
 
         // Date filters
         Text(
-            text = "Date",
+            text = "날짜",
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(start = 16.dp, top = 8.dp)
         )
@@ -75,11 +75,11 @@ fun FilterChips(
                     label = {
                         Text(
                             text = when (filter) {
-                                FilterDate.ALL -> "All"
-                                FilterDate.TODAY -> "Today"
-                                FilterDate.THIS_WEEK -> "This Week"
-                                FilterDate.THIS_MONTH -> "This Month"
-                                FilterDate.OVERDUE -> "Overdue"
+                                FilterDate.ALL -> "전체"
+                                FilterDate.TODAY -> "오늘"
+                                FilterDate.THIS_WEEK -> "이번 주"
+                                FilterDate.THIS_MONTH -> "이번 달"
+                                FilterDate.OVERDUE -> "지난 일정"
                             }
                         )
                     }
