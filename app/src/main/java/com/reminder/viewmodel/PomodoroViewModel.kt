@@ -33,6 +33,9 @@ class PomodoroViewModel(
     // 현재 세션 ID
     private var currentSessionId: Long? = null
 
+    // 타이머 Job
+    private var timerJob: Job? = null
+
     // UI가 필요로 하는 나머지 속성들
     val todaySessions = MutableStateFlow<List<PomodoroSession>>(emptyList()).asStateFlow()
     val todayCompletedSessions = MutableStateFlow(0).asStateFlow()
@@ -54,6 +57,7 @@ class PomodoroViewModel(
             currentSessionId = sessionId
             _currentState.value = PomodoroState.FOCUS
             _remainingSeconds.value = pomodoroManager.getFocusSessionDuration() * 60
+            startTimer()
         }
     }
 
@@ -66,6 +70,7 @@ class PomodoroViewModel(
             currentSessionId = sessionId
             _currentState.value = PomodoroState.SHORT_BREAK
             _remainingSeconds.value = pomodoroManager.getShortBreakDuration() * 60
+            startTimer()
         }
     }
 
@@ -78,6 +83,7 @@ class PomodoroViewModel(
             currentSessionId = sessionId
             _currentState.value = PomodoroState.LONG_BREAK
             _remainingSeconds.value = pomodoroManager.getLongBreakDuration() * 60
+            startTimer()
         }
     }
 
@@ -109,9 +115,36 @@ class PomodoroViewModel(
      * 세션 리셋
      */
     private fun resetSession() {
+        stopTimer()
         currentSessionId = null
         _currentState.value = PomodoroState.IDLE
         _remainingSeconds.value = 0
+    }
+
+    /**
+     * 타이머 시작 (1초마다 카운트다운)
+     */
+    private fun startTimer() {
+        stopTimer() // 기존 타이머 중지
+        timerJob = scope.launch {
+            while (_remainingSeconds.value > 0) {
+                delay(1000) // 1초 대기
+                _remainingSeconds.value -= 1
+
+                // 시간이 0이 되면 자동 완료
+                if (_remainingSeconds.value <= 0) {
+                    completeSession()
+                }
+            }
+        }
+    }
+
+    /**
+     * 타이머 중지
+     */
+    private fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
     }
 
     // 나머지 빈 메서드들

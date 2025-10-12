@@ -52,7 +52,7 @@ class PomodoroViewModelTest {
     fun `집중 세션을 시작하면 상태가 FOCUS로 변경된다`() = runTest(testDispatcher) {
         // When
         viewModel.startFocusSession()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent() // Only run immediate tasks, not delays
 
         // Then
         assertEquals(PomodoroState.FOCUS, viewModel.currentState.value)
@@ -63,7 +63,7 @@ class PomodoroViewModelTest {
     fun `짧은 휴식을 시작하면 상태가 SHORT_BREAK로 변경된다`() = runTest(testDispatcher) {
         // When
         viewModel.startShortBreak()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent() // Only run immediate tasks, not delays
 
         // Then
         assertEquals(PomodoroState.SHORT_BREAK, viewModel.currentState.value)
@@ -74,7 +74,7 @@ class PomodoroViewModelTest {
     fun `긴 휴식을 시작하면 상태가 LONG_BREAK로 변경된다`() = runTest(testDispatcher) {
         // When
         viewModel.startLongBreak()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent() // Only run immediate tasks, not delays
 
         // Then
         assertEquals(PomodoroState.LONG_BREAK, viewModel.currentState.value)
@@ -85,11 +85,11 @@ class PomodoroViewModelTest {
     fun `세션을 완료하면 상태가 IDLE로 돌아간다`() = runTest(testDispatcher) {
         // Given
         viewModel.startFocusSession()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent() // Only run immediate tasks, not delays
 
         // When
         viewModel.completeSession()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent()
 
         // Then
         assertTrue(pomodoroManager.completedSessions.contains(1L))
@@ -100,15 +100,47 @@ class PomodoroViewModelTest {
     fun `세션을 취소하면 상태가 IDLE로 돌아간다`() = runTest(testDispatcher) {
         // Given
         viewModel.startFocusSession()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent() // Only run immediate tasks, not delays
 
         // When
         viewModel.cancelSession()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent()
 
         // Then
         assertTrue(pomodoroManager.cancelledSessions.contains(1L))
         assertEquals(PomodoroState.IDLE, viewModel.currentState.value)
+    }
+
+    @Test
+    fun `타이머가 1초마다 카운트다운 된다`() = runTest {
+        // Given
+        viewModel.startFocusSession()
+        testScheduler.runCurrent() // Start the timer
+        val initialSeconds = viewModel.remainingSeconds.value
+
+        // When - Advance time by 3 seconds
+        testScheduler.advanceTimeBy(3000)
+        testScheduler.runCurrent() // Process the delays
+
+        // Then - Should have decremented by 3 seconds
+        assertEquals(initialSeconds - 3, viewModel.remainingSeconds.value)
+    }
+
+    @Test
+    fun `타이머가 0에 도달하면 세션이 자동 완료된다`() = runTest {
+        // Given
+        viewModel.startFocusSession()
+        testScheduler.runCurrent()
+
+        // When - Advance time past the entire duration
+        val totalTime = (25 * 60 + 1) * 1000L
+        testScheduler.advanceTimeBy(totalTime)
+        testScheduler.runCurrent()
+
+        // Then - Session should be completed
+        assertEquals(PomodoroState.IDLE, viewModel.currentState.value)
+        assertEquals(0, viewModel.remainingSeconds.value)
+        assertTrue(pomodoroManager.completedSessions.contains(1L))
     }
 }
 
