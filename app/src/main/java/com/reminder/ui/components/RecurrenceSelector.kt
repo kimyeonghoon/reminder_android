@@ -58,7 +58,7 @@ fun RecurrenceSelector(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Recurrence",
+            text = "반복 설정",
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -71,7 +71,7 @@ fun RecurrenceSelector(
                 value = getPatternDisplayName(recurrencePattern),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Repeat") },
+                label = { Text("반복") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = patternExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +101,7 @@ fun RecurrenceSelector(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Every")
+                Text("매")
 
                 OutlinedTextField(
                     value = recurrenceInterval.toString(),
@@ -122,7 +122,7 @@ fun RecurrenceSelector(
 
         // 요일 선택 (WEEKLY일 때만)
         if (recurrencePattern == RecurrencePattern.WEEKLY) {
-            Text("Repeat on", style = MaterialTheme.typography.bodyMedium)
+            Text("반복 요일", style = MaterialTheme.typography.bodyMedium)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -160,7 +160,7 @@ fun RecurrenceSelector(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("End date")
+                Text("종료일")
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (recurrenceEndDate != null) {
@@ -169,11 +169,11 @@ fun RecurrenceSelector(
                             modifier = Modifier.padding(8.dp)
                         )
                         TextButton(onClick = { onEndDateChange(null) }) {
-                            Text("Clear")
+                            Text("지우기")
                         }
                     } else {
                         TextButton(onClick = { showEndDatePicker = true }) {
-                            Text("Set end date")
+                            Text("종료일 설정")
                         }
                     }
                 }
@@ -185,7 +185,7 @@ fun RecurrenceSelector(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             Text(
-                text = "Next occurrences:",
+                text = "다음 반복 일정:",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -225,21 +225,20 @@ fun RecurrenceSelector(
 
 private fun getPatternDisplayName(pattern: RecurrencePattern): String {
     return when (pattern) {
-        RecurrencePattern.NONE -> "Does not repeat"
-        RecurrencePattern.DAILY -> "Daily"
-        RecurrencePattern.WEEKLY -> "Weekly"
-        RecurrencePattern.MONTHLY -> "Monthly"
-        RecurrencePattern.YEARLY -> "Yearly"
+        RecurrencePattern.NONE -> "반복 안 함"
+        RecurrencePattern.DAILY -> "매일"
+        RecurrencePattern.WEEKLY -> "매주"
+        RecurrencePattern.MONTHLY -> "매월"
+        RecurrencePattern.YEARLY -> "매년"
     }
 }
 
 private fun getIntervalUnit(pattern: RecurrencePattern, interval: Int): String {
-    val unit = when (pattern) {
-        RecurrencePattern.DAILY -> "day"
-        RecurrencePattern.WEEKLY -> "week"
-        RecurrencePattern.MONTHLY -> "month"
-        RecurrencePattern.YEARLY -> "year"
+    return when (pattern) {
+        RecurrencePattern.DAILY -> "일"
+        RecurrencePattern.WEEKLY -> "주"
+        RecurrencePattern.MONTHLY -> "개월"
+        RecurrencePattern.YEARLY -> "년"
         else -> ""
     }
-    return if (interval > 1) "${unit}s" else unit
 }
