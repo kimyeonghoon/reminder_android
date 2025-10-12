@@ -34,14 +34,7 @@
 > Task :app:writeDebugAppMetadata UP-TO-DATE
 > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
 > Task :app:kspDebugKotlin
-
 > Task :app:compileDebugKotlin
-w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt:87:9 Variable 'showOptimalTimeSuggestion' is never used
-w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt:140:66 'recurrencePattern: RecurrencePattern' is deprecated. Use recurrenceRule instead
-w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt:141:70 'recurrenceInterval: Int' is deprecated. Use recurrenceRule instead
-w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt:144:23 'recurrenceDaysOfWeek: String?' is deprecated. Use recurrenceRule instead
-w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/screen/AddEditReminderScreen.kt:154:66 'recurrenceEndDate: LocalDateTime?' is deprecated. Use recurrenceEnd instead
-
 > Task :app:compileDebugJavaWithJavac UP-TO-DATE
 > Task :app:dexBuilderDebug
 > Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
@@ -55,5 +48,5 @@ w: file:///home/ioniere/projects/reminder/app/src/main/java/com/reminder/ui/scre
 Installing APK 'app-debug.apk' on 'Pixel_5(AVD) - 14' for :app:debug
 Installed on 1 device.
 
-BUILD SUCCESSFUL in 6s
+BUILD SUCCESSFUL in 3s
 42 actionable tasks: 7 executed, 35 up-to-date
