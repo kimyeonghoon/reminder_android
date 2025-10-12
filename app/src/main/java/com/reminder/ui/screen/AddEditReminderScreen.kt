@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -231,13 +233,19 @@ fun AddEditReminderScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+                    .padding(bottom = 80.dp), // 버튼 공간 확보
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -713,9 +721,9 @@ fun AddEditReminderScreen(
                     )
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.weight(1f))
-
+            // 버튼을 Box 하단에 고정
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
@@ -775,7 +783,10 @@ fun AddEditReminderScreen(
                         onNavigateBack()
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .align(androidx.compose.ui.Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 enabled = title.isNotBlank()
             ) {
                 Text(if (reminder == null) "리마인더 추가" else "리마인더 수정")

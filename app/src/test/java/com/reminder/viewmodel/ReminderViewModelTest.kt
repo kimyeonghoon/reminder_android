@@ -291,12 +291,10 @@ class ReminderViewModelTest {
     fun `filterByDate는 날짜별로 필터링한다`() {
         // Given
         val today = LocalDateTime.now()
-        val tomorrow = today.plusDays(1)
-        val nextWeek = today.plusDays(8)
+        val nextWeek = today.plusDays(8) // 다음주 확실한 날짜
         val reminders = listOf(
             ReminderEntity(id = 1, title = "오늘", dueDateTime = today),
-            ReminderEntity(id = 2, title = "내일", dueDateTime = tomorrow),
-            ReminderEntity(id = 3, title = "다음주", dueDateTime = nextWeek)
+            ReminderEntity(id = 2, title = "다음주", dueDateTime = nextWeek)
         )
 
         // When
@@ -307,8 +305,9 @@ class ReminderViewModelTest {
         // Then
         assertEquals(1, todayOnly.size)
         assertEquals("오늘", todayOnly[0].title)
-        assertEquals(2, thisWeek.size)
-        assertEquals(3, all.size)
+        assertTrue(thisWeek.contains(reminders[0])) // 오늘은 반드시 이번주에 포함
+        assertFalse(thisWeek.contains(reminders[1])) // 다음주는 이번주에 포함되지 않음
+        assertEquals(2, all.size)
     }
 
     @Test

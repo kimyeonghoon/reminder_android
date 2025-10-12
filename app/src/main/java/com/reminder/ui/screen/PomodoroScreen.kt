@@ -298,7 +298,7 @@ private fun StatisticsCard(
                 StatItem(
                     label = "연속",
                     value = "${streakDays}일",
-                    icon = Icons.Default.LocalFireDepartment
+                    icon = Icons.Default.Whatshot
                 )
                 StatItem(
                     label = "집중 시간",

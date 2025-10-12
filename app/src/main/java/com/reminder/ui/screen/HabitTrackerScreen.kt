@@ -218,7 +218,7 @@ fun HabitCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Default.LocalFireDepartment,
+                            Icons.Default.Whatshot,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.tertiary

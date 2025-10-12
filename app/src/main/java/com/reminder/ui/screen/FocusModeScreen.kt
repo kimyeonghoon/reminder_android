@@ -198,7 +198,7 @@ private fun StatsCard(
                 value = "${todayMinutes}분"
             )
             StatItem(
-                icon = Icons.Default.LocalFireDepartment,
+                icon = Icons.Default.Whatshot,
                 label = "연속 기록",
                 value = "${streak}일"
             )

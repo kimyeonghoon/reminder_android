@@ -270,7 +270,7 @@ fun StatisticsCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (streakDays > 0) {
                         Icon(
-                            Icons.Default.LocalFireDepartment,
+                            Icons.Default.Whatshot,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(20.dp)

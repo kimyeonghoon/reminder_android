@@ -202,10 +202,16 @@ fun HomeScreen(
                                 Icon(Icons.Default.GridOn, contentDescription = "Eisenhower Matrix")
                             }
                             // v1.32.0: 고급 필터 버튼
-                            IconButton(onClick = { showFilterBottomSheet = true }) {
+                            IconButton(onClick = {
+                                haptic.click()
+                                showFilterBottomSheet = true
+                            }) {
                                 Icon(Icons.Default.FilterList, contentDescription = "필터")
                             }
-                            IconButton(onClick = { showSearchBar = true }) {
+                            IconButton(onClick = {
+                                haptic.click()
+                                showSearchBar = true
+                            }) {
                                 Icon(Icons.Default.Search, contentDescription = "검색")
                             }
                         }

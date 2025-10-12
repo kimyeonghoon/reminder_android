@@ -25,6 +25,14 @@
             android:textColor="@color/widget_text_primary" />
 
         <ImageButton
+            android:id="@+id/widget_add_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/ic_input_add"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/add_reminder" />
+
+        <ImageButton
             android:id="@+id/widget_refresh_button"
             android:layout_width="32dp"
             android:layout_height="32dp"

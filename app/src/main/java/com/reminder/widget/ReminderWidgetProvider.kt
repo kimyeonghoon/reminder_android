@@ -23,6 +23,7 @@ class ReminderWidgetProvider : AppWidgetProvider() {
         const val ACTION_UPDATE_WIDGET = "com.reminder.widget.ACTION_UPDATE_WIDGET"
         const val ACTION_ITEM_CLICK = "com.reminder.widget.ACTION_ITEM_CLICK"
         const val ACTION_TOGGLE_COMPLETE = "com.reminder.widget.ACTION_TOGGLE_COMPLETE"
+        const val ACTION_ADD_REMINDER = "com.reminder.widget.ACTION_ADD_REMINDER"
 
         /**
          * 모든 위젯 업데이트
@@ -60,6 +61,13 @@ class ReminderWidgetProvider : AppWidgetProvider() {
                 widgetIds.forEach { widgetId ->
                     updateWidget(context, appWidgetManager, widgetId)
                 }
+            }
+            ACTION_ADD_REMINDER -> {
+                // + 버튼 클릭 시 빠른 추가 화면 열기
+                val appIntent = Intent(context, com.reminder.tile.QuickAddActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                context.startActivity(appIntent)
             }
             "open", ACTION_ITEM_CLICK -> {
                 // 리마인더 아이템 클릭 시 앱 열기
@@ -115,6 +123,18 @@ class ReminderWidgetProvider : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         remoteViews.setOnClickPendingIntent(R.id.widget_title, titlePendingIntent)
+
+        // + 버튼 클릭 시 빠른 추가 화면 열기
+        val addIntent = Intent(context, ReminderWidgetProvider::class.java).apply {
+            action = ACTION_ADD_REMINDER
+        }
+        val addPendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            addIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        remoteViews.setOnClickPendingIntent(R.id.widget_add_button, addPendingIntent)
 
         // 새로고침 버튼 클릭 시 위젯 업데이트
         val refreshIntent = Intent(context, ReminderWidgetProvider::class.java).apply {
