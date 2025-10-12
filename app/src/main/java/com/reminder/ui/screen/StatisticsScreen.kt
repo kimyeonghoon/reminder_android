@@ -33,18 +33,18 @@ fun StatisticsScreen(
 ) {
     val statistics by viewModel.statistics.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("통계") }
-            )
-        },
-        modifier = modifier
-    ) { paddingValues ->
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        // TopAppBar
+        TopAppBar(
+            title = { Text("통계") }
+        )
+
+        // Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)

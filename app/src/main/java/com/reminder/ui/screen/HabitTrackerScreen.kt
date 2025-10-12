@@ -51,27 +51,17 @@ fun HabitTrackerScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // TopAppBar
             TopAppBar(
                 title = { Text(stringResource(R.string.habit_tracker_title)) }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddDialog = true }
+
+            // Content
+            Box(
+                modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.habit_add))
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = modifier
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
             when {
                 isLoading -> {
                     CircularProgressIndicator(
@@ -104,7 +94,26 @@ fun HabitTrackerScreen(
                     }
                 }
             }
+            }
         }
+
+        // FAB
+        FloatingActionButton(
+            onClick = { showAddDialog = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.habit_add))
+        }
+
+        // Snackbar
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 
     // 습관 추가 다이얼로그

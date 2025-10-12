@@ -58,8 +58,9 @@ fun PomodoroScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // TopAppBar
             TopAppBar(
                 title = { Text("포모도로 타이머") },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -67,17 +68,14 @@ fun PomodoroScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = modifier
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+
+            // Content
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
             // 타이머 표시
             item {
                 TimerCard(
@@ -120,7 +118,16 @@ fun PomodoroScreen(
                     SessionCard(session = session)
                 }
             }
+            }
         }
+
+        // Snackbar
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
 

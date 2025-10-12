@@ -84,22 +84,16 @@ fun FocusModeScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("집중 모드") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "뒤로 가기")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Column(modifier = Modifier.fillMaxSize()) {
+        // TopAppBar
+        TopAppBar(
+            title = { Text("집중 모드") }
+        )
+
+        // Content
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+                .weight(1f)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

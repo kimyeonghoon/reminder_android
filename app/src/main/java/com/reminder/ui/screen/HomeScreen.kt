@@ -125,8 +125,9 @@ fun HomeScreen(
         context.startActivity(shareIntent)
     }
 
-    Scaffold(
-        topBar = {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // TopAppBar content
             if (showSearchBar) {
                 SearchBar(
                     inputField = {
@@ -215,44 +216,11 @@ fun HomeScreen(
                     }
                 )
             }
-        },
-        floatingActionButton = {
-            if (!isSelectionMode) {
-                if (simpleMode) {
-                    // 간편 모드에서는 큰 일반 FAB
-                    FloatingActionButton(
-                        onClick = {
-                            haptic.click()
-                            onAddClick()
-                        },
-                        modifier = Modifier.size(72.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "리마인더 추가",
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                } else {
-                    // 일반 모드에서는 Extended FAB (스크롤에 반응)
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            haptic.click()
-                            onAddClick()
-                        },
-                        expanded = expandedFab,
-                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                        text = { Text("리마인더 추가") }
-                    )
-                }
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+
+            // Content
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
             // 간편 모드에서는 필터와 정렬 숨기기
             if (!simpleMode) {
                 // v1.32.0: 필터 프리셋 칩 (새로운 필터 시스템)
@@ -392,6 +360,44 @@ fun HomeScreen(
                         }
                     }
                 }
+            }
+            }
+        }
+
+        // FAB (Floating Action Button)
+        if (!isSelectionMode) {
+            if (simpleMode) {
+                // 간편 모드에서는 큰 일반 FAB
+                FloatingActionButton(
+                    onClick = {
+                        haptic.click()
+                        onAddClick()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                        .size(72.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "리마인더 추가",
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            } else {
+                // 일반 모드에서는 Extended FAB (스크롤에 반응)
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        haptic.click()
+                        onAddClick()
+                    },
+                    expanded = expandedFab,
+                    icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                    text = { Text("리마인더 추가") },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                )
             }
         }
     }
