@@ -26,15 +26,15 @@ fun DatePickerField(
         value = selectedDate?.toString() ?: "",
         onValueChange = {},
         readOnly = true,
-        label = { Text("Due Date") },
-        placeholder = { Text("Select Date") },
+        label = { Text("마감일") },
+        placeholder = { Text("날짜 선택") },
         trailingIcon = {
             if (selectedDate != null) {
                 IconButton(
                     onClick = { onDateSelected(null) },
-                    modifier = Modifier.semantics { contentDescription = "Clear date" }
+                    modifier = Modifier.semantics { contentDescription = "날짜 지우기" }
                 ) {
-                    Icon(Icons.Default.Clear, "Clear date")
+                    Icon(Icons.Default.Clear, "날짜 지우기")
                 }
             }
         },
@@ -73,12 +73,12 @@ fun DatePickerField(
                         showDialog = false
                     }
                 ) {
-                    Text("OK")
+                    Text("확인")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("Cancel")
+                    Text("취소")
                 }
             }
         ) {

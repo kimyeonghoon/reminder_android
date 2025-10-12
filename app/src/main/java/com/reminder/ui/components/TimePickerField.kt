@@ -25,15 +25,15 @@ fun TimePickerField(
         value = selectedTime?.let { String.format("%02d:%02d", it.hour, it.minute) } ?: "",
         onValueChange = {},
         readOnly = true,
-        label = { Text("Due Time") },
-        placeholder = { Text("Select Time") },
+        label = { Text("마감 시간") },
+        placeholder = { Text("시간 선택") },
         trailingIcon = {
             if (selectedTime != null) {
                 IconButton(
                     onClick = { onTimeSelected(null) },
-                    modifier = Modifier.semantics { contentDescription = "Clear time" }
+                    modifier = Modifier.semantics { contentDescription = "시간 지우기" }
                 ) {
-                    Icon(Icons.Default.Clear, "Clear time")
+                    Icon(Icons.Default.Clear, "시간 지우기")
                 }
             }
         },
@@ -68,7 +68,7 @@ fun TimePickerField(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "Select time",
+                        text = "시간 선택",
                         style = MaterialTheme.typography.labelLarge
                     )
 
@@ -79,7 +79,7 @@ fun TimePickerField(
                         horizontalArrangement = Arrangement.End,
                         content = {
                             TextButton(onClick = { showDialog = false }) {
-                                Text("Cancel")
+                                Text("취소")
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             TextButton(
@@ -92,7 +92,7 @@ fun TimePickerField(
                                     showDialog = false
                                 }
                             ) {
-                                Text("OK")
+                                Text("확인")
                             }
                         }
                     )
