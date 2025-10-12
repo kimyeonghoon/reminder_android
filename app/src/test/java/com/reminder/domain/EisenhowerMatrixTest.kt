@@ -24,20 +24,23 @@ class EisenhowerMatrixTest {
      * - Priority.HIGH + Urgency.MEDIUM
      * - Priority.MEDIUM + Urgency.HIGH
      */
+    /** HIGH 우선순위와 HIGH 긴급도는 DO_FIRST 쿼드런트 */
     @Test
-    fun `HIGH 우선순위와 HIGH 긴급도는 DO_FIRST 쿼드런트`() {
+    fun highPriorityAndHighUrgency_shouldBeDoFirstQuadrant() {
         val reminder = createReminder(Priority.HIGH, Urgency.HIGH)
         assertEquals(Quadrant.DO_FIRST, reminder.getQuadrant())
     }
 
+    /** HIGH 우선순위와 MEDIUM 긴급도는 DO_FIRST 쿼드런트 */
     @Test
-    fun `HIGH 우선순위와 MEDIUM 긴급도는 DO_FIRST 쿼드런트`() {
+    fun highPriorityAndMediumUrgency_shouldBeDoFirstQuadrant() {
         val reminder = createReminder(Priority.HIGH, Urgency.MEDIUM)
         assertEquals(Quadrant.DO_FIRST, reminder.getQuadrant())
     }
 
+    /** MEDIUM 우선순위와 HIGH 긴급도는 DO_FIRST 쿼드런트 */
     @Test
-    fun `MEDIUM 우선순위와 HIGH 긴급도는 DO_FIRST 쿼드런트`() {
+    fun mediumPriorityAndHighUrgency_shouldBeDoFirstQuadrant() {
         val reminder = createReminder(Priority.MEDIUM, Urgency.HIGH)
         assertEquals(Quadrant.DO_FIRST, reminder.getQuadrant())
     }
@@ -48,20 +51,23 @@ class EisenhowerMatrixTest {
      * - Priority.MEDIUM + Urgency.MEDIUM
      * - Priority.MEDIUM + Urgency.LOW
      */
+    /** HIGH 우선순위와 LOW 긴급도는 SCHEDULE 쿼드런트 */
     @Test
-    fun `HIGH 우선순위와 LOW 긴급도는 SCHEDULE 쿼드런트`() {
+    fun highPriorityAndLowUrgency_shouldBeScheduleQuadrant() {
         val reminder = createReminder(Priority.HIGH, Urgency.LOW)
         assertEquals(Quadrant.SCHEDULE, reminder.getQuadrant())
     }
 
+    /** MEDIUM 우선순위와 MEDIUM 긴급도는 SCHEDULE 쿼드런트 */
     @Test
-    fun `MEDIUM 우선순위와 MEDIUM 긴급도는 SCHEDULE 쿼드런트`() {
+    fun mediumPriorityAndMediumUrgency_shouldBeScheduleQuadrant() {
         val reminder = createReminder(Priority.MEDIUM, Urgency.MEDIUM)
         assertEquals(Quadrant.SCHEDULE, reminder.getQuadrant())
     }
 
+    /** MEDIUM 우선순위와 LOW 긴급도는 SCHEDULE 쿼드런트 */
     @Test
-    fun `MEDIUM 우선순위와 LOW 긴급도는 SCHEDULE 쿼드런트`() {
+    fun mediumPriorityAndLowUrgency_shouldBeScheduleQuadrant() {
         val reminder = createReminder(Priority.MEDIUM, Urgency.LOW)
         assertEquals(Quadrant.SCHEDULE, reminder.getQuadrant())
     }
@@ -71,14 +77,16 @@ class EisenhowerMatrixTest {
      * - Priority.LOW + Urgency.HIGH
      * - Priority.LOW + Urgency.MEDIUM
      */
+    /** LOW 우선순위와 HIGH 긴급도는 DELEGATE 쿼드런트 */
     @Test
-    fun `LOW 우선순위와 HIGH 긴급도는 DELEGATE 쿼드런트`() {
+    fun lowPriorityAndHighUrgency_shouldBeDelegateQuadrant() {
         val reminder = createReminder(Priority.LOW, Urgency.HIGH)
         assertEquals(Quadrant.DELEGATE, reminder.getQuadrant())
     }
 
+    /** LOW 우선순위와 MEDIUM 긴급도는 DELEGATE 쿼드런트 */
     @Test
-    fun `LOW 우선순위와 MEDIUM 긴급도는 DELEGATE 쿼드런트`() {
+    fun lowPriorityAndMediumUrgency_shouldBeDelegateQuadrant() {
         val reminder = createReminder(Priority.LOW, Urgency.MEDIUM)
         assertEquals(Quadrant.DELEGATE, reminder.getQuadrant())
     }
@@ -87,8 +95,9 @@ class EisenhowerMatrixTest {
      * Quadrant 4 (DELETE) 테스트
      * - Priority.LOW + Urgency.LOW
      */
+    /** LOW 우선순위와 LOW 긴급도는 DELETE 쿼드런트 */
     @Test
-    fun `LOW 우선순위와 LOW 긴급도는 DELETE 쿼드런트`() {
+    fun lowPriorityAndLowUrgency_shouldBeDeleteQuadrant() {
         val reminder = createReminder(Priority.LOW, Urgency.LOW)
         assertEquals(Quadrant.DELETE, reminder.getQuadrant())
     }
@@ -96,8 +105,9 @@ class EisenhowerMatrixTest {
     /**
      * 쿼드런트별 필터링 테스트
      */
+    /** 리마인더 리스트를 쿼드런트별로 필터링할 수 있다 */
     @Test
-    fun `리마인더 리스트를 쿼드런트별로 필터링할 수 있다`() {
+    fun filterRemindersByQuadrant() {
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.HIGH),    // DO_FIRST
             createReminder(Priority.HIGH, Urgency.LOW),     // SCHEDULE
@@ -120,8 +130,9 @@ class EisenhowerMatrixTest {
     /**
      * 쿼드런트별 카운트 테스트
      */
+    /** 리마인더 리스트의 쿼드런트별 개수를 계산할 수 있다 */
     @Test
-    fun `리마인더 리스트의 쿼드런트별 개수를 계산할 수 있다`() {
+    fun calculateCountByQuadrant() {
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.HIGH),
             createReminder(Priority.HIGH, Urgency.HIGH),
@@ -140,8 +151,9 @@ class EisenhowerMatrixTest {
     /**
      * v1.49.0: 쿼드런트 통계 테스트
      */
+    /** 쿼드런트 통계를 계산할 수 있다 */
     @Test
-    fun `쿼드런트 통계를 계산할 수 있다`() {
+    fun calculateQuadrantStats() {
         val now = LocalDateTime.now()
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = true, createdAt = now.minusHours(2), updatedAt = now),
@@ -158,8 +170,9 @@ class EisenhowerMatrixTest {
         assertEquals(180, stats.averageCompletionMinutes.toLong())
     }
 
+    /** 완료된 리마인더가 없으면 평균 처리 시간은 0 */
     @Test
-    fun `완료된 리마인더가 없으면 평균 처리 시간은 0`() {
+    fun averageCompletionTime_withNoCompletedReminders_shouldBeZero() {
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false),
             createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false)
@@ -173,8 +186,9 @@ class EisenhowerMatrixTest {
         assertEquals(0, stats.averageCompletionMinutes.toLong())
     }
 
+    /** 쿼드런트에 리마인더가 없으면 모든 통계는 0 */
     @Test
-    fun `쿼드런트에 리마인더가 없으면 모든 통계는 0`() {
+    fun quadrantStats_withNoReminders_shouldAllBeZero() {
         val reminders = listOf(
             createReminder(Priority.LOW, Urgency.LOW) // DELETE 쿼드런트
         )
@@ -190,8 +204,9 @@ class EisenhowerMatrixTest {
     /**
      * v1.49.0: 리마인더를 다른 쿼드런트로 이동 테스트
      */
+    /** 리마인더를 DO_FIRST 쿼드런트로 이동할 수 있다 */
     @Test
-    fun `리마인더를 DO_FIRST 쿼드런트로 이동할 수 있다`() {
+    fun moveReminderToDoFirstQuadrant() {
         val reminder = createReminder(Priority.LOW, Urgency.LOW)
         assertEquals(Quadrant.DELETE, reminder.getQuadrant())
 
@@ -202,8 +217,9 @@ class EisenhowerMatrixTest {
         assertEquals(Urgency.HIGH, moved.urgency)
     }
 
+    /** 리마인더를 SCHEDULE 쿼드런트로 이동할 수 있다 */
     @Test
-    fun `리마인더를 SCHEDULE 쿼드런트로 이동할 수 있다`() {
+    fun moveReminderToScheduleQuadrant() {
         val reminder = createReminder(Priority.LOW, Urgency.HIGH)
         assertEquals(Quadrant.DELEGATE, reminder.getQuadrant())
 
@@ -214,8 +230,9 @@ class EisenhowerMatrixTest {
         assertEquals(Urgency.LOW, moved.urgency)
     }
 
+    /** 리마인더를 DELEGATE 쿼드런트로 이동할 수 있다 */
     @Test
-    fun `리마인더를 DELEGATE 쿼드런트로 이동할 수 있다`() {
+    fun moveReminderToDelegateQuadrant() {
         val reminder = createReminder(Priority.HIGH, Urgency.LOW)
         assertEquals(Quadrant.SCHEDULE, reminder.getQuadrant())
 
@@ -226,8 +243,9 @@ class EisenhowerMatrixTest {
         assertEquals(Urgency.HIGH, moved.urgency)
     }
 
+    /** 리마인더를 DELETE 쿼드런트로 이동할 수 있다 */
     @Test
-    fun `리마인더를 DELETE 쿼드런트로 이동할 수 있다`() {
+    fun moveReminderToDeleteQuadrant() {
         val reminder = createReminder(Priority.HIGH, Urgency.HIGH)
         assertEquals(Quadrant.DO_FIRST, reminder.getQuadrant())
 
@@ -241,8 +259,9 @@ class EisenhowerMatrixTest {
     /**
      * v1.50.0: 쿼드런트 트렌드 분석 테스트
      */
+    /** 주간 트렌드를 계산할 수 있다 */
     @Test
-    fun `주간 트렌드를 계산할 수 있다`() {
+    fun calculateWeeklyTrend() {
         val now = LocalDateTime.now()
         val reminders = listOf(
             // 오늘 완료 2개
@@ -268,8 +287,9 @@ class EisenhowerMatrixTest {
         assertEquals(4, trend.totalCompleted) // 8일 전 제외
     }
 
+    /** 월간 트렌드를 계산할 수 있다 */
     @Test
-    fun `월간 트렌드를 계산할 수 있다`() {
+    fun calculateMonthlyTrend() {
         val now = LocalDateTime.now()
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.LOW, isCompleted = true, updatedAt = now),
@@ -289,8 +309,9 @@ class EisenhowerMatrixTest {
         assertEquals(4, trend.totalCompleted) // 31일 전 제외
     }
 
+    /** 완료된 리마인더가 없으면 트렌드는 모두 0 */
     @Test
-    fun `완료된 리마인더가 없으면 트렌드는 모두 0`() {
+    fun trend_withNoCompletedReminders_shouldAllBeZero() {
         val reminders = listOf(
             createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false),
             createReminder(Priority.HIGH, Urgency.HIGH, isCompleted = false)
@@ -305,8 +326,9 @@ class EisenhowerMatrixTest {
         }
     }
 
+    /** 다른 쿼드런트의 리마인더는 트렌드에 포함되지 않는다 */
     @Test
-    fun `다른 쿼드런트의 리마인더는 트렌드에 포함되지 않는다`() {
+    fun trend_shouldExcludeRemindersFromOtherQuadrants() {
         val now = LocalDateTime.now()
         val reminders = listOf(
             // DO_FIRST 2개
@@ -323,8 +345,9 @@ class EisenhowerMatrixTest {
         assertEquals(1, scheduleTrend.totalCompleted)
     }
 
+    /** 시간대별 쿼드런트 분포를 계산할 수 있다 */
     @Test
-    fun `시간대별 쿼드런트 분포를 계산할 수 있다`() {
+    fun calculateTimeDistributionByQuadrant() {
         val now = LocalDateTime.now()
         val reminders = listOf(
             // 오전 (0-11시): 2개

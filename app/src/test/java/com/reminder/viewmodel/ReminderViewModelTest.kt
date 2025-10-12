@@ -78,8 +78,9 @@ class ReminderViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /** addReminder 호출 시 repository에 리마인더가 추가된다 */
     @Test
-    fun `addReminder 호출 시 repository에 리마인더가 추가된다`() = runTest {
+    fun addReminder_callsRepositoryToInsertReminder() = runTest {
         // Given
         val title = "테스트 할일"
         val description = "테스트 설명"
@@ -99,8 +100,9 @@ class ReminderViewModelTest {
         })
     }
 
+    /** updateReminder 호출 시 repository에 업데이트 요청이 전달된다 */
     @Test
-    fun `updateReminder 호출 시 repository에 업데이트 요청이 전달된다`() = runTest {
+    fun updateReminder_callsRepositoryToUpdate() = runTest {
         // Given
         val reminder = ReminderEntity(
             id = 1,
@@ -116,8 +118,9 @@ class ReminderViewModelTest {
         verify(repository).updateReminder(argThat { r -> r.id == reminder.id })
     }
 
+    /** deleteReminder 호출 시 repository에 삭제 요청이 전달된다 */
     @Test
-    fun `deleteReminder 호출 시 repository에 삭제 요청이 전달된다`() = runTest {
+    fun deleteReminder_callsRepositoryToDelete() = runTest {
         // Given
         val reminder = ReminderEntity(id = 1, title = "삭제할 할일")
 
@@ -129,8 +132,9 @@ class ReminderViewModelTest {
         verify(repository).deleteReminder(reminder)
     }
 
+    /** toggleReminderCompletion 호출 시 repository에 토글 요청이 전달된다 */
     @Test
-    fun `toggleReminderCompletion 호출 시 repository에 토글 요청이 전달된다`() = runTest {
+    fun toggleReminderCompletion_callsRepositoryToToggle() = runTest {
         // Given
         val reminder = ReminderEntity(id = 1, title = "완료할 할일", isCompleted = false)
 
@@ -142,8 +146,9 @@ class ReminderViewModelTest {
         verify(repository).toggleReminderCompletion(reminder)
     }
 
+    /** deleteAllCompletedReminders 호출 시 repository에 요청이 전달된다 */
     @Test
-    fun `deleteAllCompletedReminders 호출 시 repository에 요청이 전달된다`() = runTest {
+    fun deleteAllCompletedReminders_callsRepository() = runTest {
         // When
         viewModel.deleteAllCompletedReminders()
         advanceUntilIdle()
@@ -152,8 +157,9 @@ class ReminderViewModelTest {
         verify(repository).deleteAllCompletedReminders()
     }
 
+    /** selectReminder 호출 시 selectedReminder 상태가 업데이트된다 */
     @Test
-    fun `selectReminder 호출 시 selectedReminder 상태가 업데이트된다`() = runTest {
+    fun selectReminder_updatesSelectedReminderState() = runTest {
         // Given
         val reminder = ReminderEntity(id = 1, title = "선택할 할일")
 
@@ -165,8 +171,9 @@ class ReminderViewModelTest {
         assertEquals(reminder, viewModel.selectedReminder.value)
     }
 
+    /** selectReminder에 null 전달 시 selectedReminder가 null이 된다 */
     @Test
-    fun `selectReminder에 null 전달 시 selectedReminder가 null이 된다`() = runTest {
+    fun selectReminder_withNull_clearsSelectedReminder() = runTest {
         // Given
         viewModel.selectReminder(ReminderEntity(id = 1, title = "할일"))
 
@@ -178,8 +185,9 @@ class ReminderViewModelTest {
         assertNull(viewModel.selectedReminder.value)
     }
 
+    /** updateSearchQuery 호출 시 searchQuery 상태가 업데이트된다 */
     @Test
-    fun `updateSearchQuery 호출 시 searchQuery 상태가 업데이트된다`() = runTest {
+    fun updateSearchQuery_updatesSearchQueryState() = runTest {
         // Given
         val query = "검색어"
 
@@ -191,8 +199,9 @@ class ReminderViewModelTest {
         assertEquals(query, viewModel.searchQuery.value)
     }
 
+    /** getFilteredReminders는 빈 쿼리일 때 모든 리마인더를 반환한다 */
     @Test
-    fun `getFilteredReminders는 빈 쿼리일 때 모든 리마인더를 반환한다`() {
+    fun getFilteredReminders_withEmptyQuery_returnsAllReminders() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "할일 1"),
@@ -206,8 +215,9 @@ class ReminderViewModelTest {
         assertEquals(reminders, result)
     }
 
+    /** getFilteredReminders는 제목으로 필터링한다 */
     @Test
-    fun `getFilteredReminders는 제목으로 필터링한다`() {
+    fun getFilteredReminders_filtersByTitle() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "업무 회의"),
@@ -222,8 +232,9 @@ class ReminderViewModelTest {
         assertEquals("업무 회의", result[0].title)
     }
 
+    /** getFilteredReminders는 설명으로 필터링한다 */
     @Test
-    fun `getFilteredReminders는 설명으로 필터링한다`() {
+    fun getFilteredReminders_filtersByDescription() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "회의", description = "중요한 프로젝트 논의"),
@@ -238,8 +249,9 @@ class ReminderViewModelTest {
         assertEquals("회의", result[0].title)
     }
 
+    /** getFilteredReminders는 카테고리로 필터링한다 */
     @Test
-    fun `getFilteredReminders는 카테고리로 필터링한다`() {
+    fun getFilteredReminders_filtersByCategory() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "회의", category = "업무"),
@@ -254,8 +266,9 @@ class ReminderViewModelTest {
         assertEquals("운동", result[0].title)
     }
 
+    /** getFilteredReminders는 대소문자를 구분하지 않는다 */
     @Test
-    fun `getFilteredReminders는 대소문자를 구분하지 않는다`() {
+    fun getFilteredReminders_isCaseInsensitive() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "Important Meeting")
@@ -268,8 +281,9 @@ class ReminderViewModelTest {
         assertEquals(1, result.size)
     }
 
+    /** filterByPriority는 우선순위별로 필터링한다 */
     @Test
-    fun `filterByPriority는 우선순위별로 필터링한다`() {
+    fun filterByPriority_filtersByPriorityLevel() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "할일1", priority = Priority.HIGH),
@@ -287,8 +301,9 @@ class ReminderViewModelTest {
         assertEquals(3, all.size)
     }
 
+    /** filterByDate는 날짜별로 필터링한다 */
     @Test
-    fun `filterByDate는 날짜별로 필터링한다`() {
+    fun filterByDate_filtersByDateRange() {
         // Given
         val today = LocalDateTime.now()
         val nextWeek = today.plusDays(8) // 다음주 확실한 날짜
@@ -310,8 +325,9 @@ class ReminderViewModelTest {
         assertEquals(2, all.size)
     }
 
+    /** filterByDate는 만료된 리마인더를 필터링한다 */
     @Test
-    fun `filterByDate는 만료된 리마인더를 필터링한다`() {
+    fun filterByDate_filtersOverdueReminders() {
         // Given
         val now = LocalDateTime.now()
         val yesterday = now.minusDays(1)
@@ -329,8 +345,9 @@ class ReminderViewModelTest {
         assertEquals("만료됨", overdue[0].title)
     }
 
+    /** sortReminders는 날짜 오름차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 날짜 오름차순으로 정렬한다`() {
+    fun sortReminders_sortsByDateAscending() {
         // Given
         val date1 = LocalDateTime.now().plusDays(3)
         val date2 = LocalDateTime.now().plusDays(1)
@@ -350,8 +367,9 @@ class ReminderViewModelTest {
         assertEquals("셋째", sorted[2].title)
     }
 
+    /** sortReminders는 날짜 내림차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 날짜 내림차순으로 정렬한다`() {
+    fun sortReminders_sortsByDateDescending() {
         // Given
         val date1 = LocalDateTime.now().plusDays(1)
         val date2 = LocalDateTime.now().plusDays(3)
@@ -371,8 +389,9 @@ class ReminderViewModelTest {
         assertEquals("첫째", sorted[2].title)
     }
 
+    /** sortReminders는 우선순위 높은 순으로 정렬한다 */
     @Test
-    fun `sortReminders는 우선순위 높은 순으로 정렬한다`() {
+    fun sortReminders_sortsByPriorityHighFirst() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "중간", priority = Priority.MEDIUM),
@@ -389,8 +408,9 @@ class ReminderViewModelTest {
         assertEquals("낮음", sorted[2].title)
     }
 
+    /** sortReminders는 우선순위 낮은 순으로 정렬한다 */
     @Test
-    fun `sortReminders는 우선순위 낮은 순으로 정렬한다`() {
+    fun sortReminders_sortsByPriorityLowFirst() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "중간", priority = Priority.MEDIUM),
@@ -407,8 +427,9 @@ class ReminderViewModelTest {
         assertEquals("높음", sorted[2].title)
     }
 
+    /** sortReminders는 제목 오름차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 제목 오름차순으로 정렬한다`() {
+    fun sortReminders_sortsByTitleAscending() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "C 할일"),
@@ -425,8 +446,9 @@ class ReminderViewModelTest {
         assertEquals("C 할일", sorted[2].title)
     }
 
+    /** sortReminders는 제목 내림차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 제목 내림차순으로 정렬한다`() {
+    fun sortReminders_sortsByTitleDescending() {
         // Given
         val reminders = listOf(
             ReminderEntity(id = 1, title = "A 할일"),
@@ -443,8 +465,9 @@ class ReminderViewModelTest {
         assertEquals("A 할일", sorted[2].title)
     }
 
+    /** sortReminders는 생성일 오름차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 생성일 오름차순으로 정렬한다`() {
+    fun sortReminders_sortsByCreatedDateAscending() {
         // Given
         val date1 = LocalDateTime.now().minusDays(3)
         val date2 = LocalDateTime.now().minusDays(1)
@@ -464,8 +487,9 @@ class ReminderViewModelTest {
         assertEquals("셋째", sorted[2].title)
     }
 
+    /** sortReminders는 생성일 내림차순으로 정렬한다 */
     @Test
-    fun `sortReminders는 생성일 내림차순으로 정렬한다`() {
+    fun sortReminders_sortsByCreatedDateDescending() {
         // Given
         val date1 = LocalDateTime.now().minusDays(3)
         val date2 = LocalDateTime.now().minusDays(1)

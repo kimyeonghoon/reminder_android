@@ -31,8 +31,9 @@ class AnalyticsHelperTest {
         analyticsHelper = AnalyticsHelper(firebaseAnalytics)
     }
 
+    /** 리마인더 생성 이벤트 로깅 */
     @Test
-    fun `리마인더 생성 이벤트 로깅`() {
+    fun testLogReminderCreatedEvent() {
         // Given
         val priority = Priority.HIGH
         val category = "Work"
@@ -51,8 +52,9 @@ class AnalyticsHelperTest {
         assert(bundle.getBoolean("has_recurrence") == hasRecurrence)
     }
 
+    /** 리마인더 완료 이벤트 로깅 */
     @Test
-    fun `리마인더 완료 이벤트 로깅`() {
+    fun testLogReminderCompletedEvent() {
         // Given
         val daysUntilDue = 3
 
@@ -67,8 +69,9 @@ class AnalyticsHelperTest {
         assert(bundle.getInt("days_until_due") == daysUntilDue)
     }
 
+    /** 리마인더 완료 이벤트 로깅 - dueDateTime null */
     @Test
-    fun `리마인더 완료 이벤트 로깅 - dueDateTime null`() {
+    fun testLogReminderCompletedEventWithNullDueDateTime() {
         // Given
         val daysUntilDue: Int? = null
 
@@ -83,8 +86,9 @@ class AnalyticsHelperTest {
         assert(bundle.getInt("days_until_due", -1) == -1)
     }
 
+    /** 리마인더 삭제 이벤트 로깅 */
     @Test
-    fun `리마인더 삭제 이벤트 로깅`() {
+    fun testLogReminderDeletedEvent() {
         // When
         analyticsHelper.logReminderDeleted()
 
@@ -92,8 +96,9 @@ class AnalyticsHelperTest {
         verify(firebaseAnalytics).logEvent(eq("reminder_deleted"), any())
     }
 
+    /** 리마인더 수정 이벤트 로깅 */
     @Test
-    fun `리마인더 수정 이벤트 로깅`() {
+    fun testLogReminderEditedEvent() {
         // When
         analyticsHelper.logReminderEdited()
 
@@ -101,8 +106,9 @@ class AnalyticsHelperTest {
         verify(firebaseAnalytics).logEvent(eq("reminder_edited"), any())
     }
 
+    /** 서브태스크 추가 이벤트 로깅 */
     @Test
-    fun `서브태스크 추가 이벤트 로깅`() {
+    fun testLogSubtaskAddedEvent() {
         // When
         analyticsHelper.logSubtaskAdded()
 
@@ -110,8 +116,9 @@ class AnalyticsHelperTest {
         verify(firebaseAnalytics).logEvent(eq("subtask_added"), any())
     }
 
+    /** 이미지 첨부 이벤트 로깅 */
     @Test
-    fun `이미지 첨부 이벤트 로깅`() {
+    fun testLogImageAttachedEvent() {
         // When
         analyticsHelper.logImageAttached()
 
@@ -119,8 +126,9 @@ class AnalyticsHelperTest {
         verify(firebaseAnalytics).logEvent(eq("image_attached"), any())
     }
 
+    /** 템플릿 생성 이벤트 로깅 */
     @Test
-    fun `템플릿 생성 이벤트 로깅`() {
+    fun testLogTemplateCreatedEvent() {
         // When
         analyticsHelper.logTemplateCreated()
 
@@ -128,8 +136,9 @@ class AnalyticsHelperTest {
         verify(firebaseAnalytics).logEvent(eq("template_created"), any())
     }
 
+    /** 템플릿 사용 이벤트 로깅 */
     @Test
-    fun `템플릿 사용 이벤트 로깅`() {
+    fun testLogTemplateUsedEvent() {
         // Given
         val templateName = "Daily Task"
 
@@ -144,8 +153,9 @@ class AnalyticsHelperTest {
         assert(bundle.getString("template_name") == templateName)
     }
 
+    /** 배치 작업 이벤트 로깅 */
     @Test
-    fun `배치 작업 이벤트 로깅`() {
+    fun testLogBatchOperationEvent() {
         // Given
         val operationType = "delete"
         val count = 5
@@ -162,8 +172,9 @@ class AnalyticsHelperTest {
         assert(bundle.getInt("count") == count)
     }
 
+    /** 검색 수행 이벤트 로깅 */
     @Test
-    fun `검색 수행 이벤트 로깅`() {
+    fun testLogSearchPerformedEvent() {
         // Given
         val queryLength = 10
 
@@ -178,8 +189,9 @@ class AnalyticsHelperTest {
         assert(bundle.getInt("query_length") == queryLength)
     }
 
+    /** 필터 적용 이벤트 로깅 */
     @Test
-    fun `필터 적용 이벤트 로깅`() {
+    fun testLogFilterAppliedEvent() {
         // Given
         val filterType = "priority"
 
@@ -194,8 +206,9 @@ class AnalyticsHelperTest {
         assert(bundle.getString("filter_type") == filterType)
     }
 
+    /** 정렬 변경 이벤트 로깅 */
     @Test
-    fun `정렬 변경 이벤트 로깅`() {
+    fun testLogSortChangedEvent() {
         // Given
         val sortOption = "dueDate"
 
@@ -210,8 +223,9 @@ class AnalyticsHelperTest {
         assert(bundle.getString("sort_option") == sortOption)
     }
 
+    /** 테마 변경 이벤트 로깅 */
     @Test
-    fun `테마 변경 이벤트 로깅`() {
+    fun testLogThemeChangedEvent() {
         // Given
         val themeName = "DARK"
 
@@ -226,8 +240,9 @@ class AnalyticsHelperTest {
         assert(bundle.getString("theme_name") == themeName)
     }
 
+    /** 알림 설정 변경 이벤트 로깅 */
     @Test
-    fun `알림 설정 변경 이벤트 로깅`() {
+    fun testLogNotificationSettingsChangedEvent() {
         // Given
         val settingKey = "notification_sound"
         val value = "enabled"
@@ -244,8 +259,9 @@ class AnalyticsHelperTest {
         assert(bundle.getString("value") == value)
     }
 
+    /** 간편 모드 전환 이벤트 로깅 */
     @Test
-    fun `간편 모드 전환 이벤트 로깅`() {
+    fun testLogSimpleModeToggledEvent() {
         // Given
         val enabled = true
 

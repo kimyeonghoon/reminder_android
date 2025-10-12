@@ -52,8 +52,9 @@ class FirebaseSyncRepositoryTest {
         repository = FirebaseSyncRepository(mockDao, mockRemoteDataSource, testDispatcher)
     }
 
+    /** 리마인더 삽입 시 로컬에 저장된다 */
     @Test
-    fun `리마인더 삽입 시 로컬에 저장된다`() = runTest {
+    fun insertReminderSavesToLocal() = runTest {
         // Given
         whenever(mockDao.insertReminder(any())).thenReturn(1L)
 
@@ -66,8 +67,9 @@ class FirebaseSyncRepositoryTest {
         // 백그라운드 원격 동기화는 통합 테스트에서 검증
     }
 
+    /** 리마인더 업데이트 시 로컬에 반영된다 */
     @Test
-    fun `리마인더 업데이트 시 로컬에 반영된다`() = runTest {
+    fun updateReminderReflectsInLocal() = runTest {
         // Given
 
         // When
@@ -78,8 +80,9 @@ class FirebaseSyncRepositoryTest {
         // 백그라운드 원격 동기화는 통합 테스트에서 검증
     }
 
+    /** 리마인더 삭제 시 로컬에서 삭제된다 */
     @Test
-    fun `리마인더 삭제 시 로컬에서 삭제된다`() = runTest {
+    fun deleteReminderFromLocal() = runTest {
         // Given
 
         // When
@@ -90,8 +93,9 @@ class FirebaseSyncRepositoryTest {
         // 백그라운드 원격 동기화는 통합 테스트에서 검증
     }
 
+    /** 초기 동기화 시 로컬 데이터가 원격에 업로드된다 */
     @Test
-    fun `초기 동기화 시 로컬 데이터가 원격에 업로드된다`() = runTest {
+    fun initialSyncUploadsLocalDataToRemote() = runTest {
         // Given
         val localReminders = listOf(testReminder)
         whenever(mockDao.getAllRemindersList()).thenReturn(localReminders)
@@ -105,8 +109,9 @@ class FirebaseSyncRepositoryTest {
         verify(mockRemoteDataSource).uploadAll(localReminders)
     }
 
+    /** 원격 데이터를 로컬에 동기화한다 */
     @Test
-    fun `원격 데이터를 로컬에 동기화한다`() = runTest {
+    fun syncRemoteDataToLocal() = runTest {
         // Given
         val remoteReminders = listOf(testReminder)
         whenever(mockRemoteDataSource.getAllReminders()).thenReturn(flowOf(remoteReminders))
@@ -118,8 +123,9 @@ class FirebaseSyncRepositoryTest {
         assertEquals(remoteReminders, result)
     }
 
+    /** 원격 동기화 실패 시에도 로컬 작업은 성공한다 */
     @Test
-    fun `원격 동기화 실패 시에도 로컬 작업은 성공한다`() = runTest {
+    fun localOperationSucceedsEvenIfRemoteSyncFails() = runTest {
         // Given
         whenever(mockDao.insertReminder(any())).thenReturn(1L)
 
@@ -132,8 +138,9 @@ class FirebaseSyncRepositoryTest {
         verify(mockDao).insertReminder(testReminder)
     }
 
+    /** 완료된 리마인더 삭제 시 로컬과 원격에서 모두 삭제된다 */
     @Test
-    fun `완료된 리마인더 삭제 시 로컬과 원격에서 모두 삭제된다`() = runTest(testDispatcher) {
+    fun deleteCompletedRemindersFromBothLocalAndRemote() = runTest(testDispatcher) {
         // Given
         val completedReminder1 = testReminder.copy(id = 1, isCompleted = true)
         val completedReminder2 = testReminder.copy(id = 2, isCompleted = true)
@@ -152,8 +159,9 @@ class FirebaseSyncRepositoryTest {
         verify(mockRemoteDataSource).deleteReminder(2)
     }
 
+    /** 완료된 리마인더가 없을 때 삭제 시 원격 호출 없이 완료된다 */
     @Test
-    fun `완료된 리마인더가 없을 때 삭제 시 원격 호출 없이 완료된다`() = runTest {
+    fun deleteCompletedRemindersWithoutRemoteCallWhenEmpty() = runTest {
         // Given
         whenever(mockDao.getCompletedRemindersList()).thenReturn(emptyList())
 

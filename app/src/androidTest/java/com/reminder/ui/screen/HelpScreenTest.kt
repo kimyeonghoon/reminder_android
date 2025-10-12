@@ -21,8 +21,11 @@ class HelpScreenTest {
         onNavigateBackCalled = false
     }
 
+    /**
+     * 도움말 화면 제목 표시 확인
+     */
     @Test
-    fun 도움말_화면_제목이_표시된다() {
+    fun helpScreenTitleIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -32,8 +35,11 @@ class HelpScreenTest {
         composeTestRule.onNodeWithText("도움말").assertIsDisplayed()
     }
 
+    /**
+     * 뒤로가기 버튼 클릭 시 콜백 호출 확인
+     */
     @Test
-    fun 뒤로가기_버튼_클릭_시_onNavigateBack_콜백이_호출된다() {
+    fun backButtonClickInvokesCallback() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = { onNavigateBackCalled = true })
@@ -46,8 +52,11 @@ class HelpScreenTest {
         assert(onNavigateBackCalled)
     }
 
+    /**
+     * 주요 기능 섹션 표시 확인
+     */
     @Test
-    fun 주요_기능_섹션이_표시된다() {
+    fun mainFeaturesSectionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -57,8 +66,11 @@ class HelpScreenTest {
         composeTestRule.onNodeWithText("주요 기능").assertIsDisplayed()
     }
 
+    /**
+     * 할 일 추가하기 도움말 표시 확인
+     */
     @Test
-    fun 할_일_추가하기_도움말이_표시된다() {
+    fun addTaskHelpIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -73,8 +85,11 @@ class HelpScreenTest {
         ).assertExists()
     }
 
+    /**
+     * 할 일 완료하기 도움말 표시 확인
+     */
     @Test
-    fun 할_일_완료하기_도움말이_표시된다() {
+    fun completeTaskHelpIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -87,8 +102,11 @@ class HelpScreenTest {
         ).assertIsDisplayed()
     }
 
+    /**
+     * 우선순위 설정 도움말 표시 확인
+     */
     @Test
-    fun 우선순위_설정_도움말이_표시된다() {
+    fun prioritySettingHelpIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -101,8 +119,11 @@ class HelpScreenTest {
         ).assertIsDisplayed()
     }
 
+    /**
+     * 설정 기능 섹션 표시 확인
+     */
     @Test
-    fun 설정_기능_섹션이_표시된다() {
+    fun settingsFeaturesSectionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -112,8 +133,11 @@ class HelpScreenTest {
         composeTestRule.onNodeWithText("설정 기능").assertIsDisplayed()
     }
 
+    /**
+     * 테마 변경 도움말 표시 확인
+     */
     @Test
-    fun 테마_변경_도움말이_표시된다() {
+    fun themeChangeHelpIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -128,8 +152,11 @@ class HelpScreenTest {
         ).assertExists()
     }
 
+    /**
+     * 간편 모드 도움말 표시 확인
+     */
     @Test
-    fun 간편_모드_도움말이_표시된다() {
+    fun simpleModeHelpIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -144,8 +171,11 @@ class HelpScreenTest {
         ).assertExists()
     }
 
+    /**
+     * 자주 묻는 질문 섹션 표시 확인
+     */
     @Test
-    fun 자주_묻는_질문_섹션이_표시된다() {
+    fun faqSectionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -157,8 +187,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * FAQ 알림이 오지 않아요 질문 표시 확인
+     */
     @Test
-    fun FAQ_알림이_오지_않아요_질문이_표시된다() {
+    fun faqNotificationNotWorkingQuestionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -170,8 +203,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * FAQ 카드 클릭 시 답변 표시 확인
+     */
     @Test
-    fun FAQ_카드_클릭_시_답변이_표시된다() {
+    fun faqCardClickShowsAnswer() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -195,8 +231,11 @@ class HelpScreenTest {
         ).assertExists()
     }
 
+    /**
+     * FAQ 완료한 할일 질문 표시 확인
+     */
     @Test
-    fun FAQ_완료한_할일_질문이_표시된다() {
+    fun faqCompletedTasksQuestionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -208,8 +247,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * FAQ 데이터 백업 질문 표시 확인
+     */
     @Test
-    fun FAQ_데이터_백업_질문이_표시된다() {
+    fun faqDataBackupQuestionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -221,8 +263,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * FAQ 위젯 업데이트 질문 표시 확인
+     */
     @Test
-    fun FAQ_위젯_업데이트_질문이_표시된다() {
+    fun faqWidgetUpdateQuestionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -234,8 +279,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * FAQ 글씨가 너무 작아요 질문 표시 확인
+     */
     @Test
-    fun FAQ_글씨가_너무_작아요_질문이_표시된다() {
+    fun faqFontSizeTooSmallQuestionIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -247,8 +295,11 @@ class HelpScreenTest {
             .assertIsDisplayed()
     }
 
+    /**
+     * 문의하기 카드 표시 확인
+     */
     @Test
-    fun 문의하기_카드가_표시된다() {
+    fun contactCardIsDisplayed() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})
@@ -262,8 +313,11 @@ class HelpScreenTest {
             .assertExists()
     }
 
+    /**
+     * FAQ 두 번 클릭 시 답변 숨김 확인
+     */
     @Test
-    fun FAQ_두_번_클릭_시_답변이_숨겨진다() {
+    fun faqSecondClickHidesAnswer() {
         // Given
         composeTestRule.setContent {
             HelpScreen(onNavigateBack = {})

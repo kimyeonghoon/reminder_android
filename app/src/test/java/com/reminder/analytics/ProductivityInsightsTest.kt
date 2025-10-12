@@ -18,8 +18,9 @@ class ProductivityInsightsTest {
         productivityInsights = ProductivityInsights()
     }
 
+    /** 주간 완료율 상승 인사이트 생성 */
     @Test
-    fun `주간 완료율 상승 인사이트 생성`() {
+    fun testGenerateWeeklyImprovementInsight() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.75, // 75%
@@ -38,8 +39,9 @@ class ProductivityInsightsTest {
         assertTrue(weeklyInsight?.message?.contains("15%") == true)
     }
 
+    /** 주간 완료율 하락 인사이트 생성 */
     @Test
-    fun `주간 완료율 하락 인사이트 생성`() {
+    fun testGenerateWeeklyDeclineInsight() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.50,
@@ -58,8 +60,9 @@ class ProductivityInsightsTest {
         assertTrue(weeklyInsight?.message?.contains("25%") == true)
     }
 
+    /** 가장 생산적인 시간대 인사이트 생성 */
     @Test
-    fun `가장 생산적인 시간대 인사이트 생성`() {
+    fun testGenerateMostProductiveHourInsight() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.70,
@@ -78,8 +81,9 @@ class ProductivityInsightsTest {
         assertTrue(hourInsight?.message?.contains("14") == true || hourInsight?.message?.contains("오후 2시") == true)
     }
 
+    /** 카테고리별 낮은 완료율 인사이트 생성 */
     @Test
-    fun `카테고리별 낮은 완료율 인사이트 생성`() {
+    fun testGenerateLowCategoryCompletionInsight() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.70,
@@ -102,8 +106,9 @@ class ProductivityInsightsTest {
         assertTrue(categoryInsight?.message?.contains("30%") == true)
     }
 
+    /** 연속 목표 달성 인사이트 생성 */
     @Test
-    fun `연속 목표 달성 인사이트 생성`() {
+    fun testGenerateStreakInsight() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.70,
@@ -122,8 +127,9 @@ class ProductivityInsightsTest {
         assertTrue(streakInsight?.message?.contains("5") == true)
     }
 
+    /** 인사이트 없음 - 변화가 없는 경우 */
     @Test
-    fun `인사이트 없음 - 변화가 없는 경우`() {
+    fun testGenerateNoInsightsWhenNoChange() {
         // Given
         val stats = Statistics(
             thisWeekCompletionRate = 0.70,

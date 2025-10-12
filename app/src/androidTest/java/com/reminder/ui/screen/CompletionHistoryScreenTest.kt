@@ -30,10 +30,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 화면 제목 - 한글
+     * 완료 이력 화면 제목 표시 확인
      */
     @Test
-    fun 완료_이력_화면_제목이_표시된다() {
+    fun completionHistoryScreenTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -50,10 +50,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 뒤로가기 버튼
+     * 뒤로가기 버튼 표시 확인
      */
     @Test
-    fun 뒤로가기_버튼이_표시된다() {
+    fun backButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -70,10 +70,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 월 선택 - 이전 달 버튼
+     * 이전 달 버튼 표시 확인
      */
     @Test
-    fun 이전_달_버튼이_표시된다() {
+    fun previousMonthButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -90,10 +90,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 월 선택 - 다음 달 버튼
+     * 다음 달 버튼 표시 확인
      */
     @Test
-    fun 다음_달_버튼이_표시된다() {
+    fun nextMonthButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -110,10 +110,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 월 표시 - 한글 형식
+     * 현재 월 한글 형식 표시 확인
      */
     @Test
-    fun 현재_월이_한글_형식으로_표시된다() {
+    fun currentMonthIsDisplayedInKoreanFormat() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -132,10 +132,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 달력 - 요일 헤더 (한글)
+     * 요일 헤더 한글 표시 확인
      */
     @Test
-    fun 요일_헤더가_한글로_표시된다() {
+    fun dayOfWeekHeadersAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -158,10 +158,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 달력 - 날짜 표시
+     * 달력 날짜 표시 확인
      */
     @Test
-    fun 달력_날짜가_표시된다() {
+    fun calendarDatesAreDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -179,10 +179,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 뒤로가기 버튼 클릭
+     * 뒤로가기 버튼 클릭 시 콜백 호출 확인
      */
     @Test
-    fun 뒤로가기_버튼_클릭_시_콜백이_호출된다() {
+    fun backButtonClickInvokesCallback() {
         // Given
         val viewModel = createMockViewModel()
         var navigatedBack = false
@@ -202,10 +202,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 이전 달 버튼 클릭
+     * 이전 달 버튼 클릭 시 월 변경 확인
      */
     @Test
-    fun 이전_달_버튼_클릭_시_월이_변경된다() {
+    fun previousMonthButtonClickChangesMonth() {
         // Given
         val viewModel = createMockViewModel()
         val currentMonth = java.time.LocalDate.now().monthValue
@@ -228,10 +228,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 다음 달 버튼 클릭
+     * 다음 달 버튼 클릭 시 월 변경 확인
      */
     @Test
-    fun 다음_달_버튼_클릭_시_월이_변경된다() {
+    fun nextMonthButtonClickChangesMonth() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -252,10 +252,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 날짜 셀 클릭 - 선택 기능
+     * 날짜 셀 클릭 시 선택 확인
      */
     @Test
-    fun 날짜_셀_클릭_시_선택된다() {
+    fun dateCellClickSelectsDate() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -274,10 +274,10 @@ class CompletionHistoryScreenTest {
     }
 
     /**
-     * 스크롤 가능 확인
+     * 화면 스크롤 가능 확인
      */
     @Test
-    fun 화면을_스크롤할_수_있다() {
+    fun screenIsScrollable() {
         // Given
         val viewModel = createMockViewModel()
 

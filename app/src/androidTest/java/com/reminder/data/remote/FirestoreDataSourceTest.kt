@@ -83,8 +83,11 @@ class FirestoreDataSourceTest {
         }
     }
 
+    /**
+     * 리마인더 Firestore 저장 및 조회 확인
+     */
     @Test
-    fun 리마인더를_Firestore에_저장하고_조회한다() = runTest {
+    fun saveAndRetrieveReminderFromFirestore() = runTest {
         // When: 리마인더 저장
         val result = dataSource.upsertReminder(testReminder)
 
@@ -102,8 +105,11 @@ class FirestoreDataSourceTest {
         assertEquals(testReminder.category, retrieved?.category)
     }
 
+    /**
+     * 모든 리마인더 실시간 조회 확인
+     */
     @Test
-    fun 모든_리마인더를_실시간으로_가져온다() = runTest {
+    fun getAllRemindersInRealTime() = runTest {
         // Given: 리마인더 저장
         dataSource.upsertReminder(testReminder)
         kotlinx.coroutines.delay(1000) // Firestore 반영 대기
@@ -115,8 +121,11 @@ class FirestoreDataSourceTest {
         assertTrue(reminders.any { it.id == testReminder.id })
     }
 
+    /**
+     * 리마인더 Firestore 삭제 확인
+     */
     @Test
-    fun 리마인더를_Firestore에서_삭제한다() = runTest {
+    fun deleteReminderFromFirestore() = runTest {
         // Given: 리마인더 저장
         dataSource.upsertReminder(testReminder)
         kotlinx.coroutines.delay(500)
@@ -134,8 +143,11 @@ class FirestoreDataSourceTest {
         assertNull(retrieved)
     }
 
+    /**
+     * 여러 리마인더 일괄 업로드 확인
+     */
     @Test
-    fun 여러_리마인더를_일괄_업로드한다() = runTest {
+    fun uploadMultipleRemindersAtOnce() = runTest {
         // Given: 여러 리마인더 생성
         val reminders = listOf(
             testReminder,
@@ -169,8 +181,11 @@ class FirestoreDataSourceTest {
         dataSource.deleteReminder(testReminder.id + 2)
     }
 
+    /**
+     * 수정된 리마인더만 조회 확인
+     */
     @Test
-    fun 수정된_리마인더만_조회한다() = runTest {
+    fun retrieveOnlyModifiedReminders() = runTest {
         // Given: 리마인더 저장
         dataSource.upsertReminder(testReminder)
         kotlinx.coroutines.delay(500)

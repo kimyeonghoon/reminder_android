@@ -23,8 +23,9 @@ class PermissionManagerTest {
         permissionManager = FakePermissionManager()
     }
 
+    /** 권한 확인 - OWNER는 모든 권한 보유 */
     @Test
-    fun `권한 확인 - OWNER는 모든 권한 보유`() = runTest {
+    fun checkPermission_OwnerHasAllPermissions() = runTest {
         // Given
         val userId = "user1"
         val reminderId = "reminder1"
@@ -41,8 +42,9 @@ class PermissionManagerTest {
         assertTrue(hasViewerPermission)
     }
 
+    /** 권한 확인 - EDITOR는 편집 및 보기 권한 보유 */
     @Test
-    fun `권한 확인 - EDITOR는 편집 및 보기 권한 보유`() = runTest {
+    fun checkPermission_EditorHasEditAndViewPermissions() = runTest {
         // Given
         val userId = "user2"
         val reminderId = "reminder1"
@@ -59,8 +61,9 @@ class PermissionManagerTest {
         assertTrue(hasViewerPermission)
     }
 
+    /** 권한 확인 - VIEWER는 보기 권한만 보유 */
     @Test
-    fun `권한 확인 - VIEWER는 보기 권한만 보유`() = runTest {
+    fun checkPermission_ViewerHasOnlyViewPermission() = runTest {
         // Given
         val userId = "user3"
         val reminderId = "reminder1"
@@ -77,8 +80,9 @@ class PermissionManagerTest {
         assertTrue(hasViewerPermission)
     }
 
+    /** 권한 부여 - 새 사용자에게 EDITOR 권한 부여 */
     @Test
-    fun `권한 부여 - 새 사용자에게 EDITOR 권한 부여`() = runTest {
+    fun grantPermission_GrantEditorToNewUser() = runTest {
         // Given
         val userId = "user4"
         val reminderId = "reminder1"
@@ -91,8 +95,9 @@ class PermissionManagerTest {
         assertTrue(hasPermission)
     }
 
+    /** 권한 부여 - 기존 VIEWER를 EDITOR로 승격 */
     @Test
-    fun `권한 부여 - 기존 VIEWER를 EDITOR로 승격`() = runTest {
+    fun grantPermission_UpgradeViewerToEditor() = runTest {
         // Given
         val userId = "user5"
         val reminderId = "reminder1"
@@ -106,8 +111,9 @@ class PermissionManagerTest {
         assertTrue(hasEditorPermission)
     }
 
+    /** 권한 회수 - EDITOR 권한 제거 */
     @Test
-    fun `권한 회수 - EDITOR 권한 제거`() = runTest {
+    fun revokePermission_RemoveEditorPermission() = runTest {
         // Given
         val userId = "user6"
         val reminderId = "reminder1"
@@ -121,8 +127,9 @@ class PermissionManagerTest {
         assertFalse(hasPermission)
     }
 
+    /** 특정 리마인더의 모든 협업자 조회 */
     @Test
-    fun `특정 리마인더의 모든 협업자 조회`() = runTest {
+    fun getAllCollaboratorsForSpecificReminder() = runTest {
         // Given
         val reminderId = "reminder1"
         permissionManager.grantPermission("user1", reminderId, Permission.OWNER)
@@ -139,8 +146,9 @@ class PermissionManagerTest {
         assertTrue(collaborators.any { it.userId == "user3" && it.permission == Permission.VIEWER })
     }
 
+    /** 사용자가 접근 가능한 모든 공유 리마인더 조회 */
     @Test
-    fun `사용자가 접근 가능한 모든 공유 리마인더 조회`() = runTest {
+    fun getAllSharedRemindersAccessibleByUser() = runTest {
         // Given
         val userId = "user1"
         permissionManager.grantPermission(userId, "reminder1", Permission.OWNER)
@@ -157,8 +165,9 @@ class PermissionManagerTest {
         assertTrue(sharedReminders.contains("reminder3"))
     }
 
+    /** 권한 없는 사용자는 접근 불가 */
     @Test
-    fun `권한 없는 사용자는 접근 불가`() = runTest {
+    fun unauthorizedUserCannotAccess() = runTest {
         // Given
         val userId = "unauthorized_user"
         val reminderId = "reminder1"
@@ -170,8 +179,9 @@ class PermissionManagerTest {
         assertFalse(hasPermission)
     }
 
+    /** OWNER만 협업자 권한 변경 가능 */
     @Test
-    fun `OWNER만 협업자 권한 변경 가능`() = runTest {
+    fun onlyOwnerCanModifyCollaboratorPermissions() = runTest {
         // Given
         val ownerId = "owner"
         val editorId = "editor"

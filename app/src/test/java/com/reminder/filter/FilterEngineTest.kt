@@ -113,8 +113,9 @@ class FilterEngineTest {
         )
     }
 
+    /** 빈 필터 적용 시 모든 리마인더 반환 */
     @Test
-    fun `빈 필터 적용 시 모든 리마인더 반환`() {
+    fun testApplyEmptyFilterReturnsAllReminders() {
         // Given
         val emptyFilter = ReminderFilter()
 
@@ -126,8 +127,9 @@ class FilterEngineTest {
         assertEquals(testReminders, result)
     }
 
+    /** 우선순위 필터 - 높은 우선순위만 */
     @Test
-    fun `우선순위 필터 - 높은 우선순위만`() {
+    fun testFilterByHighPriorityOnly() {
         // Given
         val filter = ReminderFilter(priorities = listOf(Priority.HIGH))
 
@@ -142,8 +144,9 @@ class FilterEngineTest {
         assertTrue(result.any { it.id == 8L }) // 프로젝트 제출
     }
 
+    /** 우선순위 필터 - 여러 우선순위 */
     @Test
-    fun `우선순위 필터 - 여러 우선순위`() {
+    fun testFilterByMultiplePriorities() {
         // Given
         val filter = ReminderFilter(priorities = listOf(Priority.HIGH, Priority.MEDIUM))
 
@@ -155,8 +158,9 @@ class FilterEngineTest {
         assertTrue(result.all { it.priority in listOf(Priority.HIGH, Priority.MEDIUM) })
     }
 
+    /** 카테고리 필터 - 단일 카테고리 */
     @Test
-    fun `카테고리 필터 - 단일 카테고리`() {
+    fun testFilterBySingleCategory() {
         // Given
         val filter = ReminderFilter(categories = listOf("업무"))
 
@@ -170,8 +174,9 @@ class FilterEngineTest {
         assertTrue(result.any { it.id == 8L }) // 프로젝트 제출
     }
 
+    /** 카테고리 필터 - 여러 카테고리 */
     @Test
-    fun `카테고리 필터 - 여러 카테고리`() {
+    fun testFilterByMultipleCategories() {
         // Given
         val filter = ReminderFilter(categories = listOf("업무", "개인"))
 
@@ -183,8 +188,9 @@ class FilterEngineTest {
         assertTrue(result.all { it.category in listOf("업무", "개인") })
     }
 
+    /** 태그 필터 - 단일 태그 */
     @Test
-    fun `태그 필터 - 단일 태그`() {
+    fun testFilterBySingleTag() {
         // Given
         val filter = ReminderFilter(tags = listOf("긴급"))
 
@@ -197,8 +203,9 @@ class FilterEngineTest {
         assertTrue(result[0].tags.contains("긴급"))
     }
 
+    /** 날짜 범위 필터 - 오늘부터 일주일 */
     @Test
-    fun `날짜 범위 필터 - 오늘부터 일주일`() {
+    fun testFilterByDateRangeFromTodayToOneWeek() {
         // Given
         val now = LocalDateTime.now()
         val filter = ReminderFilter(
@@ -220,8 +227,9 @@ class FilterEngineTest {
         })
     }
 
+    /** 완료 상태 필터 - 미완료만 */
     @Test
-    fun `완료 상태 필터 - 미완료만`() {
+    fun testFilterByIncompleteOnly() {
         // Given
         val filter = ReminderFilter(isCompleted = false)
 
@@ -234,8 +242,9 @@ class FilterEngineTest {
         assertFalse(result.any { it.id == 3L }) // 우유 사기 (완료됨)
     }
 
+    /** 완료 상태 필터 - 완료된 것만 */
     @Test
-    fun `완료 상태 필터 - 완료된 것만`() {
+    fun testFilterByCompletedOnly() {
         // Given
         val filter = ReminderFilter(isCompleted = true)
 
@@ -248,8 +257,9 @@ class FilterEngineTest {
         assertEquals(3L, result[0].id) // 우유 사기
     }
 
+    /** 위치 필터 - 위치가 설정된 것만 */
     @Test
-    fun `위치 필터 - 위치가 설정된 것만`() {
+    fun testFilterByHasLocationOnly() {
         // Given
         val filter = ReminderFilter(hasLocation = true)
 
@@ -263,8 +273,9 @@ class FilterEngineTest {
         assertNotNull(result[0].locationLongitude)
     }
 
+    /** 웹 링크 필터 - 웹 링크가 있는 것만 */
     @Test
-    fun `웹 링크 필터 - 웹 링크가 있는 것만`() {
+    fun testFilterByHasWebLinkOnly() {
         // Given
         val filter = ReminderFilter(hasWebLink = true)
 
@@ -277,8 +288,9 @@ class FilterEngineTest {
         assertNotNull(result[0].webLink)
     }
 
+    /** TTS 필터 - TTS가 설정된 것만 */
     @Test
-    fun `TTS 필터 - TTS가 설정된 것만`() {
+    fun testFilterByHasTtsOnly() {
         // Given
         val filter = ReminderFilter(hasTts = true)
 
@@ -291,8 +303,9 @@ class FilterEngineTest {
         assertTrue(result[0].readAloud)
     }
 
+    /** 복합 필터 - 높은 우선순위 + 업무 카테고리 + 미완료 */
     @Test
-    fun `복합 필터 - 높은 우선순위 + 업무 카테고리 + 미완료`() {
+    fun testFilterByMultipleCriteriaHighPriorityWorkIncomplete() {
         // Given
         val filter = ReminderFilter(
             priorities = listOf(Priority.HIGH),
@@ -312,8 +325,9 @@ class FilterEngineTest {
         })
     }
 
+    /** 복합 필터 - 조건에 맞는 것이 없으면 빈 리스트 반환 */
     @Test
-    fun `복합 필터 - 조건에 맞는 것이 없으면 빈 리스트 반환`() {
+    fun testFilterReturnsEmptyListWhenNoMatchingReminders() {
         // Given
         val filter = ReminderFilter(
             priorities = listOf(Priority.HIGH),

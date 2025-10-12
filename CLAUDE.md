@@ -356,8 +356,11 @@ fun ComponentName(
 
 ```kotlin
 // 예시: ReminderViewModelTest.kt
+/**
+ * 리마인더 추가 시 목록 반영 확인
+ */
 @Test
-fun `리마인더 추가 시 목록에 반영된다`() {
+fun addReminderIsReflectedInList() {
     // Given
     val title = "테스트 할일"
 
@@ -415,9 +418,17 @@ fun addButton_whenClicked_navigatesToAddScreen() {
 
 **테스트 작성 규칙**
 
-1. **테스트 이름**: 한글로 작성 가능, 명확하게
-   - `fun 리마인더_추가_시_목록에_반영된다()`
-   - 또는 백틱 사용: `` `리마인더 추가 시 목록에 반영된다` ``
+1. **테스트 이름**: 영어 함수명 + 한글 주석
+   - 함수명은 영어 camelCase: `fun addReminderIsReflectedInList()`
+   - 함수 위에 한글 주석으로 설명 추가:
+   ```kotlin
+   /**
+    * 리마인더 추가 시 목록 반영 확인
+    */
+   @Test
+   fun addReminderIsReflectedInList() { ... }
+   ```
+   - **중요**: 한글 함수명(예: `fun 리마인더_추가_시_목록에_반영된다()`)은 테스트 실패 문제로 인해 사용하지 않음
 
 2. **AAA 패턴 사용**
    - **Arrange** (Given): 테스트 준비

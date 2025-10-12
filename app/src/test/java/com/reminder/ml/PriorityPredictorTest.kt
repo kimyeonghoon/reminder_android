@@ -28,8 +28,9 @@ class PriorityPredictorTest {
         predictor = PriorityPredictor(mlDao)
     }
 
+    /** 학습 데이터가 없을 때 기본 우선순위 MEDIUM 반환 */
     @Test
-    fun `학습 데이터가 없을 때 기본 우선순위 MEDIUM 반환`() = runTest {
+    fun returnDefaultMediumPriorityWhenNoTrainingData() = runTest {
         // Given
         val title = "새로운 작업"
         val description = "처음 보는 작업"
@@ -43,8 +44,9 @@ class PriorityPredictorTest {
         assertEquals(0.0f, result.confidence, 0.01f)
     }
 
+    /** 유사한 제목이 있을 때 해당 우선순위 반환 */
     @Test
-    fun `유사한 제목이 있을 때 해당 우선순위 반환`() = runTest {
+    fun returnMatchingPriorityWhenSimilarTitleExists() = runTest {
         // Given
         val title = "회의 준비"
         val description = "프로젝트 회의"
@@ -69,8 +71,9 @@ class PriorityPredictorTest {
         assertTrue(result.confidence > 0.5f)
     }
 
+    /** 여러 패턴이 있을 때 가장 많이 사용된 우선순위 반환 */
     @Test
-    fun `여러 패턴이 있을 때 가장 많이 사용된 우선순위 반환`() = runTest {
+    fun returnMostUsedPriorityWhenMultiplePatternsExist() = runTest {
         // Given
         val title = "장보기"
         val description = ""
@@ -107,8 +110,9 @@ class PriorityPredictorTest {
         assertTrue(result.confidence > 0.5f)
     }
 
+    /** 학습 데이터 저장 시 올바른 형식으로 저장 */
     @Test
-    fun `학습 데이터 저장 시 올바른 형식으로 저장`() = runTest {
+    fun saveTrainingDataInCorrectFormat() = runTest {
         // Given
         val title = "보고서 작성"
         val description = "월간 보고서"
@@ -124,8 +128,9 @@ class PriorityPredictorTest {
         assertEquals("HIGH", inserted[0].outputLabel)
     }
 
+    /** 신뢰도 계산 - 사용 횟수가 많을수록 높은 신뢰도 */
     @Test
-    fun `신뢰도 계산 - 사용 횟수가 많을수록 높은 신뢰도`() = runTest {
+    fun calculateConfidence_HigherUsageCountGivesHigherConfidence() = runTest {
         // Given
         val title = "운동"
         val description = ""

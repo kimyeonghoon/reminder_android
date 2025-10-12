@@ -8,8 +8,9 @@ import java.time.LocalDateTime
 
 class WidgetDataProviderTest {
 
+    /** 위젯 데이터 제공자는 리마인더 목록을 위젯용 데이터로 변환한다 */
     @Test
-    fun `위젯 데이터 제공자는 리마인더 목록을 위젯용 데이터로 변환한다`() {
+    fun widgetDataProviderConvertsRemindersToWidgetData() {
         // Given
         val reminders = listOf(
             ReminderEntity(
@@ -41,8 +42,9 @@ class WidgetDataProviderTest {
         assertEquals("2025-10-10 10:00", widgetData[0].formattedDueDate)
     }
 
+    /** 완료된 리마인더는 위젯에 표시하지 않는다 */
     @Test
-    fun `완료된 리마인더는 위젯에 표시하지 않는다`() {
+    fun completedRemindersAreNotDisplayedInWidget() {
         // Given
         val reminders = listOf(
             ReminderEntity(
@@ -66,8 +68,9 @@ class WidgetDataProviderTest {
         assertEquals("할일 1", widgetData[0].title)
     }
 
+    /** 마감일이 가까운 순서대로 정렬한다 */
     @Test
-    fun `마감일이 가까운 순서대로 정렬한다`() {
+    fun sortsRemindersByClosestDueDate() {
         // Given
         val now = LocalDateTime.now()
         val reminders = listOf(
@@ -101,8 +104,9 @@ class WidgetDataProviderTest {
         assertEquals("할일 3", widgetData[2].title) // 마감일 없음
     }
 
+    /** 최대 10개의 리마인더만 반환한다 */
     @Test
-    fun `최대 10개의 리마인더만 반환한다`() {
+    fun returnsMaximumTenReminders() {
         // Given
         val reminders = (1..15).map { i ->
             ReminderEntity(
@@ -121,8 +125,9 @@ class WidgetDataProviderTest {
         assertEquals(10, widgetData.size)
     }
 
+    /** 마감일이 없는 경우 빈 문자열을 반환한다 */
     @Test
-    fun `마감일이 없는 경우 빈 문자열을 반환한다`() {
+    fun returnsEmptyStringForNoDueDate() {
         // Given
         val reminders = listOf(
             ReminderEntity(

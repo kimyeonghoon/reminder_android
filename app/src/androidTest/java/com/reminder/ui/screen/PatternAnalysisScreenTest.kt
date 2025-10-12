@@ -44,10 +44,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 화면 제목 - 한글
+     * 완료 패턴 분석 화면 제목 표시 확인
      */
     @Test
-    fun 완료_패턴_분석_화면_제목이_표시된다() {
+    fun completionPatternAnalysisScreenTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -64,10 +64,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 뒤로가기 버튼
+     * 뒤로가기 버튼 표시 확인
      */
     @Test
-    fun 뒤로가기_버튼이_표시된다() {
+    fun backButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -84,10 +84,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 로딩 상태 - 기본 메시지
+     * 로딩 상태에서 분석 중 메시지 표시 확인
      */
     @Test
-    fun 로딩_상태에서_분석_중_메시지가_표시된다() {
+    fun analyzingMessageIsDisplayedInLoadingState() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -104,10 +104,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 로딩 상태 - 프로그레스 인디케이터
+     * 로딩 상태에서 프로그레스 인디케이터 표시 확인
      */
     @Test
-    fun 로딩_상태에서_프로그레스_인디케이터가_표시된다() {
+    fun progressIndicatorIsDisplayedInLoadingState() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -126,10 +126,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 뒤로가기 버튼 클릭
+     * 뒤로가기 버튼 클릭 시 콜백 호출 확인
      */
     @Test
-    fun 뒤로가기_버튼_클릭_시_콜백이_호출된다() {
+    fun backButtonClickInvokesCallback() {
         // Given
         val viewModel = createMockViewModel()
         var navigatedBack = false
@@ -156,10 +156,10 @@ class PatternAnalysisScreenTest {
      */
 
     /**
-     * 요약 카드 - 제목
+     * 요약 카드 제목 표시 확인
      */
     @Test
-    fun 요약_카드_제목이_표시된다() {
+    fun summaryCardTitleIsDisplayed() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -189,10 +189,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 완료율 카드 - 제목
+     * 완료율 카드 제목 한글 표시 확인
      */
     @Test
-    fun 완료율_카드_제목이_한글로_표시된다() {
+    fun completionRateCardTitleIsDisplayedInKorean() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -220,10 +220,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 시간대 카드 - 제목
+     * 시간대 카드 제목 한글 표시 확인
      */
     @Test
-    fun 시간대_카드_제목이_한글로_표시된다() {
+    fun hourlyCardTitleIsDisplayedInKorean() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -252,10 +252,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 요일 카드 - 제목
+     * 요일 카드 제목 한글 표시 확인
      */
     @Test
-    fun 요일_카드_제목이_한글로_표시된다() {
+    fun dailyCardTitleIsDisplayedInKorean() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -284,10 +284,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 평균 완료 시간 카드 - 제목
+     * 평균 완료 시간 카드 제목 한글 표시 확인
      */
     @Test
-    fun 평균_완료_시간_카드_제목이_한글로_표시된다() {
+    fun averageCompletionTimeCardTitleIsDisplayedInKorean() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -315,10 +315,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 요일 한글 변환 - 월요일
+     * 월요일 한글 표시 확인
      */
     @Test
-    fun 월요일이_한글로_표시된다() {
+    fun mondayIsDisplayedInKorean() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,
@@ -346,10 +346,10 @@ class PatternAnalysisScreenTest {
     }
 
     /**
-     * 스크롤 가능 확인
+     * 화면 스크롤 가능 확인
      */
     @Test
-    fun 화면을_스크롤할_수_있다() {
+    fun screenIsScrollable() {
         // Given
         val pattern = CompletionPatternAnalyzer.CompletionPattern(
             completionRate = 0.75,

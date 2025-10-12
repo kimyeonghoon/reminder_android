@@ -42,8 +42,9 @@ class StatisticsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /** 초기 상태는 모든 통계가 0이다 */
     @Test
-    fun `초기 상태는 모든 통계가 0이다`() {
+    fun initialStateAllStatisticsAreZero() {
         val statistics = viewModel.statistics.value
 
         assertEquals(0, statistics.totalReminders)
@@ -52,8 +53,9 @@ class StatisticsViewModelTest {
         assertEquals(0f, statistics.completionRate)
     }
 
+    /** 전체 리마인더 개수를 계산한다 */
     @Test
-    fun `전체 리마인더 개수를 계산한다`() = runTest {
+    fun calculateTotalRemindersCount() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, isCompleted = true),
@@ -72,8 +74,9 @@ class StatisticsViewModelTest {
         assertEquals(3, testViewModel.statistics.value.totalReminders)
     }
 
+    /** 완료된 리마인더 개수를 계산한다 */
     @Test
-    fun `완료된 리마인더 개수를 계산한다`() = runTest {
+    fun calculateCompletedRemindersCount() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, isCompleted = true),
@@ -92,8 +95,9 @@ class StatisticsViewModelTest {
         assertEquals(2, testViewModel.statistics.value.completedReminders)
     }
 
+    /** 미완료 리마인더 개수를 계산한다 */
     @Test
-    fun `미완료 리마인더 개수를 계산한다`() = runTest {
+    fun calculatePendingRemindersCount() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, isCompleted = true),
@@ -112,8 +116,9 @@ class StatisticsViewModelTest {
         assertEquals(2, testViewModel.statistics.value.pendingReminders)
     }
 
+    /** 완료율을 계산한다 */
     @Test
-    fun `완료율을 계산한다`() = runTest {
+    fun calculateCompletionRate() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, isCompleted = true),
@@ -133,8 +138,9 @@ class StatisticsViewModelTest {
         assertEquals(0.5f, testViewModel.statistics.value.completionRate, 0.001f)
     }
 
+    /** 리마인더가 없을 때 완료율은 0이다 */
     @Test
-    fun `리마인더가 없을 때 완료율은 0이다`() = runTest {
+    fun completionRateIsZeroWhenNoReminders() = runTest {
         // Given
         val testRepository = mock(ReminderRepository::class.java)
         `when`(testRepository.allReminders).thenReturn(flowOf(emptyList()))
@@ -148,8 +154,9 @@ class StatisticsViewModelTest {
         assertEquals(0f, testViewModel.statistics.value.completionRate)
     }
 
+    /** 우선순위별 개수를 계산한다 */
     @Test
-    fun `우선순위별 개수를 계산한다`() = runTest {
+    fun calculateCountByPriority() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, priority = Priority.HIGH),
@@ -172,8 +179,9 @@ class StatisticsViewModelTest {
         assertEquals(1, statistics.lowPriorityCount)
     }
 
+    /** 카테고리별 분포를 계산한다 */
     @Test
-    fun `카테고리별 분포를 계산한다`() = runTest {
+    fun calculateDistributionByCategory() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, category = "Work"),
@@ -198,8 +206,9 @@ class StatisticsViewModelTest {
         assertEquals(3, distribution["Shopping"])
     }
 
+    /** 빈 카테고리는 분포에서 제외한다 */
     @Test
-    fun `빈 카테고리는 분포에서 제외한다`() = runTest {
+    fun excludeEmptyCategoriesFromDistribution() = runTest {
         // Given
         val reminders = listOf(
             createReminder(id = 1, category = "Work"),
@@ -221,8 +230,9 @@ class StatisticsViewModelTest {
         assertNull(distribution[""])
     }
 
+    /** 최근 7일간 완료된 리마인더 개수를 계산한다 */
     @Test
-    fun `최근 7일간 완료된 리마인더 개수를 계산한다`() = runTest {
+    fun calculateCompletedRemindersForLast7Days() = runTest {
         // Given
         val now = LocalDateTime.now()
         val reminders = listOf(
@@ -260,8 +270,9 @@ class StatisticsViewModelTest {
         assertEquals(0, weeklyCompleted[6]) // 6일 전
     }
 
+    /** 최근 30일간 완료된 리마인더 개수를 계산한다 */
     @Test
-    fun `최근 30일간 완료된 리마인더 개수를 계산한다`() = runTest {
+    fun calculateCompletedRemindersForLast30Days() = runTest {
         // Given
         val now = LocalDateTime.now()
         val reminders = listOf(

@@ -9,8 +9,9 @@ import java.time.LocalDateTime
  */
 class ReminderImageTest {
 
+    /** ReminderImage 생성 시 기본값이 올바르게 설정된다 */
     @Test
-    fun `ReminderImage 생성 시 기본값이 올바르게 설정된다`() {
+    fun reminderImageCreationSetsDefaultValuesCorrectly() {
         // Given
         val reminderId = 1L
         val imageUri = "content://media/external/images/media/123"
@@ -27,8 +28,9 @@ class ReminderImageTest {
         assertNotNull(image.createdAt)
     }
 
+    /** 동일한 reminderId에 여러 이미지를 추가할 수 있다 */
     @Test
-    fun `동일한 reminderId에 여러 이미지를 추가할 수 있다`() {
+    fun canAddMultipleImagesToSameReminderId() {
         // Given
         val reminderId = 1L
 

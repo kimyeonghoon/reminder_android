@@ -12,8 +12,9 @@ import org.junit.Assert.*
  */
 class ReminderTemplateTest {
 
+    /** 템플릿에서 리마인더 생성 시 모든 필드가 정확히 복사된다 */
     @Test
-    fun `템플릿에서 리마인더 생성 시 모든 필드가 정확히 복사된다`() {
+    fun creatingReminderFromTemplateCopiesAllFieldsCorrectly() {
         // Given
         val template = ReminderTemplate(
             id = 1L,
@@ -45,8 +46,9 @@ class ReminderTemplateTest {
         assertEquals(template.defaultRecurrenceInterval, reminder.recurrenceInterval)
     }
 
+    /** 리마인더를 템플릿으로 저장 시 핵심 정보만 저장된다 */
     @Test
-    fun `리마인더를 템플릿으로 저장 시 핵심 정보만 저장된다`() {
+    fun savingReminderAsTemplateStoresOnlyEssentialInformation() {
         // Given
         val reminder = ReminderEntity(
             id = 10L,

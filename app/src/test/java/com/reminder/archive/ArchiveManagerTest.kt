@@ -28,11 +28,9 @@ class ArchiveManagerTest {
         archiveManager = ArchiveManager(reminderDao)
     }
 
-    /**
-     * 테스트 1: 리마인더를 아카이브할 수 있다
-     */
+    /** 테스트 1: 리마인더를 아카이브할 수 있다 */
     @Test
-    fun `리마인더를 아카이브할 수 있다`() = runTest {
+    fun testArchiveReminder() = runTest {
         // Given
         val reminder = createTestReminder(id = 1)
 
@@ -45,11 +43,9 @@ class ArchiveManagerTest {
         )
     }
 
-    /**
-     * 테스트 2: 아카이브된 리마인더를 복원할 수 있다
-     */
+    /** 테스트 2: 아카이브된 리마인더를 복원할 수 있다 */
     @Test
-    fun `아카이브된 리마인더를 복원할 수 있다`() = runTest {
+    fun testUnarchiveReminder() = runTest {
         // Given
         val archivedReminder = createTestReminder(id = 1, isArchived = true)
 
@@ -62,11 +58,9 @@ class ArchiveManagerTest {
         )
     }
 
-    /**
-     * 테스트 3: N일 이상 완료된 리마인더를 자동 아카이브할 수 있다
-     */
+    /** 테스트 3: N일 이상 완료된 리마인더를 자동 아카이브할 수 있다 */
     @Test
-    fun `N일 이상 완료된 리마인더를 자동 아카이브한다`() = runTest {
+    fun testAutoArchiveOldCompletedReminders() = runTest {
         // Given
         val now = LocalDateTime.now()
         val old = now.minusDays(35) // 35일 전 완료
@@ -88,11 +82,9 @@ class ArchiveManagerTest {
         )
     }
 
-    /**
-     * 테스트 4: 이미 아카이브된 리마인더는 다시 아카이브하지 않는다
-     */
+    /** 테스트 4: 이미 아카이브된 리마인더는 다시 아카이브하지 않는다 */
     @Test
-    fun `이미 아카이브된 리마인더는 건너뛴다`() = runTest {
+    fun testSkipAlreadyArchivedReminders() = runTest {
         // Given
         val now = LocalDateTime.now()
         val old = now.minusDays(35)
@@ -115,11 +107,9 @@ class ArchiveManagerTest {
         verify(reminderDao, never()).updateReminder(any())
     }
 
-    /**
-     * 테스트 5: 아카이브된 리마인더 목록을 조회할 수 있다
-     */
+    /** 테스트 5: 아카이브된 리마인더 목록을 조회할 수 있다 */
     @Test
-    fun `아카이브된 리마인더 목록을 조회할 수 있다`() = runTest {
+    fun testGetArchivedReminders() = runTest {
         // Given
         val archived1 = createTestReminder(id = 1, isArchived = true)
         val archived2 = createTestReminder(id = 2, isArchived = true)
@@ -135,11 +125,9 @@ class ArchiveManagerTest {
         assertTrue(result.all { it.isArchived })
     }
 
-    /**
-     * 테스트 6: 아카이브된 리마인더를 영구 삭제할 수 있다
-     */
+    /** 테스트 6: 아카이브된 리마인더를 영구 삭제할 수 있다 */
     @Test
-    fun `아카이브된 리마인더를 영구 삭제할 수 있다`() = runTest {
+    fun testDeleteArchivedReminderPermanently() = runTest {
         // Given
         val archived = createTestReminder(id = 1, isArchived = true)
 
@@ -150,11 +138,9 @@ class ArchiveManagerTest {
         verify(reminderDao).deleteReminder(archived)
     }
 
-    /**
-     * 테스트 7: 모든 아카이브를 일괄 삭제할 수 있다
-     */
+    /** 테스트 7: 모든 아카이브를 일괄 삭제할 수 있다 */
     @Test
-    fun `모든 아카이브를 일괄 삭제할 수 있다`() = runTest {
+    fun testDeleteAllArchivedReminders() = runTest {
         // Given
         val archived1 = createTestReminder(id = 1, isArchived = true)
         val archived2 = createTestReminder(id = 2, isArchived = true)

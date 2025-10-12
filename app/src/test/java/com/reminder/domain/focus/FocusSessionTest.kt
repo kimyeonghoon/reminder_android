@@ -14,8 +14,9 @@ class FocusSessionTest {
     /**
      * 세션 시작 테스트
      */
+    /** 포커스 세션을 시작할 수 있다 */
     @Test
-    fun `포커스 세션을 시작할 수 있다`() {
+    fun startFocusSession() {
         // Given
         val targetMinutes = 25
         val focusType = FocusType.DEEP_WORK
@@ -37,8 +38,9 @@ class FocusSessionTest {
     /**
      * 세션이 진행 중인지 확인
      */
+    /** 진행 중인 세션을 확인할 수 있다 */
     @Test
-    fun `진행 중인 세션을 확인할 수 있다`() {
+    fun checkActiveSession() {
         // Given
         val session = FocusSessionEntity(
             targetDurationMinutes = 25
@@ -48,8 +50,9 @@ class FocusSessionTest {
         assertTrue(session.isActive())
     }
 
+    /** 완료된 세션은 진행 중이 아니다 */
     @Test
-    fun `완료된 세션은 진행 중이 아니다`() {
+    fun completedSession_shouldNotBeActive() {
         // Given
         val session = FocusSessionEntity(
             targetDurationMinutes = 25,
@@ -64,8 +67,9 @@ class FocusSessionTest {
     /**
      * 세션 완료
      */
+    /** 포커스 세션을 완료할 수 있다 */
     @Test
-    fun `포커스 세션을 완료할 수 있다`() {
+    fun completeFocusSession() {
         // Given
         val startTime = LocalDateTime.now().minusMinutes(25)
         val session = FocusSessionEntity(
@@ -86,8 +90,9 @@ class FocusSessionTest {
     /**
      * 세션 중단
      */
+    /** 포커스 세션을 중단할 수 있다 */
     @Test
-    fun `포커스 세션을 중단할 수 있다`() {
+    fun interruptFocusSession() {
         // Given
         val startTime = LocalDateTime.now().minusMinutes(10)
         val session = FocusSessionEntity(
@@ -108,8 +113,9 @@ class FocusSessionTest {
     /**
      * 남은 시간 계산
      */
+    /** 남은 시간을 계산할 수 있다 */
     @Test
-    fun `남은 시간을 계산할 수 있다`() {
+    fun calculateRemainingTime() {
         // Given
         val startTime = LocalDateTime.now().minusMinutes(10)
         val session = FocusSessionEntity(
@@ -124,8 +130,9 @@ class FocusSessionTest {
         assertEquals(15, remainingMinutes)
     }
 
+    /** 목표 시간을 초과하면 남은 시간은 0 */
     @Test
-    fun `목표 시간을 초과하면 남은 시간은 0`() {
+    fun remainingTime_whenExceedsTarget_shouldBeZero() {
         // Given
         val startTime = LocalDateTime.now().minusMinutes(30)
         val session = FocusSessionEntity(
@@ -143,8 +150,9 @@ class FocusSessionTest {
     /**
      * 진행률 계산
      */
+    /** 진행률을 계산할 수 있다 */
     @Test
-    fun `진행률을 계산할 수 있다`() {
+    fun calculateProgress() {
         // Given
         val startTime = LocalDateTime.now().minusMinutes(10)
         val session = FocusSessionEntity(
@@ -162,8 +170,9 @@ class FocusSessionTest {
     /**
      * 리마인더 연결
      */
+    /** 리마인더와 연결된 세션을 생성할 수 있다 */
     @Test
-    fun `리마인더와 연결된 세션을 생성할 수 있다`() {
+    fun createSessionLinkedToReminder() {
         // Given
         val reminderId = 123L
 
@@ -182,8 +191,9 @@ class FocusSessionTest {
     /**
      * 세션 통계 계산
      */
+    /** 일별 집중 시간을 계산할 수 있다 */
     @Test
-    fun `일별 집중 시간을 계산할 수 있다`() {
+    fun calculateDailyFocusTime() {
         // Given
         val today = LocalDateTime.now()
         val sessions = listOf(
@@ -214,8 +224,9 @@ class FocusSessionTest {
         assertEquals(50, totalMinutes)
     }
 
+    /** Streak를 계산할 수 있다 */
     @Test
-    fun `Streak를 계산할 수 있다`() {
+    fun calculateStreak() {
         // Given
         val today = LocalDateTime.now()
         val sessions = listOf(
@@ -247,8 +258,9 @@ class FocusSessionTest {
         assertEquals(3, streak)
     }
 
+    /** 연속 기록이 없으면 Streak는 0 */
     @Test
-    fun `연속 기록이 없으면 Streak는 0`() {
+    fun streak_withNoConsecutiveDays_shouldBeZero() {
         // Given
         val today = LocalDateTime.now()
         val sessions = listOf(

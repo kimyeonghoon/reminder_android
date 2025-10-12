@@ -18,10 +18,10 @@ class RecurrenceSelectorTest {
     val composeTestRule = createComposeRule()
 
     /**
-     * 기본 UI 요소 확인 - 한글 텍스트
+     * 반복 설정 제목 한글 표시 확인
      */
     @Test
-    fun 반복_설정_제목이_한글로_표시된다() {
+    fun recurrenceSettingsTitleIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -41,10 +41,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 반복 패턴 드롭다운 - 한글 라벨
+     * 반복 드롭다운 라벨 한글 표시 확인
      */
     @Test
-    fun 반복_드롭다운_라벨이_한글로_표시된다() {
+    fun recurrenceDropdownLabelIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -64,10 +64,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 반복 안 함 - 기본값
+     * 반복 안 함이 기본값으로 표시되는지 확인
      */
     @Test
-    fun 반복_안_함이_기본값으로_표시된다() {
+    fun nonePatternIsDisplayedAsDefault() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -87,10 +87,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 매일 패턴 선택 시 한글 표시
+     * 매일 패턴 한글 표시 확인
      */
     @Test
-    fun 매일_패턴이_한글로_표시된다() {
+    fun dailyPatternIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -110,10 +110,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 매주 패턴 선택 시 한글 표시
+     * 매주 패턴 한글 표시 확인
      */
     @Test
-    fun 매주_패턴이_한글로_표시된다() {
+    fun weeklyPatternIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -133,10 +133,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 매월 패턴 선택 시 한글 표시
+     * 매월 패턴 한글 표시 확인
      */
     @Test
-    fun 매월_패턴이_한글로_표시된다() {
+    fun monthlyPatternIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -156,10 +156,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 매년 패턴 선택 시 한글 표시
+     * 매년 패턴 한글 표시 확인
      */
     @Test
-    fun 매년_패턴이_한글로_표시된다() {
+    fun yearlyPatternIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -179,10 +179,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 간격 설정 - 매일 단위 한글 표시
+     * 매일 간격 단위 한글 표시 확인
      */
     @Test
-    fun 매일_간격_단위가_한글로_표시된다() {
+    fun dailyIntervalUnitIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -203,10 +203,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 간격 설정 - 매주 단위 한글 표시
+     * 매주 간격 단위 한글 표시 확인
      */
     @Test
-    fun 매주_간격_단위가_한글로_표시된다() {
+    fun weeklyIntervalUnitIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -227,10 +227,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 간격 설정 - 매월 단위 한글 표시
+     * 매월 간격 단위 한글 표시 확인
      */
     @Test
-    fun 매월_간격_단위가_한글로_표시된다() {
+    fun monthlyIntervalUnitIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -251,10 +251,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 간격 설정 - 매년 단위 한글 표시
+     * 매년 간격 단위 한글 표시 확인
      */
     @Test
-    fun 매년_간격_단위가_한글로_표시된다() {
+    fun yearlyIntervalUnitIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -275,10 +275,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 반복 요일 라벨 - 한글 표시
+     * 매주 선택 시 반복 요일 라벨 한글 표시 확인
      */
     @Test
-    fun 매주_선택_시_반복_요일_라벨이_한글로_표시된다() {
+    fun recurrenceDaysLabelIsDisplayedInKoreanWhenWeeklySelected() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -298,10 +298,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 종료일 라벨 - 한글 표시
+     * 종료일 라벨 한글 표시 확인
      */
     @Test
-    fun 종료일_라벨이_한글로_표시된다() {
+    fun endDateLabelIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -321,10 +321,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 종료일 설정 버튼 - 한글 표시
+     * 종료일 설정 버튼 한글 표시 확인
      */
     @Test
-    fun 종료일_설정_버튼이_한글로_표시된다() {
+    fun setEndDateButtonIsDisplayedInKorean() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -344,10 +344,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 종료일 지우기 버튼 - 한글 표시
+     * 종료일 설정 후 지우기 버튼 한글 표시 확인
      */
     @Test
-    fun 종료일_설정_후_지우기_버튼이_한글로_표시된다() {
+    fun clearEndDateButtonIsDisplayedInKoreanAfterSettingEndDate() {
         // Given
         val endDate = java.time.LocalDateTime.now().plusDays(7)
         composeTestRule.setContent {
@@ -368,10 +368,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 반복 안 함 선택 시 간격 설정 숨김
+     * 반복 안 함 선택 시 간격 설정이 표시되지 않는지 확인
      */
     @Test
-    fun 반복_안_함_선택_시_간격_설정이_표시되지_않는다() {
+    fun intervalSettingsAreHiddenWhenNonePatternIsSelected() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(
@@ -391,10 +391,10 @@ class RecurrenceSelectorTest {
     }
 
     /**
-     * 반복 안 함 선택 시 종료일 설정 숨김
+     * 반복 안 함 선택 시 종료일 설정이 표시되지 않는지 확인
      */
     @Test
-    fun 반복_안_함_선택_시_종료일_설정이_표시되지_않는다() {
+    fun endDateSettingsAreHiddenWhenNonePatternIsSelected() {
         // Given
         composeTestRule.setContent {
             RecurrenceSelector(

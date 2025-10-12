@@ -28,10 +28,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 신규 추가 모드 - 제목
+     * 신규 추가 모드에서 제목 표시 확인
      */
     @Test
-    fun 신규_추가_모드에서_제목이_표시된다() {
+    fun titleIsDisplayedInNewAddMode() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -49,10 +49,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 수정 모드 - 제목
+     * 수정 모드에서 제목 표시 확인
      */
     @Test
-    fun 수정_모드에서_제목이_표시된다() {
+    fun titleIsDisplayedInEditMode() {
         // Given
         val viewModel = createMockViewModel()
         val reminder = ReminderEntity(
@@ -76,10 +76,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 제목 입력 필드 - 한글 라벨
+     * 제목 입력 필드 표시 확인
      */
     @Test
-    fun 제목_입력_필드가_표시된다() {
+    fun titleInputFieldIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -97,10 +97,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 설명 입력 필드 - 한글 라벨
+     * 설명 입력 필드 표시 확인
      */
     @Test
-    fun 설명_입력_필드가_표시된다() {
+    fun descriptionInputFieldIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -118,10 +118,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 날짜/시간 선택 버튼
+     * 날짜/시간 선택 버튼 표시 확인
      */
     @Test
-    fun 날짜_시간_선택_버튼이_표시된다() {
+    fun dateTimePickerButtonsAreDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -140,10 +140,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 우선순위 섹션 - 한글
+     * 우선순위 섹션 한글 표시 확인
      */
     @Test
-    fun 우선순위_섹션이_한글로_표시된다() {
+    fun prioritySectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -164,10 +164,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 중요도/긴급도 섹션 - 한글
+     * 중요도/긴급도 섹션 한글 표시 확인
      */
     @Test
-    fun 중요도_긴급도_섹션이_한글로_표시된다() {
+    fun importanceUrgencySectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -186,10 +186,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 카테고리 입력 필드
+     * 카테고리 입력 필드 표시 확인
      */
     @Test
-    fun 카테고리_입력_필드가_표시된다() {
+    fun categoryInputFieldIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -207,10 +207,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 태그 입력 필드
+     * 태그 입력 필드 표시 확인
      */
     @Test
-    fun 태그_입력_필드가_표시된다() {
+    fun tagInputFieldIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -228,10 +228,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 반복 설정 섹션
+     * 반복 설정 섹션 표시 확인
      */
     @Test
-    fun 반복_설정_섹션이_표시된다() {
+    fun recurrenceSettingsSectionIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -249,10 +249,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 음성 알림 스위치
+     * 음성 알림 스위치 표시 확인
      */
     @Test
-    fun 음성_알림_스위치가_표시된다() {
+    fun voiceAlertSwitchIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -270,10 +270,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 저장 버튼 - 신규 추가
+     * 신규 추가 모드에서 저장 버튼 텍스트 확인
      */
     @Test
-    fun 신규_추가_모드에서_저장_버튼_텍스트가_올바르다() {
+    fun saveButtonTextIsCorrectInNewAddMode() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -291,10 +291,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 저장 버튼 - 수정 모드
+     * 수정 모드에서 저장 버튼 텍스트 확인
      */
     @Test
-    fun 수정_모드에서_저장_버튼_텍스트가_올바르다() {
+    fun saveButtonTextIsCorrectInEditMode() {
         // Given
         val viewModel = createMockViewModel()
         val reminder = ReminderEntity(
@@ -318,10 +318,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 제목 없을 때 저장 버튼 비활성화
+     * 제목이 비어있을 때 저장 버튼 비활성화 확인
      */
     @Test
-    fun 제목이_비어있으면_저장_버튼이_비활성화된다() {
+    fun saveButtonIsDisabledWhenTitleIsEmpty() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -339,10 +339,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 제목 입력 시 저장 버튼 활성화
+     * 제목 입력 시 저장 버튼 활성화 확인
      */
     @Test
-    fun 제목을_입력하면_저장_버튼이_활성화된다() {
+    fun saveButtonIsEnabledWhenTitleIsEntered() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -363,10 +363,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 기존 데이터 표시 - 제목
+     * 수정 모드에서 기존 제목 표시 확인
      */
     @Test
-    fun 수정_모드에서_기존_제목이_표시된다() {
+    fun existingTitleIsDisplayedInEditMode() {
         // Given
         val viewModel = createMockViewModel()
         val reminder = ReminderEntity(
@@ -394,10 +394,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 스크롤 가능 확인
+     * 화면 스크롤 가능 확인
      */
     @Test
-    fun 화면을_스크롤할_수_있다() {
+    fun screenIsScrollable() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -415,10 +415,10 @@ class AddEditReminderScreenTest {
     }
 
     /**
-     * 간편 모드 - 고급 옵션 숨김
+     * 간편 모드에서 고급 옵션 숨김 확인
      */
     @Test
-    fun 간편_모드에서_고급_옵션이_숨겨진다() {
+    fun advancedOptionsAreHiddenInSimpleMode() {
         // Given
         val viewModel = createMockViewModel()
 

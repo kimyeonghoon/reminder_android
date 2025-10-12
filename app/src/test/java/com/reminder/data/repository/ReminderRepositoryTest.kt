@@ -28,29 +28,33 @@ class ReminderRepositoryTest {
         repository = ReminderRepository(dao)
     }
 
+    /** allReminders는 DAO의 getAllReminders를 호출한다 */
     @Test
-    fun `allReminders는 DAO의 getAllReminders를 호출한다`() = runTest {
+    fun testAllRemindersCallsDaoGetAllReminders() = runTest {
         // Repository 생성 시 이미 getAllReminders()가 호출됨
         // Then
         verify(dao).getAllReminders()
     }
 
+    /** activeReminders는 DAO의 getActiveReminders를 호출한다 */
     @Test
-    fun `activeReminders는 DAO의 getActiveReminders를 호출한다`() = runTest {
+    fun testActiveRemindersCallsDaoGetActiveReminders() = runTest {
         // Repository 생성 시 이미 getActiveReminders()가 호출됨
         // Then
         verify(dao).getActiveReminders()
     }
 
+    /** completedReminders는 DAO의 getCompletedReminders를 호출한다 */
     @Test
-    fun `completedReminders는 DAO의 getCompletedReminders를 호출한다`() = runTest {
+    fun testCompletedRemindersCallsDaoGetCompletedReminders() = runTest {
         // Repository 생성 시 이미 getCompletedReminders()가 호출됨
         // Then
         verify(dao).getCompletedReminders()
     }
 
+    /** getReminderById는 DAO에 ID를 전달하여 리마인더를 가져온다 */
     @Test
-    fun `getReminderById는 DAO에 ID를 전달하여 리마인더를 가져온다`() = runTest {
+    fun testGetReminderByIdPassesIdToDao() = runTest {
         // Given
         val reminderId = 1L
         val reminder = ReminderEntity(id = reminderId, title = "테스트 할일")
@@ -64,8 +68,9 @@ class ReminderRepositoryTest {
         assertEquals(reminder, result)
     }
 
+    /** getRemindersByCategory는 DAO에 카테고리를 전달하여 리마인더를 가져온다 */
     @Test
-    fun `getRemindersByCategory는 DAO에 카테고리를 전달하여 리마인더를 가져온다`() = runTest {
+    fun testGetRemindersByCategoryPassesCategoryToDao() = runTest {
         // Given
         val category = "업무"
         val reminders = listOf(
@@ -80,8 +85,9 @@ class ReminderRepositoryTest {
         verify(dao).getRemindersByCategory(category)
     }
 
+    /** insertReminder는 DAO에 리마인더를 삽입하고 ID를 반환한다 */
     @Test
-    fun `insertReminder는 DAO에 리마인더를 삽입하고 ID를 반환한다`() = runTest {
+    fun testInsertReminderInsertsReminderAndReturnsId() = runTest {
         // Given
         val reminder = ReminderEntity(title = "새 할일")
         val insertedId = 5L
@@ -95,8 +101,9 @@ class ReminderRepositoryTest {
         assertEquals(insertedId, result)
     }
 
+    /** updateReminder는 DAO에 리마인더 업데이트를 요청한다 */
     @Test
-    fun `updateReminder는 DAO에 리마인더 업데이트를 요청한다`() = runTest {
+    fun testUpdateReminderUpdatesReminderInDao() = runTest {
         // Given
         val reminder = ReminderEntity(id = 1, title = "수정된 할일")
 
@@ -107,8 +114,9 @@ class ReminderRepositoryTest {
         verify(dao).updateReminder(reminder)
     }
 
+    /** deleteReminder는 DAO에 리마인더 삭제를 요청한다 */
     @Test
-    fun `deleteReminder는 DAO에 리마인더 삭제를 요청한다`() = runTest {
+    fun testDeleteReminderDeletesReminderInDao() = runTest {
         // Given
         val reminder = ReminderEntity(id = 1, title = "삭제할 할일")
 
@@ -119,8 +127,9 @@ class ReminderRepositoryTest {
         verify(dao).deleteReminder(reminder)
     }
 
+    /** deleteReminderById는 DAO에 ID로 삭제를 요청한다 */
     @Test
-    fun `deleteReminderById는 DAO에 ID로 삭제를 요청한다`() = runTest {
+    fun testDeleteReminderByIdDeletesReminderByIdInDao() = runTest {
         // Given
         val reminderId = 1L
 
@@ -131,8 +140,9 @@ class ReminderRepositoryTest {
         verify(dao).deleteReminderById(reminderId)
     }
 
+    /** deleteAllCompletedReminders는 DAO에 완료된 리마인더 전체 삭제를 요청한다 */
     @Test
-    fun `deleteAllCompletedReminders는 DAO에 완료된 리마인더 전체 삭제를 요청한다`() = runTest {
+    fun testDeleteAllCompletedRemindersDeletesAllCompletedInDao() = runTest {
         // When
         repository.deleteAllCompletedReminders()
 
@@ -140,8 +150,9 @@ class ReminderRepositoryTest {
         verify(dao).deleteAllCompletedReminders()
     }
 
+    /** toggleReminderCompletion은 완료 상태를 반전시키고 업데이트 시간을 갱신한다 */
     @Test
-    fun `toggleReminderCompletion은 완료 상태를 반전시키고 업데이트 시간을 갱신한다`() = runTest {
+    fun testToggleReminderCompletionTogglesStatusAndUpdatesTime() = runTest {
         // Given
         val now = LocalDateTime.now()
         val reminder = ReminderEntity(
@@ -162,8 +173,9 @@ class ReminderRepositoryTest {
         })
     }
 
+    /** toggleReminderCompletion은 완료된 리마인더를 미완료로 변경한다 */
     @Test
-    fun `toggleReminderCompletion은 완료된 리마인더를 미완료로 변경한다`() = runTest {
+    fun testToggleReminderCompletionChangesCompletedToIncomplete() = runTest {
         // Given
         val reminder = ReminderEntity(
             id = 1,

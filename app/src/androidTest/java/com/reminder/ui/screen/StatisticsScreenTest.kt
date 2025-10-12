@@ -27,10 +27,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 전체 통계 카드 - 제목
+     * 전체 통계 카드 제목 표시 확인
      */
     @Test
-    fun 전체_통계_카드_제목이_표시된다() {
+    fun overallStatisticsCardTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -44,10 +44,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 전체 통계 카드 - 라벨들
+     * 전체 통계 라벨 한글 표시 확인
      */
     @Test
-    fun 전체_통계_라벨이_한글로_표시된다() {
+    fun overallStatisticsLabelsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -63,10 +63,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 전체 통계 카드 - 숫자 표시
+     * 전체 통계 숫자 표시 확인
      */
     @Test
-    fun 전체_통계_숫자가_표시된다() {
+    fun overallStatisticsNumbersAreDisplayed() {
         // Given
         val statistics = Statistics(
             totalReminders = 10,
@@ -86,10 +86,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 완료율 카드 - 제목
+     * 완료율 카드 제목 표시 확인
      */
     @Test
-    fun 완료율_카드_제목이_표시된다() {
+    fun completionRateCardTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -103,10 +103,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 완료율 카드 - 퍼센트 표시
+     * 완료율 퍼센트 표시 확인
      */
     @Test
-    fun 완료율_퍼센트가_표시된다() {
+    fun completionRatePercentageIsDisplayed() {
         // Given
         val statistics = Statistics(
             totalReminders = 10,
@@ -125,10 +125,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 완료 이력 달력 버튼
+     * 완료 이력 달력 버튼 표시 확인
      */
     @Test
-    fun 완료_이력_달력_버튼이_표시된다() {
+    fun completionHistoryCalendarButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -142,10 +142,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 완료 패턴 분석 버튼
+     * 완료 패턴 분석 버튼 표시 확인
      */
     @Test
-    fun 완료_패턴_분석_버튼이_표시된다() {
+    fun completionPatternAnalysisButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -159,10 +159,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 우선순위별 분포 - 제목
+     * 우선순위별 분포 제목 표시 확인
      */
     @Test
-    fun 우선순위별_분포_제목이_표시된다() {
+    fun priorityDistributionTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -176,10 +176,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 우선순위별 분포 - 데이터 없을 때
+     * 우선순위별 분포 데이터 없을 때 메시지 표시 확인
      */
     @Test
-    fun 우선순위별_분포_데이터_없을_때_메시지가_표시된다() {
+    fun priorityDistributionNoDataMessageIsDisplayed() {
         // Given
         val statistics = Statistics(totalReminders = 0)
         val viewModel = createMockViewModel(statistics)
@@ -194,10 +194,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 카테고리별 분포 - 제목
+     * 카테고리별 분포 제목 표시 확인
      */
     @Test
-    fun 카테고리별_분포_제목이_표시된다() {
+    fun categoryDistributionTitleIsDisplayed() {
         // Given
         val statistics = Statistics(
             categoryDistribution = mapOf("업무" to 5, "개인" to 3)
@@ -214,10 +214,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 카테고리별 분포 - 데이터 없을 때 숨김
+     * 카테고리별 분포 데이터 없을 때 숨김 확인
      */
     @Test
-    fun 카테고리별_분포_데이터_없을_때_숨겨진다() {
+    fun categoryDistributionIsHiddenWhenNoData() {
         // Given
         val statistics = Statistics(categoryDistribution = emptyMap())
         val viewModel = createMockViewModel(statistics)
@@ -232,10 +232,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 주간 트렌드 - 제목
+     * 주간 트렌드 제목 한글 표시 확인
      */
     @Test
-    fun 주간_트렌드_제목이_한글로_표시된다() {
+    fun weeklyTrendTitleIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -249,10 +249,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 주간 트렌드 - 데이터 없을 때
+     * 주간 트렌드 데이터 없을 때 메시지 표시 확인
      */
     @Test
-    fun 주간_트렌드_데이터_없을_때_메시지가_표시된다() {
+    fun weeklyTrendNoDataMessageIsDisplayed() {
         // Given
         val statistics = Statistics(weeklyCompleted = listOf(0, 0, 0, 0, 0, 0, 0))
         val viewModel = createMockViewModel(statistics)
@@ -267,10 +267,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 월간 트렌드 - 제목
+     * 월간 트렌드 제목 한글 표시 확인
      */
     @Test
-    fun 월간_트렌드_제목이_한글로_표시된다() {
+    fun monthlyTrendTitleIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -284,10 +284,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 월간 트렌드 - 데이터 없을 때
+     * 월간 트렌드 데이터 없을 때 메시지 표시 확인
      */
     @Test
-    fun 월간_트렌드_데이터_없을_때_메시지가_표시된다() {
+    fun monthlyTrendNoDataMessageIsDisplayed() {
         // Given
         val statistics = Statistics(monthlyCompleted = List(30) { 0 })
         val viewModel = createMockViewModel(statistics)
@@ -302,10 +302,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 스크롤 가능 확인
+     * 화면 스크롤 가능 확인
      */
     @Test
-    fun 화면을_스크롤할_수_있다() {
+    fun screenIsScrollable() {
         // Given
         val statistics = Statistics(
             totalReminders = 10,
@@ -326,10 +326,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 완료 이력 버튼 클릭
+     * 완료 이력 버튼 클릭 시 콜백 호출 확인
      */
     @Test
-    fun 완료_이력_버튼_클릭_시_콜백이_호출된다() {
+    fun completionHistoryButtonClickInvokesCallback() {
         // Given
         val viewModel = createMockViewModel()
         var clicked = false
@@ -349,10 +349,10 @@ class StatisticsScreenTest {
     }
 
     /**
-     * 패턴 분석 버튼 클릭
+     * 패턴 분석 버튼 클릭 시 콜백 호출 확인
      */
     @Test
-    fun 패턴_분석_버튼_클릭_시_콜백이_호출된다() {
+    fun patternAnalysisButtonClickInvokesCallback() {
         // Given
         val viewModel = createMockViewModel()
         var clicked = false

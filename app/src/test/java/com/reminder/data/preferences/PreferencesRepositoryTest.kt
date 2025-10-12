@@ -6,8 +6,9 @@ import org.junit.Test
 
 class PreferencesRepositoryTest {
 
+    /** UserPreferences 초기값은 시스템 테마와 동적 컬러 활성화이다 */
     @Test
-    fun `UserPreferences 초기값은 시스템 테마와 동적 컬러 활성화이다`() {
+    fun userPreferencesDefaultValuesAreSystemThemeAndDynamicColorEnabled() {
         // Given & When
         val preferences = UserPreferences()
 
@@ -16,8 +17,9 @@ class PreferencesRepositoryTest {
         assertTrue(preferences.dynamicColor)
     }
 
+    /** ThemeMode의 모든 값이 정의되어 있다 */
     @Test
-    fun `ThemeMode의 모든 값이 정의되어 있다`() {
+    fun themeModeHasAllValuesDefined() {
         // When
         val themeModes = ThemeMode.values()
 
@@ -28,8 +30,9 @@ class PreferencesRepositoryTest {
         assertTrue(themeModes.contains(ThemeMode.SYSTEM))
     }
 
+    /** UserPreferences copy로 themeMode를 변경할 수 있다 */
     @Test
-    fun `UserPreferences copy로 themeMode를 변경할 수 있다`() {
+    fun userPreferencesCopyCanChangeThemeMode() {
         // Given
         val preferences = UserPreferences()
 
@@ -41,8 +44,9 @@ class PreferencesRepositoryTest {
         assertTrue(updated.dynamicColor)
     }
 
+    /** UserPreferences copy로 dynamicColor를 변경할 수 있다 */
     @Test
-    fun `UserPreferences copy로 dynamicColor를 변경할 수 있다`() {
+    fun userPreferencesCopyCanChangeDynamicColor() {
         // Given
         val preferences = UserPreferences()
 
@@ -54,8 +58,9 @@ class PreferencesRepositoryTest {
         assertFalse(updated.dynamicColor)
     }
 
+    /** FontSize의 모든 값이 정의되어 있다 */
     @Test
-    fun `FontSize의 모든 값이 정의되어 있다`() {
+    fun fontSizeHasAllValuesDefined() {
         // When
         val fontSizes = FontSize.values()
 
@@ -67,8 +72,9 @@ class PreferencesRepositoryTest {
         assertTrue(fontSizes.contains(FontSize.EXTRA_LARGE))
     }
 
+    /** UserPreferences 초기 fontSize는 NORMAL이다 */
     @Test
-    fun `UserPreferences 초기 fontSize는 NORMAL이다`() {
+    fun userPreferencesDefaultFontSizeIsNormal() {
         // Given & When
         val preferences = UserPreferences()
 
@@ -76,8 +82,9 @@ class PreferencesRepositoryTest {
         assertEquals(FontSize.NORMAL, preferences.fontSize)
     }
 
+    /** UserPreferences copy로 fontSize를 변경할 수 있다 */
     @Test
-    fun `UserPreferences copy로 fontSize를 변경할 수 있다`() {
+    fun userPreferencesCopyCanChangeFontSize() {
         // Given
         val preferences = UserPreferences()
 
@@ -89,8 +96,9 @@ class PreferencesRepositoryTest {
         assertEquals(ThemeMode.SYSTEM, updated.themeMode)
     }
 
+    /** UserPreferences 초기 simpleMode는 false이다 */
     @Test
-    fun `UserPreferences 초기 simpleMode는 false이다`() {
+    fun userPreferencesDefaultSimpleModeIsFalse() {
         // Given & When
         val preferences = UserPreferences()
 
@@ -98,8 +106,9 @@ class PreferencesRepositoryTest {
         assertFalse(preferences.simpleMode)
     }
 
+    /** UserPreferences copy로 simpleMode를 변경할 수 있다 */
     @Test
-    fun `UserPreferences copy로 simpleMode를 변경할 수 있다`() {
+    fun userPreferencesCopyCanChangeSimpleMode() {
         // Given
         val preferences = UserPreferences()
 

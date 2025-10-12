@@ -10,8 +10,11 @@ import java.time.LocalDateTime
  */
 class RecurrenceRuleTest {
 
+    /**
+     * 반복 없음 시 다음 발생 없음
+     */
     @Test
-    fun `반복 없음 시 다음 발생 없음`() {
+    fun noRecurrence_returnsNoNextOccurrence() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.NONE)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0)
@@ -23,8 +26,11 @@ class RecurrenceRuleTest {
         assertNull(next)
     }
 
+    /**
+     * 매일 반복 - 다음 날짜 계산
+     */
     @Test
-    fun `매일 반복 - 다음 날짜 계산`() {
+    fun dailyRecurrence_calculatesNextDay() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.DAILY, interval = 1)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0)
@@ -36,8 +42,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 9, 10, 0), next)
     }
 
+    /**
+     * 2일마다 반복
+     */
     @Test
-    fun `2일마다 반복`() {
+    fun everyTwoDays_calculatesCorrectly() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.DAILY, interval = 2)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0)
@@ -49,8 +58,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 10, 10, 0), next)
     }
 
+    /**
+     * 매주 반복 - 요일 지정 없음
+     */
     @Test
-    fun `매주 반복 - 요일 지정 없음`() {
+    fun weeklyRecurrence_withoutDayOfWeek() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.WEEKLY, interval = 1)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0) // 수요일
@@ -62,8 +74,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 15, 10, 0), next)
     }
 
+    /**
+     * 매주 월수금 반복
+     */
     @Test
-    fun `매주 월수금 반복`() {
+    fun weeklyRecurrence_onMondayWednesdayFriday() {
         // Given
         val rule = RecurrenceRule(
             pattern = RecurrencePattern.WEEKLY,
@@ -80,8 +95,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 10, 10, 0), next)
     }
 
+    /**
+     * 매주 월수금 반복 - 금요일에서 다음은 월요일
+     */
     @Test
-    fun `매주 월수금 반복 - 금요일에서 다음은 월요일`() {
+    fun weeklyRecurrence_fromFridayToMonday() {
         // Given
         val rule = RecurrenceRule(
             pattern = RecurrencePattern.WEEKLY,
@@ -98,8 +116,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 13, 10, 0), next)
     }
 
+    /**
+     * 매월 반복
+     */
     @Test
-    fun `매월 반복`() {
+    fun monthlyRecurrence_calculatesNextMonth() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.MONTHLY, interval = 1)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0)
@@ -111,8 +132,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 11, 8, 10, 0), next)
     }
 
+    /**
+     * 매년 반복
+     */
     @Test
-    fun `매년 반복`() {
+    fun yearlyRecurrence_calculatesNextYear() {
         // Given
         val rule = RecurrenceRule(pattern = RecurrencePattern.YEARLY, interval = 1)
         val from = LocalDateTime.of(2025, 10, 8, 10, 0)
@@ -124,8 +148,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2026, 10, 8, 10, 0), next)
     }
 
+    /**
+     * 종료일 이후에는 다음 발생 없음
+     */
     @Test
-    fun `종료일 이후에는 다음 발생 없음`() {
+    fun afterEndDate_returnsNoNextOccurrence() {
         // Given
         val endDate = LocalDateTime.of(2025, 10, 10, 0, 0)
         val rule = RecurrenceRule(
@@ -142,8 +169,11 @@ class RecurrenceRuleTest {
         assertNull(next)
     }
 
+    /**
+     * 종료일 이전에는 다음 발생 계산
+     */
     @Test
-    fun `종료일 이전에는 다음 발생 계산`() {
+    fun beforeEndDate_calculatesNextOccurrence() {
         // Given
         val endDate = LocalDateTime.of(2025, 10, 15, 0, 0)
         val rule = RecurrenceRule(
@@ -160,8 +190,11 @@ class RecurrenceRuleTest {
         assertEquals(LocalDateTime.of(2025, 10, 9, 10, 0), next)
     }
 
+    /**
+     * 종료일 직전 다음 발생이 종료일 이후면 null 반환
+     */
     @Test
-    fun `종료일 직전 다음 발생이 종료일 이후면 null 반환`() {
+    fun nextOccurrenceAfterEndDate_returnsNull() {
         // Given
         val endDate = LocalDateTime.of(2025, 10, 9, 0, 0)
         val rule = RecurrenceRule(

@@ -83,8 +83,9 @@ class GoalTrackerTest {
         )
     }
 
+    /** 일일 목표 진행률 계산 - 목표 달성 */
     @Test
-    fun `일일 목표 진행률 계산 - 목표 달성`() {
+    fun calculateDailyGoalProgress_Achieved() {
         // Given
         val goal = Goal(
             id = 1,
@@ -106,8 +107,9 @@ class GoalTrackerTest {
         assertEquals(0, progress.remainingDays)
     }
 
+    /** 일일 목표 진행률 계산 - 목표 미달성 */
     @Test
-    fun `일일 목표 진행률 계산 - 목표 미달성`() {
+    fun calculateDailyGoalProgress_NotAchieved() {
         // Given
         val goal = Goal(
             id = 1,
@@ -128,8 +130,9 @@ class GoalTrackerTest {
         assertFalse(progress.isAchieved)
     }
 
+    /** 주간 목표 진행률 계산 */
     @Test
-    fun `주간 목표 진행률 계산`() {
+    fun calculateWeeklyGoalProgress() {
         // Given
         val startOfWeek = LocalDate.now().minusDays(6)
         val endOfWeek = LocalDate.now()
@@ -152,8 +155,9 @@ class GoalTrackerTest {
         assertTrue(progress.isAchieved)
     }
 
+    /** 월간 목표 진행률 계산 */
     @Test
-    fun `월간 목표 진행률 계산`() {
+    fun calculateMonthlyGoalProgress() {
         // Given
         val startOfMonth = LocalDate.now().withDayOfMonth(1)
         val endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())
@@ -176,8 +180,9 @@ class GoalTrackerTest {
         assertFalse(progress.isAchieved)
     }
 
+    /** 카테고리별 목표 진행률 - 업무 카테고리 */
     @Test
-    fun `카테고리별 목표 진행률 - 업무 카테고리`() {
+    fun calculateGoalProgressByCategory_Work() {
         // Given
         val goal = Goal(
             id = 4,
@@ -198,8 +203,9 @@ class GoalTrackerTest {
         assertTrue(progress.isAchieved)
     }
 
+    /** 목표 초과 달성 케이스 */
     @Test
-    fun `목표 초과 달성 케이스`() {
+    fun goalExceeded() {
         // Given
         val goal = Goal(
             id = 5,
@@ -220,8 +226,9 @@ class GoalTrackerTest {
         assertTrue(progress.isAchieved)
     }
 
+    /** 남은 일수 계산 */
     @Test
-    fun `남은 일수 계산`() {
+    fun calculateRemainingDays() {
         // Given
         val goal = Goal(
             id = 6,
@@ -239,8 +246,9 @@ class GoalTrackerTest {
         assertEquals(3, progress.remainingDays)
     }
 
+    /** 목표 기간 만료 케이스 */
     @Test
-    fun `목표 기간 만료 케이스`() {
+    fun goalPeriodExpired() {
         // Given
         val goal = Goal(
             id = 7,

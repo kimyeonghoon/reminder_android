@@ -9,8 +9,9 @@ import java.time.LocalDateTime
  */
 class SubTaskTest {
 
+    /** SubTask 생성 시 기본값이 올바르게 설정된다 */
     @Test
-    fun `SubTask 생성 시 기본값이 올바르게 설정된다`() {
+    fun subTaskCreationSetsDefaultValuesCorrectly() {
         // Given
         val reminderId = 1L
         val title = "서브 할 일"
@@ -29,8 +30,9 @@ class SubTaskTest {
         assertNotNull(subTask.createdAt)
     }
 
+    /** SubTask 완료 상태 토글이 올바르게 동작한다 */
     @Test
-    fun `SubTask 완료 상태 토글이 올바르게 동작한다`() {
+    fun subTaskCompletionToggleWorksCorrectly() {
         // Given
         val subTask = SubTask(
             reminderId = 1L,
@@ -45,8 +47,9 @@ class SubTaskTest {
         assertEquals(!originalStatus, updatedSubTask.isCompleted)
     }
 
+    /** SubTask position 설정이 올바르게 동작한다 */
     @Test
-    fun `SubTask position 설정이 올바르게 동작한다`() {
+    fun subTaskPositionSettingWorksCorrectly() {
         // Given
         val position = 3
 
@@ -61,8 +64,9 @@ class SubTaskTest {
         assertEquals(position, subTask.position)
     }
 
+    /** 동일한 reminderId를 가진 여러 SubTask를 생성할 수 있다 */
     @Test
-    fun `동일한 reminderId를 가진 여러 SubTask를 생성할 수 있다`() {
+    fun canCreateMultipleSubTasksWithSameReminderId() {
         // Given
         val reminderId = 1L
 

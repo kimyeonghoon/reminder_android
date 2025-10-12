@@ -56,11 +56,9 @@ class FocusModeViewModelTest {
         Dispatchers.resetMain()
     }
 
-    /**
-     * 초기 상태 확인
-     */
+    /** 초기 상태 확인 */
     @Test
-    fun `초기 상태는 IDLE이다`() = runTest {
+    fun initialState_shouldBeIdle() = runTest {
         // When
         val state = viewModel.focusState.first()
 
@@ -68,12 +66,9 @@ class FocusModeViewModelTest {
         assertEquals(FocusState.IDLE, state)
     }
 
-    /**
-     * 세션 시작
-     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
-     */
+    /** 세션 시작 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */
     @Test
-    fun `포커스 세션을 시작할 수 있다`() = runTest {
+    fun startFocusSession() = runTest {
         // Given
         val targetMinutes = 25
         val focusType = FocusType.DEEP_WORK
@@ -96,12 +91,9 @@ class FocusModeViewModelTest {
         assertEquals(targetMinutes * 60, viewModel.remainingSeconds.first()) // 타이머 초기값 확인
     }
 
-    /**
-     * 세션 완료
-     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
-     */
+    /** 세션 완료 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */
     @Test
-    fun `포커스 세션을 완료할 수 있다`() = runTest {
+    fun completeFocusSession() = runTest {
         // Given
         val session = FocusSessionEntity(
             id = 1L,
@@ -122,12 +114,9 @@ class FocusModeViewModelTest {
         verify(repository).updateSession(argThat { session -> session.isCompleted })
     }
 
-    /**
-     * 세션 중단
-     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
-     */
+    /** 세션 중단 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */
     @Test
-    fun `포커스 세션을 중단할 수 있다`() = runTest {
+    fun interruptFocusSession() = runTest {
         // Given
         val session = FocusSessionEntity(
             id = 1L,
@@ -148,12 +137,9 @@ class FocusModeViewModelTest {
         verify(repository).updateSession(argThat { session -> session.isInterrupted })
     }
 
-    /**
-     * 리마인더와 연결된 세션 시작
-     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
-     */
+    /** 리마인더와 연결된 세션 시작 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */
     @Test
-    fun `리마인더와 연결하여 세션을 시작할 수 있다`() = runTest {
+    fun startFocusSessionForReminder() = runTest {
         // Given
         val reminderId = 123L
         val session = FocusSessionEntity(
@@ -176,11 +162,9 @@ class FocusModeViewModelTest {
         assertEquals(50 * 60, viewModel.remainingSeconds.first()) // 타이머 초기값 확인
     }
 
-    /**
-     * 모든 세션 조회 - StateFlow는 setup()에서 초기화되므로 데이터 검증 생략
-     */
+    /** 모든 세션 조회 - StateFlow는 setup()에서 초기화되므로 데이터 검증 생략 */
     @Test
-    fun `모든 세션 목록을 조회할 수 있다`() = runTest {
+    fun getAllSessions() = runTest {
         // When
         val result = viewModel.allSessions.first()
 
@@ -188,11 +172,9 @@ class FocusModeViewModelTest {
         assertNotNull(result) // StateFlow가 초기화되었는지만 확인
     }
 
-    /**
-     * 완료된 세션만 조회 - StateFlow는 setup()에서 초기화되므로 데이터 검증 생략
-     */
+    /** 완료된 세션만 조회 - StateFlow는 setup()에서 초기화되므로 데이터 검증 생략 */
     @Test
-    fun `완료된 세션만 조회할 수 있다`() = runTest {
+    fun getCompletedSessions() = runTest {
         // When
         val result = viewModel.completedSessions.first()
 
@@ -200,11 +182,9 @@ class FocusModeViewModelTest {
         assertNotNull(result) // StateFlow가 초기화되었는지만 확인
     }
 
-    /**
-     * 오늘의 총 집중 시간 조회
-     */
+    /** 오늘의 총 집중 시간 조회 */
     @Test
-    fun `오늘의 총 집중 시간을 조회할 수 있다`() = runTest {
+    fun getTodayTotalFocusTime() = runTest {
         // Given
         val today = LocalDateTime.now()
         val sessions = listOf(
@@ -228,11 +208,9 @@ class FocusModeViewModelTest {
         assertEquals(50, totalMinutes)
     }
 
-    /**
-     * Streak 조회 - StateFlow는 setup()에서 초기화되므로 기본값 검증
-     */
+    /** Streak 조회 - StateFlow는 setup()에서 초기화되므로 기본값 검증 */
     @Test
-    fun `연속 기록 Streak를 조회할 수 있다`() = runTest {
+    fun getCurrentStreak() = runTest {
         // When
         val streak = viewModel.getCurrentStreak().first()
 
@@ -240,11 +218,9 @@ class FocusModeViewModelTest {
         assertEquals(0, streak) // 빈 세션 리스트이므로 Streak는 0
     }
 
-    /**
-     * 세션 타이머 카운트다운
-     */
+    /** 세션 타이머 카운트다운 */
     @Test
-    fun `세션 진행 중 남은 시간이 감소한다`() = runTest {
+    fun remainingTime_duringSession_shouldDecrease() = runTest {
         // Given
         val session = FocusSessionEntity(
             id = 1L,
@@ -260,11 +236,9 @@ class FocusModeViewModelTest {
         assertTrue(remainingMinutes in 14..16) // 약간의 시간 오차 허용
     }
 
-    /**
-     * 세션 진행률 계산
-     */
+    /** 세션 진행률 계산 */
     @Test
-    fun `세션 진행률을 계산할 수 있다`() = runTest {
+    fun calculateSessionProgress() = runTest {
         // Given
         val session = FocusSessionEntity(
             id = 1L,
@@ -280,11 +254,9 @@ class FocusModeViewModelTest {
         assertTrue(progress in 38..42) // 40% 전후 (10/25 * 100)
     }
 
-    /**
-     * v1.63.1: 타이머 카운트다운 테스트
-     */
+    /** v1.63.1: 타이머 카운트다운 테스트 */
     @Test
-    fun `타이머가 1초마다 카운트다운 된다`() = runTest {
+    fun timer_shouldCountdownEverySecond() = runTest {
         // Given
         val targetMinutes = 25
         val session = FocusSessionEntity(
@@ -306,11 +278,9 @@ class FocusModeViewModelTest {
         assertEquals(initialSeconds - 3, viewModel.remainingSeconds.first())
     }
 
-    /**
-     * v1.63.1: 타이머 자동 완료 테스트
-     */
+    /** v1.63.1: 타이머 자동 완료 테스트 */
     @Test
-    fun `타이머가 0에 도달하면 세션이 자동 완료된다`() = runTest {
+    fun timer_whenReachesZero_shouldAutoCompleteSession() = runTest {
         // Given
         val targetMinutes = 1 // 1분으로 짧게 설정
         val session = FocusSessionEntity(

@@ -30,10 +30,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 기본 UI 요소 검증 - 한글
+     * 홈 화면 제목 표시 확인
      */
     @Test
-    fun 홈_화면_제목이_표시된다() {
+    fun homeScreenTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -51,10 +51,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 빈 상태 메시지 - 한글
+     * 리마인더가 없을 때 빈 상태 메시지 표시 확인
      */
     @Test
-    fun 리마인더가_없을_때_빈_상태_메시지가_표시된다() {
+    fun emptyStateMessageIsDisplayedWhenNoReminders() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -72,10 +72,10 @@ class HomeScreenTest {
     }
 
     /**
-     * FAB 버튼 - 한글
+     * 리마인더 추가 버튼 표시 확인
      */
     @Test
-    fun 리마인더_추가_버튼이_표시된다() {
+    fun addReminderButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -93,10 +93,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 필터 버튼 - 아이콘으로 검증
+     * 필터 버튼 표시 확인
      */
     @Test
-    fun 필터_버튼이_표시된다() {
+    fun filterButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -114,10 +114,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 검색 버튼 - 아이콘으로 검증
+     * 검색 버튼 표시 확인
      */
     @Test
-    fun 검색_버튼이_표시된다() {
+    fun searchButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -135,10 +135,10 @@ class HomeScreenTest {
     }
 
     /**
-     * Eisenhower Matrix 버튼
+     * Eisenhower Matrix 버튼 표시 확인
      */
     @Test
-    fun 아이젠하워_매트릭스_버튼이_표시된다() {
+    fun eisenhowerMatrixButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -156,10 +156,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 설정 버튼
+     * 설정 버튼 표시 확인
      */
     @Test
-    fun 설정_버튼이_표시된다() {
+    fun settingsButtonIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -177,10 +177,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 리마인더 목록 표시
+     * 리마인더가 있을 때 목록 표시 확인
      */
     @Test
-    fun 리마인더가_있을_때_목록이_표시된다() {
+    fun reminderListIsDisplayedWhenRemindersExist() {
         // Given
         val viewModel = mock(ReminderViewModel::class.java)
         val reminder = ReminderEntity(
@@ -210,10 +210,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 검색 기능
+     * 검색 버튼 클릭 시 검색바 표시 확인
      */
     @Test
-    fun 검색_버튼_클릭_시_검색바가_표시된다() {
+    fun searchBarIsDisplayedWhenSearchButtonClicked() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -233,10 +233,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 간편 모드 - FAB 크기
+     * 간편 모드에서 큰 FAB 표시 확인
      */
     @Test
-    fun 간편_모드에서_큰_FAB이_표시된다() {
+    fun largeFabIsDisplayedInSimpleMode() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -255,10 +255,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 간편 모드 - 필터/검색 숨김
+     * 간편 모드에서 필터와 검색 숨김 확인
      */
     @Test
-    fun 간편_모드에서_필터와_검색이_숨겨진다() {
+    fun filterAndSearchAreHiddenInSimpleMode() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -279,10 +279,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 정렬 드롭다운 - 한글
+     * 정렬 옵션 한글 표시 확인
      */
     @Test
-    fun 정렬_옵션이_한글로_표시된다() {
+    fun sortOptionsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -301,10 +301,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 우선순위 필터 칩 - 한글
+     * 우선순위 필터 칩 한글 표시 확인
      */
     @Test
-    fun 우선순위_필터_칩이_한글로_표시된다() {
+    fun priorityFilterChipsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -325,10 +325,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 날짜 필터 칩 - 한글
+     * 날짜 필터 칩 한글 표시 확인
      */
     @Test
-    fun 날짜_필터_칩이_한글로_표시된다() {
+    fun dateFilterChipsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
 
@@ -347,10 +347,10 @@ class HomeScreenTest {
     }
 
     /**
-     * 검색 결과 없음 메시지
+     * 검색 결과가 없을 때 메시지 표시 확인
      */
     @Test
-    fun 검색_결과가_없을_때_메시지가_표시된다() {
+    fun noSearchResultsMessageIsDisplayed() {
         // Given
         val viewModel = mock(ReminderViewModel::class.java)
         `when`(viewModel.activeReminders).thenReturn(MutableStateFlow(emptyList()))

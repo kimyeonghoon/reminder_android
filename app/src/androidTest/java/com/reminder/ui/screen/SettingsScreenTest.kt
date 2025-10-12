@@ -32,10 +32,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 기본 UI 요소 - 제목
+     * 설정 화면 제목 표시 확인
      */
     @Test
-    fun 설정_화면_제목이_표시된다() {
+    fun settingsScreenTitleIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -53,10 +53,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 테마 섹션 - 한글
+     * 테마 섹션 한글 표시 확인
      */
     @Test
-    fun 테마_섹션이_한글로_표시된다() {
+    fun themeSectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -74,10 +74,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 테마 모드 옵션 - 한글
+     * 테마 모드 옵션 한글 표시 확인
      */
     @Test
-    fun 테마_모드_옵션이_한글로_표시된다() {
+    fun themeModeOptionsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -95,10 +95,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 테마 색상 섹션
+     * 테마 색상 섹션 표시 확인
      */
     @Test
-    fun 테마_색상_섹션이_표시된다() {
+    fun themeColorSectionIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -116,10 +116,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 글씨 크기 섹션 - 한글
+     * 글씨 크기 섹션 한글 표시 확인
      */
     @Test
-    fun 글씨_크기_섹션이_한글로_표시된다() {
+    fun fontSizeSectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -137,10 +137,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 간편 모드 섹션 - 한글
+     * 간편 모드 섹션 한글 표시 확인
      */
     @Test
-    fun 간편_모드_섹션이_한글로_표시된다() {
+    fun simpleModeSectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -159,10 +159,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 알림 설정 섹션 - 한글
+     * 알림 설정 섹션 한글 표시 확인
      */
     @Test
-    fun 알림_설정_섹션이_한글로_표시된다() {
+    fun notificationSettingsSectionIsDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -180,10 +180,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 알림 옵션 - 한글
+     * 알림 옵션 한글 표시 확인
      */
     @Test
-    fun 알림_옵션이_한글로_표시된다() {
+    fun notificationOptionsAreDisplayedInKorean() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -202,10 +202,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 배지 설정 섹션
+     * 배지 설정 섹션 표시 확인
      */
     @Test
-    fun 배지_설정_섹션이_표시된다() {
+    fun badgeSettingsSectionIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -223,10 +223,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 백업/복원 섹션
+     * 백업/복원 섹션 표시 확인
      */
     @Test
-    fun 백업_복원_섹션이_표시된다() {
+    fun backupRestoreSectionIsDisplayed() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -244,10 +244,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 스크롤 가능 확인
+     * 설정 화면 스크롤 가능 확인
      */
     @Test
-    fun 설정_화면을_스크롤할_수_있다() {
+    fun settingsScreenIsScrollable() {
         // Given
         val viewModel = createMockViewModel()
         val backupManager = createMockBackupManager()
@@ -266,10 +266,10 @@ class SettingsScreenTest {
     }
 
     /**
-     * 간편 모드 - 고급 기능 숨김
+     * 간편 모드에서 고급 기능 숨김 확인
      */
     @Test
-    fun 간편_모드에서_고급_기능이_숨겨진다() {
+    fun advancedFeaturesAreHiddenInSimpleMode() {
         // Given
         val viewModel = mock(SettingsViewModel::class.java)
         val simplePrefs = UserPreferences(simpleMode = true)
