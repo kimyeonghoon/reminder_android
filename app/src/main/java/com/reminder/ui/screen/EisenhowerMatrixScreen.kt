@@ -71,7 +71,7 @@ fun EisenhowerMatrixScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Eisenhower Matrix") },
+                title = { Text("아이젠하워 매트릭스") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "뒤로가기")
@@ -186,7 +186,7 @@ private fun InfoCard() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "생산성 향상을 위한 Eisenhower Matrix",
+                text = "생산성 향상을 위한 아이젠하워 매트릭스",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer

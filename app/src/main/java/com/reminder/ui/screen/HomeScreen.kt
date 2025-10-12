@@ -136,7 +136,7 @@ fun HomeScreen(
                             onSearch = { },
                             expanded = true,
                             onExpandedChange = { if (!it) showSearchBar = false },
-                            placeholder = { Text("Search reminders...") }
+                            placeholder = { Text("리마인더 검색...") }
                         )
                     },
                     expanded = true,
@@ -186,7 +186,7 @@ fun HomeScreen(
                 )
             } else {
                 TopAppBar(
-                    title = { Text("Reminder") },
+                    title = { Text("리마인더") },
                     actions = {
                         // 간편 모드에서는 필터와 검색 숨기기
                         if (!simpleMode) {
@@ -298,7 +298,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (searchQuery.isNotBlank()) "No reminders found" else "No active reminders",
+                        text = if (searchQuery.isNotBlank()) "리마인더를 찾을 수 없습니다" else "할 일이 없습니다",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
