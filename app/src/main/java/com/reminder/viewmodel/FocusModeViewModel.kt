@@ -10,9 +10,10 @@ import com.reminder.data.entity.FocusType
 import com.reminder.data.repository.DndRepository
 import com.reminder.data.repository.FocusSessionRepository
 import com.reminder.domain.focus.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 /**
  * v1.51.0: 포커스 모드 ViewModel
@@ -33,6 +34,13 @@ class FocusModeViewModel(
     private val _focusState = MutableStateFlow(FocusState.IDLE)
     val focusState: StateFlow<FocusState> = _focusState.asStateFlow()
 
+    // 남은 시간 (초)
+    private val _remainingSeconds = MutableStateFlow(0)
+    val remainingSeconds: StateFlow<Int> = _remainingSeconds.asStateFlow()
+
+    // 타이머 Job
+    private var timerJob: Job? = null
+
     // 모든 세션 목록
     val allSessions: StateFlow<List<FocusSessionEntity>> = repository.getAllSessions()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -52,6 +60,7 @@ class FocusModeViewModel(
     /**
      * 포커스 세션 시작
      * v1.54.0: DND 자동 활성화
+     * v1.63.1: 타이머 카운트다운 추가
      */
     fun startFocusSession(
         targetMinutes: Int,
@@ -70,9 +79,13 @@ class FocusModeViewModel(
 
             _currentSession.value = insertedSession
             _focusState.value = FocusState.ACTIVE
+            _remainingSeconds.value = targetMinutes * 60
 
             // v1.54.0: DND 자동 활성화
             dndRepository?.enableDnd()
+
+            // v1.63.1: 타이머 시작
+            startTimer()
         }
     }
 
@@ -90,15 +103,19 @@ class FocusModeViewModel(
     /**
      * 세션 완료
      * v1.54.0: DND 자동 비활성화
+     * v1.63.1: 타이머 중지
      */
     fun completeSession() {
         viewModelScope.launch {
             _currentSession.value?.let { session ->
+                stopTimer()
+
                 val completedSession = session.complete()
                 repository.updateSession(completedSession)
 
                 _currentSession.value = completedSession
                 _focusState.value = FocusState.COMPLETED
+                _remainingSeconds.value = 0
 
                 // v1.54.0: DND 자동 비활성화
                 dndRepository?.disableDnd()
@@ -109,15 +126,19 @@ class FocusModeViewModel(
     /**
      * 세션 중단
      * v1.54.0: DND 자동 비활성화
+     * v1.63.1: 타이머 중지
      */
     fun interruptSession() {
         viewModelScope.launch {
             _currentSession.value?.let { session ->
+                stopTimer()
+
                 val interruptedSession = session.interrupt()
                 repository.updateSession(interruptedSession)
 
                 _currentSession.value = interruptedSession
                 _focusState.value = FocusState.INTERRUPTED
+                _remainingSeconds.value = 0
 
                 // v1.54.0: DND 자동 비활성화
                 dndRepository?.disableDnd()
@@ -127,10 +148,13 @@ class FocusModeViewModel(
 
     /**
      * 세션 초기화 (다음 세션 준비)
+     * v1.63.1: 타이머 중지
      */
     fun resetSession() {
+        stopTimer()
         _currentSession.value = null
         _focusState.value = FocusState.IDLE
+        _remainingSeconds.value = 0
     }
 
     /**
@@ -224,6 +248,32 @@ class FocusModeViewModel(
     internal fun setCurrentSession(session: FocusSessionEntity) {
         _currentSession.value = session
         _focusState.value = if (session.isActive()) FocusState.ACTIVE else FocusState.IDLE
+    }
+
+    /**
+     * v1.63.1: 타이머 시작 (1초마다 카운트다운)
+     */
+    private fun startTimer() {
+        stopTimer() // 기존 타이머 중지
+        timerJob = viewModelScope.launch {
+            while (_remainingSeconds.value > 0) {
+                delay(1000) // 1초 대기
+                _remainingSeconds.value -= 1
+
+                // 시간이 0이 되면 자동 완료
+                if (_remainingSeconds.value <= 0) {
+                    completeSession()
+                }
+            }
+        }
+    }
+
+    /**
+     * v1.63.1: 타이머 중지
+     */
+    private fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
     }
 }
 

@@ -56,33 +56,18 @@ fun FocusModeScreen(
     val dndSettings by viewModel.dndSettings.collectAsState()
     var showDndPermissionDialog by remember { mutableStateOf(false) }
 
-    // 타이머 업데이트 (매 초)
-    var remainingMinutes by remember { mutableIntStateOf(0) }
-    var remainingSeconds by remember { mutableIntStateOf(0) }
-    var progress by remember { mutableFloatStateOf(0f) }
+    // v1.63.1: 타이머 업데이트 (ViewModel의 remainingSeconds StateFlow 사용)
+    val totalRemainingSeconds by viewModel.remainingSeconds.collectAsState()
+    val remainingMinutes = totalRemainingSeconds / 60
+    val remainingSeconds = totalRemainingSeconds % 60
 
-    LaunchedEffect(currentSession, focusState) {
-        if (focusState == FocusState.ACTIVE) {
-            while (true) {
-                val remaining = viewModel.getRemainingMinutes()
-                val progressValue = viewModel.getProgress()
-
-                remainingMinutes = remaining
-                remainingSeconds = ((currentSession?.let {
-                    java.time.Duration.between(it.startTime, LocalDateTime.now()).seconds
-                } ?: 0) % 60).toInt()
-                progress = progressValue / 100f
-
-                // 목표 시간 도달 시 자동 완료
-                if (remaining <= 0) {
-                    viewModel.completeSession()
-                    break
-                }
-
-                delay(1000)
-            }
-        }
-    }
+    // 진행률 계산
+    val progress = currentSession?.let { session ->
+        val totalSeconds = session.targetDurationMinutes * 60
+        if (totalSeconds > 0) {
+            1f - (totalRemainingSeconds.toFloat() / totalSeconds)
+        } else 0f
+    } ?: 0f
 
     // Content
     Column(modifier = Modifier.fillMaxSize()) {

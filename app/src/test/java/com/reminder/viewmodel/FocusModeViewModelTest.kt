@@ -70,6 +70,7 @@ class FocusModeViewModelTest {
 
     /**
      * 세션 시작
+     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
      */
     @Test
     fun `포커스 세션을 시작할 수 있다`() = runTest {
@@ -86,16 +87,18 @@ class FocusModeViewModelTest {
 
         // When
         viewModel.startFocusSession(targetMinutes, focusType)
-        advanceUntilIdle()
+        testScheduler.runCurrent() // v1.63.1: 타이머 무한 실행 방지
 
         // Then
         val state = viewModel.focusState.first()
         assertEquals(FocusState.ACTIVE, state)
         assertNotNull(viewModel.currentSession.first())
+        assertEquals(targetMinutes * 60, viewModel.remainingSeconds.first()) // 타이머 초기값 확인
     }
 
     /**
      * 세션 완료
+     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
      */
     @Test
     fun `포커스 세션을 완료할 수 있다`() = runTest {
@@ -110,16 +113,18 @@ class FocusModeViewModelTest {
 
         // When
         viewModel.completeSession()
-        advanceUntilIdle()
+        testScheduler.runCurrent() // v1.63.1: 타이머 무한 실행 방지
 
         // Then
         val state = viewModel.focusState.first()
         assertEquals(FocusState.COMPLETED, state)
+        assertEquals(0, viewModel.remainingSeconds.first()) // 타이머 리셋 확인
         verify(repository).updateSession(argThat { session -> session.isCompleted })
     }
 
     /**
      * 세션 중단
+     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
      */
     @Test
     fun `포커스 세션을 중단할 수 있다`() = runTest {
@@ -134,16 +139,18 @@ class FocusModeViewModelTest {
 
         // When
         viewModel.interruptSession()
-        advanceUntilIdle()
+        testScheduler.runCurrent() // v1.63.1: 타이머 무한 실행 방지
 
         // Then
         val state = viewModel.focusState.first()
         assertEquals(FocusState.INTERRUPTED, state)
+        assertEquals(0, viewModel.remainingSeconds.first()) // 타이머 리셋 확인
         verify(repository).updateSession(argThat { session -> session.isInterrupted })
     }
 
     /**
      * 리마인더와 연결된 세션 시작
+     * v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정
      */
     @Test
     fun `리마인더와 연결하여 세션을 시작할 수 있다`() = runTest {
@@ -160,12 +167,13 @@ class FocusModeViewModelTest {
 
         // When
         viewModel.startFocusSessionForReminder(reminderId, 50, FocusType.DO_FIRST)
-        advanceUntilIdle()
+        testScheduler.runCurrent() // v1.63.1: 타이머 무한 실행 방지
 
         // Then
         val currentSession = viewModel.currentSession.first()
         assertEquals(reminderId, currentSession?.reminderId)
         assertEquals(FocusType.DO_FIRST, currentSession?.focusType)
+        assertEquals(50 * 60, viewModel.remainingSeconds.first()) // 타이머 초기값 확인
     }
 
     /**
@@ -270,6 +278,59 @@ class FocusModeViewModelTest {
 
         // Then
         assertTrue(progress in 38..42) // 40% 전후 (10/25 * 100)
+    }
+
+    /**
+     * v1.63.1: 타이머 카운트다운 테스트
+     */
+    @Test
+    fun `타이머가 1초마다 카운트다운 된다`() = runTest {
+        // Given
+        val targetMinutes = 25
+        val session = FocusSessionEntity(
+            id = 1L,
+            targetDurationMinutes = targetMinutes
+        )
+        `when`(repository.insertSession(any())).thenReturn(1L)
+        `when`(repository.getSessionById(1L)).thenReturn(session)
+
+        viewModel.startFocusSession(targetMinutes)
+        testScheduler.runCurrent()
+        val initialSeconds = viewModel.remainingSeconds.first()
+
+        // When - Advance time by 3 seconds
+        testScheduler.advanceTimeBy(3000)
+        testScheduler.runCurrent()
+
+        // Then - Should have decremented by 3 seconds
+        assertEquals(initialSeconds - 3, viewModel.remainingSeconds.first())
+    }
+
+    /**
+     * v1.63.1: 타이머 자동 완료 테스트
+     */
+    @Test
+    fun `타이머가 0에 도달하면 세션이 자동 완료된다`() = runTest {
+        // Given
+        val targetMinutes = 1 // 1분으로 짧게 설정
+        val session = FocusSessionEntity(
+            id = 1L,
+            targetDurationMinutes = targetMinutes
+        )
+        `when`(repository.insertSession(any())).thenReturn(1L)
+        `when`(repository.getSessionById(1L)).thenReturn(session)
+        `when`(repository.updateSession(any())).thenReturn(Unit)
+
+        viewModel.startFocusSession(targetMinutes)
+        testScheduler.runCurrent()
+
+        // When - Advance time past the entire duration
+        testScheduler.advanceTimeBy((targetMinutes * 60 + 1) * 1000L)
+        testScheduler.runCurrent()
+
+        // Then - Session should be completed
+        assertEquals(FocusState.COMPLETED, viewModel.focusState.first())
+        assertEquals(0, viewModel.remainingSeconds.first())
     }
 }
 
