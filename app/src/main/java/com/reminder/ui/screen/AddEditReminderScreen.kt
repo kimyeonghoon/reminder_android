@@ -18,8 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,11 +35,15 @@ import coil.request.ImageRequest
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import com.reminder.ai.UrgencyPredictor
+import com.reminder.api.kakao.KakaoPlace
 import com.reminder.data.entity.Priority
 // import com.reminder.data.entity.RecurrencePattern  // v1.64.0: Deprecated, TODO v1.65.0 RecurrenceRule UI
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.SubTask
 import com.reminder.data.entity.Urgency
+import com.reminder.ReminderApplication
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import com.reminder.ui.components.DatePickerField
 import com.reminder.ui.components.RecurrenceSelector
 import com.reminder.ui.components.SubTaskItem
@@ -76,6 +82,9 @@ fun AddEditReminderScreen(
     var locationName by remember { mutableStateOf(reminder?.locationName ?: "") }
     var locationRadius by remember { mutableStateOf(reminder?.locationRadius?.toString() ?: "100") }
 
+    // v1.67.0: 카카오 장소 검색 결과
+    var locationSearchResults by remember { mutableStateOf<List<KakaoPlace>>(emptyList()) }
+
     // v1.23.0: 웹 링크
     var webLink by remember { mutableStateOf(reminder?.webLink ?: "") }
 
@@ -93,6 +102,19 @@ fun AddEditReminderScreen(
     LaunchedEffect(title, description) {
         if (title.isNotBlank() || description.isNotBlank()) {
             categorySuggestions = viewModel.suggestCategories(title, description)
+        }
+    }
+
+    // v1.67.0: 카카오 장소 검색 (debounced)
+    LaunchedEffect(locationName) {
+        if (locationName.length >= 2) {
+            delay(500) // 500ms 디바운스
+            val app = context.applicationContext as? ReminderApplication
+            if (app != null) {
+                locationSearchResults = app.locationSearchRepository.searchPlaces(locationName)
+            }
+        } else {
+            locationSearchResults = emptyList()
         }
     }
 
@@ -521,7 +543,7 @@ fun AddEditReminderScreen(
                 }
             }
 
-            // v1.22.0: 위치 입력 (간편 모드 제외)
+            // v1.67.0: 위치 검색 (카카오 로컬 API) - 간편 모드 제외
             if (!simpleMode) {
                 HorizontalDivider()
                 Text(
@@ -530,46 +552,112 @@ fun AddEditReminderScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
 
+                // 위치 이름 검색 TextField
                 OutlinedTextField(
                     value = locationName,
-                    onValueChange = { locationName = it },
+                    onValueChange = {
+                        locationName = it
+                        // 검색은 LaunchedEffect에서 자동으로 실행됨 (debounced)
+                    },
                     label = { Text("위치 이름") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text("예: 집, 회사") }
+                    placeholder = { Text("예: 스타벅스 강남점") },
+                    supportingText = {
+                        Text("2글자 이상 입력하면 자동으로 검색됩니다")
+                    }
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = locationLatitude,
-                        onValueChange = { locationLatitude = it },
-                        label = { Text("위도") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        placeholder = { Text("37.5665") }
-                    )
-
-                    OutlinedTextField(
-                        value = locationLongitude,
-                        onValueChange = { locationLongitude = it },
-                        label = { Text("경도") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        placeholder = { Text("126.9780") }
-                    )
+                // 검색 결과 목록 (있을 때만 표시)
+                if (locationSearchResults.isNotEmpty()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 200.dp)
+                        ) {
+                            locationSearchResults.forEach { place ->
+                                ListItem(
+                                    headlineContent = { Text(place.placeName) },
+                                    supportingContent = { Text(place.addressName) },
+                                    modifier = Modifier.clickable {
+                                        // 선택 시 위치 정보 자동 입력
+                                        locationName = place.placeName
+                                        locationLatitude = place.latitude
+                                        locationLongitude = place.longitude
+                                        locationSearchResults = emptyList() // 결과 목록 닫기
+                                    },
+                                    colors = ListItemDefaults.colors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                    )
+                                )
+                                if (place != locationSearchResults.last()) {
+                                    HorizontalDivider()
+                                }
+                            }
+                        }
+                    }
                 }
 
-                OutlinedTextField(
-                    value = locationRadius,
-                    onValueChange = { locationRadius = it },
-                    label = { Text("반경 (미터)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    placeholder = { Text("100") }
-                )
+                // 위치 상태 표시
+                if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Geofencing 활성화됨 (좌표: ${locationLatitude.take(8)}, ${locationLongitude.take(9)})",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else if (locationName.isNotBlank()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "위치 메모만 저장됨 (알림 없음)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // 반경 설정 (Geofencing이 활성화된 경우에만 표시)
+                if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
+                    OutlinedTextField(
+                        value = locationRadius,
+                        onValueChange = { locationRadius = it },
+                        label = { Text("반경 (미터)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        placeholder = { Text("100") }
+                    )
+                }
             }
 
             // v1.65.0: RecurrenceRule UI 복원

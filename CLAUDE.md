@@ -78,8 +78,9 @@
 - ✅ v1.64.0 - RecurrencePattern 레거시 제거 (새 RecurrenceRule 시스템, 646줄 감소)
 - ✅ v1.65.0 - RecurrenceRule UI 재구현 (RecurrenceSelector 복원, 미리 알림 기능)
 - ✅ v1.66.0 - hasTime 필드 추가 (날짜/시간 구분 명시화, 00:00 문제 해결)
+- ✅ v1.67.0 - 카카오 로컬 API 장소 검색 (실시간 자동완성, 하이브리드 입력, TDD 완료)
 
-**🎉 현재 버전: v1.66.0 (versionCode 71, DB v26)**
+**🎉 현재 버전: v1.67.0 (versionCode 72, DB v26)**
 
 ---
 

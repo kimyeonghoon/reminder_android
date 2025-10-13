@@ -1,9 +1,19 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+}
+
+// v1.67.0: Load local.properties for API keys
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -14,13 +24,20 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 71
-        versionName = "1.66.0"
+        versionCode = 72
+        versionName = "1.67.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // v1.67.0: Kakao REST API Key
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            "\"${localProperties.getProperty("KAKAO_REST_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -128,6 +145,11 @@ dependencies {
 
     // Location Services
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // v1.67.0: Retrofit (Kakao Local API)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Testing (Updated)
     testImplementation("junit:junit:4.13.2")

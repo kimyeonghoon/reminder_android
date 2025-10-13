@@ -121,6 +121,22 @@ class ReminderApplication : Application(), ImageLoaderFactory {
         com.reminder.data.repository.DndRepository(this)
     }
 
+    // v1.67.0: 장소 검색 (카카오 로컬 API)
+    private val kakaoLocalApi by lazy {
+        val retrofit = retrofit2.Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+            .build()
+        retrofit.create(com.reminder.api.kakao.KakaoLocalApi::class.java)
+    }
+
+    val locationSearchRepository by lazy {
+        com.reminder.repository.LocationSearchRepository(
+            kakaoLocalApi,
+            BuildConfig.KAKAO_REST_API_KEY
+        )
+    }
+
     /**
      * v1.30.0: 애플리케이션 시작 시 저장된 언어 설정 적용
      * v1.62.1: BUG_001 수정 - DataStore 접근을 onCreate로 이동 (attachBaseContext에서는 applicationContext가 null)

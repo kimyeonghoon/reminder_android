@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.67.0] - 2025-10-13
+
+### Added
+- ✅ **카카오 로컬 API 장소 검색** - 실용적인 위치 입력 UX 개선
+  - **Kakao REST API 통합 (Retrofit)**
+    - KakaoLocalApi 인터페이스 추가 (장소 검색)
+    - LocationSearchRepository 구현 (TDD 완료, 5개 테스트 100% 통과)
+    - ReminderApplication에 Repository 초기화 추가
+    - local.properties에 KAKAO_REST_API_KEY 설정
+  - **AddEditReminderScreen UI 대폭 개선**
+    - 실시간 장소 검색 (2글자 이상, 500ms 디바운스)
+    - 검색 결과 드롭다운 (장소명, 주소 표시)
+    - 클릭 시 좌표 자동 입력 (위도/경도)
+    - Geofencing 상태 실시간 표시
+      - ✅ "Geofencing 활성화됨" (좌표 O)
+      - ℹ️ "위치 메모만 저장됨" (좌표 X)
+  - **하이브리드 입력 방식**
+    - **옵션 1**: 카카오 검색 → 선택 → 좌표 자동 입력 → Geofencing 활성화
+    - **옵션 2**: 수동 입력 (검색 결과 없음) → 위치 메모만 저장 → 알림 없음
+    - **좌표는 선택사항** - 위치 이름만으로도 저장 가능
+    - 일본 등 해외 여행 시에도 수동 입력으로 사용 가능
+
+### Changed
+- ♻️ **위치 입력 UI 전면 개편**
+  - **제거**: 수동 위도/경도 입력 TextField (UX 문제 해결)
+  - **추가**: 자연어 장소 검색 (예: "스타벅스 강남점")
+  - **개선**: 반경 설정 TextField는 Geofencing 활성화 시에만 표시
+  - **예시 텍스트 변경**: "예: 집, 회사" → "예: 스타벅스 강남점"
+
+### Technical Details
+- **버전**: versionCode 72, versionName "1.67.0"
+- **의존성 추가**:
+  - `com.squareup.retrofit2:retrofit:2.9.0`
+  - `com.squareup.retrofit2:converter-gson:2.9.0`
+  - `com.squareup.okhttp3:logging-interceptor:4.12.0`
+- **데이터 모델**:
+  - KakaoPlaceResponse (documents 리스트)
+  - KakaoPlace (placeName, addressName, longitude, latitude)
+- **아키텍처**:
+  - Repository 패턴 (LocationSearchRepository)
+  - LaunchedEffect 디바운스 (500ms)
+  - ReminderApplication lazy 초기화
+
+### Testing
+- **5개 TDD 테스트 추가** (LocationSearchRepositoryTest.kt, 총 216개 테스트 100% 통과)
+  - `searchPlaces_withValidQuery_returnsResults()` - 정상 검색
+  - `searchPlaces_withNoResults_returnsEmptyList()` - 결과 없음
+  - `searchPlaces_withEmptyQuery_returnsEmptyList()` - 빈 쿼리
+  - `searchPlaces_withBlankQuery_returnsEmptyList()` - 공백 쿼리
+  - `searchPlaces_whenApiThrowsException_returnsEmptyList()` - API 오류
+
+### Security
+- 🔐 **API 키 보안**
+  - local.properties에 KAKAO_REST_API_KEY 저장 (git-ignored)
+  - local.properties.example 예시 파일 제공
+  - BuildConfig를 통한 안전한 키 관리
+
+### User Experience
+- 🎯 **사용성 대폭 향상**
+  - **Before**: 위도/경도를 수동으로 입력 (비현실적)
+  - **After**: "스타벅스 강남점" 검색 → 클릭 → 자동 입력
+  - **유연성**: 검색 결과가 없어도 메모로 저장 가능
+  - **국제 호환**: 카카오 미지원 지역(일본 등)에서도 사용 가능
+
+### Code Quality
+- **TDD 완벽 준수**: Red → Green → Refactor 사이클
+- **에러 처리**: API 실패 시 빈 리스트 반환 (앱 크래시 방지)
+- **UI 상태 관리**: LaunchedEffect + remember로 검색 상태 관리
+- **코드 가독성**: 명확한 주석 및 한글 설명
+
 ## [1.66.0] - 2025-10-13
 
 ### Added

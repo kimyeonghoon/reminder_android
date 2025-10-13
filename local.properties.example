@@ -5,9 +5,13 @@
 # sdk.dir=/path/to/Android/Sdk
 sdk.dir=/home/YOUR_USERNAME/Android/Sdk
 
-# API Keys (if needed in the future)
+# API Keys
 # MAPS_API_KEY=your_google_maps_api_key_here
 # WEATHER_API_KEY=your_weather_api_key_here
+
+# v1.67.0: Kakao Local API (장소 검색)
+# Get your API key from: https://developers.kakao.com/console/app
+KAKAO_REST_API_KEY=your_kakao_rest_api_key_here
 
 # Build configuration
 # Use this for any sensitive build-time configuration
