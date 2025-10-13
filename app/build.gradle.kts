@@ -14,8 +14,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 69
-        versionName = "1.63.0"
+        versionCode = 70
+        versionName = "1.65.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

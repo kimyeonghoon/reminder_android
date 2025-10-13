@@ -68,9 +68,28 @@ class ReminderReceiver : BroadcastReceiver() {
                     gson.fromJson(it, RecurrenceEnd::class.java)
                 }
 
-                // TODO v1.65.0: RecurrenceRule을 사용한 다음 발생 시간 계산 로직 구현 필요
-                // RecurrenceCalculator 클래스를 만들어서 RecurrenceRule에서 다음 발생 시간을 계산해야 함
-                Log.d(TAG, "Recurrence detected: $recurrenceRule, TODO: implement next occurrence calculation")
+                // v1.65.0: RecurrenceCalculator를 사용하여 다음 발생 시간 계산
+                val currentTime = LocalDateTime.now()
+
+                val nextOccurrence = com.reminder.recurrence.RecurrenceCalculator.calculateNextOccurrence(
+                    currentTime = currentTime,
+                    recurrenceRule = recurrenceRule,
+                    recurrenceEnd = recurrenceEnd ?: RecurrenceEnd.Never
+                )
+
+                if (nextOccurrence != null) {
+                    // 다음 알람 스케줄링
+                    val alarmScheduler = AlarmScheduler(context)
+                    val nextReminder = reminder.copy(
+                        dueDateTime = nextOccurrence,
+                        recurrenceRule = recurrenceRule,
+                        recurrenceEnd = recurrenceEnd
+                    )
+                    alarmScheduler.schedule(nextReminder)
+                    Log.d(TAG, "Next occurrence scheduled: $nextOccurrence")
+                } else {
+                    Log.d(TAG, "Recurrence ended (no next occurrence)")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to parse recurrence rule: ${e.message}")
             }

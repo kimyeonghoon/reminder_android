@@ -135,10 +135,9 @@ fun AddEditReminderScreen(
         }
     }
 
-    // TODO v1.65.0: RecurrenceRule UI 구현 필요
-    // 반복 설정은 v1.64.0에서 임시로 비활성화됨
-    // var recurrenceRule by remember { mutableStateOf(reminder?.recurrenceRule) }
-    // var recurrenceEnd by remember { mutableStateOf(reminder?.recurrenceEnd) }
+    // v1.65.0: RecurrenceRule UI 복원
+    var recurrenceRule by remember { mutableStateOf(reminder?.recurrenceRule) }
+    var recurrenceEnd by remember { mutableStateOf(reminder?.recurrenceEnd ?: com.reminder.recurrence.RecurrenceEnd.Never) }
 
     // 서브태스크 관련 (편집 모드일 때만)
     val subTasksFlow = if (reminder != null) {
@@ -511,12 +510,24 @@ fun AddEditReminderScreen(
                 )
             }
 
-            // TODO v1.65.0: RecurrenceRule UI 구현 필요
-            // 반복 일정 기능은 v1.64.0에서 임시로 비활성화됨
-            // if (!simpleMode) {
-            //     HorizontalDivider()
-            //     // RecurrenceSelector with RecurrenceRule here
-            // }
+            // v1.65.0: RecurrenceRule UI 복원
+            if (!simpleMode) {
+                HorizontalDivider()
+                Text(
+                    text = "🔄 반복 설정",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                RecurrenceSelector(
+                    recurrenceRule = recurrenceRule,
+                    onRecurrenceRuleChange = { recurrenceRule = it },
+                    recurrenceEnd = recurrenceEnd,
+                    onRecurrenceEndChange = { recurrenceEnd = it },
+                    startDateTime = if (selectedDate != null && selectedTime != null) {
+                        LocalDateTime.of(selectedDate, selectedTime)
+                    } else null
+                )
+            }
 
             // 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
@@ -712,16 +723,18 @@ fun AddEditReminderScreen(
                         val radius = locationRadius.toFloatOrNull()
 
                         if (reminder == null) {
-                            // TODO v1.65.0: RecurrenceRule 파라미터 추가 필요
+                            // v1.65.0: RecurrenceRule 파라미터 추가
                             viewModel.addReminder(
                                 title = title,
                                 description = description,
                                 priority = priority,
                                 category = category,
-                                dueDateTime = dueDateTime
+                                dueDateTime = dueDateTime,
+                                recurrenceRule = recurrenceRule,
+                                recurrenceEnd = recurrenceEnd
                             )
                         } else {
-                            // TODO v1.65.0: RecurrenceRule 필드 추가 필요
+                            // v1.65.0: RecurrenceRule 필드 추가
                             var updatedReminder = reminder.copy(
                                 title = title,
                                 description = description,
@@ -738,7 +751,10 @@ fun AddEditReminderScreen(
                                 // v1.23.0: 웹 링크
                                 webLink = webLink.ifBlank { null },
                                 // v1.24.0: TTS 자동 읽기
-                                readAloud = readAloud
+                                readAloud = readAloud,
+                                // v1.65.0: RecurrenceRule
+                                recurrenceRule = recurrenceRule,
+                                recurrenceEnd = recurrenceEnd
                             )
                             viewModel.updateReminder(updatedReminder)
                         }

@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-12 (v1.63.1 완료)
+> 마지막 업데이트: 2025-10-13 (v1.64.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.63.1 (versionCode 68)
+- **최신 버전**: v1.64.0 (versionCode 69)
 - **DB 버전**: v24
-- **총 릴리즈**: 68개 버전
-- **테스트 커버리지**: 213/213 통과 (100% ✅)
+- **총 릴리즈**: 69개 버전
+- **테스트 커버리지**: 268/268 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -52,6 +52,7 @@
 - ✅ **코드 품질 개선 (v1.59.0~v1.62.0: Lint 경고 수정, 성능 최적화, RemoteViews 호환)** 🧹
 - ✅ **Bottom Navigation 통합 (v1.63.0: TopAppBar 아키텍처 개선, UI 정리)** 🎨
 - ✅ **테스트 함수명 표준화 (v1.63.1: 38개 파일, 370+ 함수 영어 변환, UI 테스트 강화)** ✅
+- ✅ **RecurrencePattern 레거시 제거 (v1.64.0: 새 RecurrenceRule 시스템으로 완전 전환)** 🔄
 
 ---
 
@@ -442,6 +443,33 @@
 - **코드 품질**: 테스트 안정성 향상, 코드 일관성 통일
 - **테스트**: 213/213 통과 ✅
 
+### v1.64.0: RecurrencePattern 레거시 완전 제거 ✅ 🔄
+**완료됨** - 새 RecurrenceRule 시스템으로 완전 전환
+- **Deprecated 필드 제거** (4개):
+  - recurrencePattern (enum) → recurrenceRule (data class)
+  - recurrenceInterval (Int) → recurrenceRule.interval
+  - recurrenceDaysOfWeek (String) → recurrenceRule.daysOfWeek
+  - recurrenceEndDate (LocalDateTime) → recurrenceEnd (sealed class)
+- **파일 수정** (12개):
+  - ReminderEntity.kt, ReminderTemplate.kt (데이터 모델)
+  - BackupManager.kt (Gson 직렬화/역직렬화)
+  - AlarmScheduler.kt, ReminderReceiver.kt (알람 시스템)
+  - ConflictResolver.kt, FilterEngine.kt (필터링)
+  - AddEditReminderScreen.kt, RecurrenceSelector.kt (UI - 임시 비활성화)
+  - ReminderViewModel.kt (ViewModel)
+  - ReminderTemplateTest.kt (테스트)
+- **파일 삭제** (3개):
+  - RecurrenceMigration.kt (더 이상 불가능)
+  - RecurrenceMigrationTest.kt
+  - AlarmSchedulerCalculationTest.kt (deprecated 함수 테스트)
+- **코드 감소**: 762 lines deleted, 116 lines added (net -646 lines)
+- **테스트**: 268/268 통과 ✅
+- **⚠️ v1.65.0 TODO**:
+  - RecurrenceCalculator 구현 (다음 발생 시간 계산)
+  - RecurrenceSelector UI 재구현
+  - AddEditReminderScreen 반복 설정 UI 복원
+  - ReminderReceiver 다음 알람 스케줄링
+
 ---
 
 ## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
@@ -474,7 +502,7 @@
 
 ## 📅 다음 세션 제안
 
-v1.63.1까지 완료! 다음 세션에서는:
+v1.64.0까지 완료! 다음 세션에서는:
 
 ### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
 ### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
@@ -492,8 +520,18 @@ v1.63.1까지 완료! 다음 세션에서는:
 ### 14. ~~**코드 품질 개선 (v1.59.0~v1.62.0)**~~ ✅ 완료됨
 ### 15. ~~**Bottom Navigation 통합 (v1.63.0)**~~ ✅ 완료됨
 ### 16. ~~**테스트 함수명 표준화 (v1.63.1)**~~ ✅ 완료됨
+### 17. ~~**RecurrencePattern 레거시 제거 (v1.64.0)**~~ ✅ 완료됨
 
-### 17. **Wear OS 앱 구현** (다음 우선순위) 🔴
+### 18. **RecurrenceRule UI 재구현 (v1.65.0)** (다음 우선순위) 🔴
+- v1.64.0에서 비활성화된 반복 기능 UI 복원
+- RecurrenceCalculator 구현 (다음 발생 시간 계산)
+- RecurrenceSelector UI 재구현 (RecurrenceRule 기반)
+- AddEditReminderScreen 반복 설정 UI 복원
+- ReminderReceiver 다음 알람 스케줄링
+- TDD 방식 개발 (테스트 먼저)
+- 예상 시간: 2-3시간
+
+### 19. **Wear OS 앱 구현** 🟠
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
@@ -501,7 +539,7 @@ v1.63.1까지 완료! 다음 세션에서는:
 - 리마인더 빠른 완료 기능
 - 예상 시간: 6-7시간
 
-### 18. **시간 블로킹 (Time Blocking)** 🟡
+### 20. **시간 블로킹 (Time Blocking)** 🟡
 - 캘린더와 통합하여 작업 시간 예약
 - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
 - 드래그 앤 드롭으로 시간대 배정
@@ -573,12 +611,12 @@ v1.63.1까지 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.63.1까지 68개 버전, 24개 DB 마이그레이션을 완료했습니다. 품질 개선과 함께 사용자 경험 극대화!_
+_v1.64.0까지 69개 버전, 24개 DB 마이그레이션을 완료했습니다. 품질 개선과 함께 사용자 경험 극대화!_
 
 **주요 성과**:
-- ✅ 68개 버전 릴리즈 (v1.0.0 ~ v1.63.1)
+- ✅ 69개 버전 릴리즈 (v1.0.0 ~ v1.64.0)
 - ✅ 24번의 데이터베이스 마이그레이션
-- ✅ TDD 기반 안정적인 코드베이스 (213개 테스트 100% 통과)
+- ✅ TDD 기반 안정적인 코드베이스 (268개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
 - ✅ AI/ML 기반 스마트 추천
@@ -593,15 +631,18 @@ _v1.63.1까지 68개 버전, 24개 DB 마이그레이션을 완료했습니다. 
 - ✅ **코드 품질 개선 (v1.59.0~v1.62.0: Lint Error 0개 달성)** 🧹
 - ✅ **Bottom Navigation 통합 (v1.63.0: TopAppBar 아키텍처 개선)** 🎨
 - ✅ **테스트 함수명 표준화 (v1.63.1: 38개 파일, 370+ 함수 영어 변환)** ✅
+- ✅ **RecurrencePattern 레거시 제거 (v1.64.0: 새 RecurrenceRule 시스템, 646줄 감소)** 🔄
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
-2. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
-3. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
+1. 🔴 **RecurrenceRule UI 재구현 (v1.65.0)** (반복 기능 UI 복원, 긴급)
+2. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
+3. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
+4. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
 
-**⭐ v1.59.0 ~ v1.63.1 하이라이트**:
+**⭐ v1.59.0 ~ v1.64.0 하이라이트**:
 - **v1.59.0~v1.62.0**: 코드 품질 개선으로 Lint Error 0개 달성, Compose 성능 최적화, RemoteViews 호환성 100% 확보 🧹
 - **v1.63.0**: Bottom Navigation 통합 및 TopAppBar 아키텍처 개선으로 UI 일관성 대폭 향상 🎨
 - **v1.63.1**: 테스트 함수명 표준화 (38개 파일, 370+ 함수 영어 변환)로 테스트 안정성 확보, UI 한글화 완료 ✅
+- **v1.64.0**: RecurrencePattern 레거시 완전 제거, RecurrenceRule 시스템으로 전환, 646줄 코드 감소, 268개 테스트 통과 🔄
