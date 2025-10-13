@@ -1,14 +1,18 @@
 package com.reminder.viewmodel
 
 import com.reminder.data.entity.Priority
-import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.ReminderTemplate
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
+import com.reminder.recurrence.RecurrenceType
 import org.junit.Test
 import org.junit.Assert.*
 
 /**
  * 리마인더 템플릿 기능 테스트
+ *
+ * v1.64.0: RecurrenceRule 사용
  */
 class ReminderTemplateTest {
 
@@ -16,6 +20,7 @@ class ReminderTemplateTest {
     @Test
     fun creatingReminderFromTemplateCopiesAllFieldsCorrectly() {
         // Given
+        val recurrenceRule = RecurrenceRule(type = RecurrenceType.WEEKLY, interval = 1)
         val template = ReminderTemplate(
             id = 1L,
             name = "회의 템플릿",
@@ -23,8 +28,8 @@ class ReminderTemplateTest {
             descriptionTemplate = "주간 팀 회의 안건 논의",
             defaultPriority = Priority.HIGH,
             defaultCategory = "업무",
-            defaultRecurrencePattern = RecurrencePattern.WEEKLY,
-            defaultRecurrenceInterval = 1
+            defaultRecurrenceRule = recurrenceRule,
+            defaultRecurrenceEnd = RecurrenceEnd.Never
         )
 
         // When
@@ -33,8 +38,8 @@ class ReminderTemplateTest {
             description = template.descriptionTemplate,
             priority = template.defaultPriority,
             category = template.defaultCategory,
-            recurrencePattern = template.defaultRecurrencePattern,
-            recurrenceInterval = template.defaultRecurrenceInterval
+            recurrenceRule = template.defaultRecurrenceRule,
+            recurrenceEnd = template.defaultRecurrenceEnd
         )
 
         // Then
@@ -42,8 +47,8 @@ class ReminderTemplateTest {
         assertEquals(template.descriptionTemplate, reminder.description)
         assertEquals(template.defaultPriority, reminder.priority)
         assertEquals(template.defaultCategory, reminder.category)
-        assertEquals(template.defaultRecurrencePattern, reminder.recurrencePattern)
-        assertEquals(template.defaultRecurrenceInterval, reminder.recurrenceInterval)
+        assertEquals(template.defaultRecurrenceRule, reminder.recurrenceRule)
+        assertEquals(template.defaultRecurrenceEnd, reminder.recurrenceEnd)
     }
 
     /** 리마인더를 템플릿으로 저장 시 핵심 정보만 저장된다 */
@@ -56,7 +61,7 @@ class ReminderTemplateTest {
             description = "Q4 프로젝트 최종 제출",
             priority = Priority.HIGH,
             category = "업무",
-            recurrencePattern = RecurrencePattern.NONE,
+            recurrenceRule = null,  // v1.64.0: 반복 없음
             isCompleted = true  // 완료 상태는 템플릿에 저장되면 안됨
         )
 
@@ -67,7 +72,7 @@ class ReminderTemplateTest {
             descriptionTemplate = reminder.description,
             defaultPriority = reminder.priority,
             defaultCategory = reminder.category,
-            defaultRecurrencePattern = reminder.recurrencePattern
+            defaultRecurrenceRule = reminder.recurrenceRule
         )
 
         // Then

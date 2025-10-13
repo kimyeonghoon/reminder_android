@@ -52,10 +52,8 @@ class ReminderViewModel(
         dueDateTime: LocalDateTime? = null,
         priority: Priority = Priority.MEDIUM,
         category: String = "",
-        recurrencePattern: com.reminder.data.entity.RecurrencePattern = com.reminder.data.entity.RecurrencePattern.NONE,
-        recurrenceInterval: Int = 1,
-        recurrenceDaysOfWeek: String? = null,
-        recurrenceEndDate: LocalDateTime? = null
+        recurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
+        recurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null
     ) {
         viewModelScope.launch {
             val reminder = ReminderEntity(
@@ -64,10 +62,8 @@ class ReminderViewModel(
                 dueDateTime = dueDateTime,
                 priority = priority,
                 category = category,
-                recurrencePattern = recurrencePattern,
-                recurrenceInterval = recurrenceInterval,
-                recurrenceDaysOfWeek = recurrenceDaysOfWeek,
-                recurrenceEndDate = recurrenceEndDate
+                recurrenceRule = recurrenceRule,
+                recurrenceEnd = recurrenceEnd
             )
             repository.insertReminder(reminder)
 
@@ -80,7 +76,7 @@ class ReminderViewModel(
             analyticsHelper.logReminderCreated(
                 priority = priority,
                 category = category,
-                hasRecurrence = recurrencePattern != com.reminder.data.entity.RecurrencePattern.NONE
+                hasRecurrence = recurrenceRule != null
             )
         }
     }
@@ -376,6 +372,8 @@ class ReminderViewModel(
 
     /**
      * 템플릿 추가
+     *
+     * v1.64.0: RecurrenceRule 사용
      */
     fun addTemplate(
         name: String,
@@ -383,8 +381,8 @@ class ReminderViewModel(
         descriptionTemplate: String = "",
         defaultPriority: Priority = Priority.MEDIUM,
         defaultCategory: String = "",
-        defaultRecurrencePattern: com.reminder.data.entity.RecurrencePattern = com.reminder.data.entity.RecurrencePattern.NONE,
-        defaultRecurrenceInterval: Int = 1
+        defaultRecurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
+        defaultRecurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null
     ) {
         viewModelScope.launch {
             val template = com.reminder.data.entity.ReminderTemplate(
@@ -393,8 +391,8 @@ class ReminderViewModel(
                 descriptionTemplate = descriptionTemplate,
                 defaultPriority = defaultPriority,
                 defaultCategory = defaultCategory,
-                defaultRecurrencePattern = defaultRecurrencePattern,
-                defaultRecurrenceInterval = defaultRecurrenceInterval
+                defaultRecurrenceRule = defaultRecurrenceRule,
+                defaultRecurrenceEnd = defaultRecurrenceEnd
             )
             database.reminderTemplateDao().insert(template)
 
@@ -405,6 +403,8 @@ class ReminderViewModel(
 
     /**
      * 템플릿에서 리마인더 생성
+     *
+     * v1.64.0: RecurrenceRule 사용
      */
     fun createReminderFromTemplate(template: com.reminder.data.entity.ReminderTemplate, dueDateTime: LocalDateTime? = null) {
         viewModelScope.launch {
@@ -414,8 +414,8 @@ class ReminderViewModel(
                 dueDateTime = dueDateTime,
                 priority = template.defaultPriority,
                 category = template.defaultCategory,
-                recurrencePattern = template.defaultRecurrencePattern,
-                recurrenceInterval = template.defaultRecurrenceInterval
+                recurrenceRule = template.defaultRecurrenceRule,
+                recurrenceEnd = template.defaultRecurrenceEnd
             )
             val reminderId = repository.insertReminder(reminder)
 
@@ -440,6 +440,8 @@ class ReminderViewModel(
 
     /**
      * 현재 리마인더를 템플릿으로 저장
+     *
+     * v1.64.0: RecurrenceRule 사용
      */
     fun saveAsTemplate(
         reminder: ReminderEntity,
@@ -452,8 +454,8 @@ class ReminderViewModel(
                 descriptionTemplate = reminder.description,
                 defaultPriority = reminder.priority,
                 defaultCategory = reminder.category,
-                defaultRecurrencePattern = reminder.recurrencePattern,
-                defaultRecurrenceInterval = reminder.recurrenceInterval
+                defaultRecurrenceRule = reminder.recurrenceRule,
+                defaultRecurrenceEnd = reminder.recurrenceEnd
             )
             database.reminderTemplateDao().insert(template)
         }

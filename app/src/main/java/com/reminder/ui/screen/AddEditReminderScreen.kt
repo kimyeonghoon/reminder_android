@@ -34,7 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import com.reminder.ai.UrgencyPredictor
 import com.reminder.data.entity.Priority
-import com.reminder.data.entity.RecurrencePattern
+// import com.reminder.data.entity.RecurrencePattern  // v1.64.0: Deprecated, TODO v1.65.0 RecurrenceRule UI
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.SubTask
 import com.reminder.data.entity.Urgency
@@ -135,22 +135,10 @@ fun AddEditReminderScreen(
         }
     }
 
-    // 반복 설정
-    var recurrencePattern by remember { mutableStateOf(reminder?.recurrencePattern ?: RecurrencePattern.NONE) }
-    var recurrenceInterval by remember { mutableIntStateOf(reminder?.recurrenceInterval ?: 1) }
-    var recurrenceDaysOfWeek by remember {
-        mutableStateOf(
-            reminder?.recurrenceDaysOfWeek?.split(",")
-                ?.mapNotNull { dayName ->
-                    try {
-                        DayOfWeek.valueOf(dayName.trim())
-                    } catch (e: Exception) {
-                        null
-                    }
-                }?.toSet()
-        )
-    }
-    var recurrenceEndDate by remember { mutableStateOf(reminder?.recurrenceEndDate) }
+    // TODO v1.65.0: RecurrenceRule UI 구현 필요
+    // 반복 설정은 v1.64.0에서 임시로 비활성화됨
+    // var recurrenceRule by remember { mutableStateOf(reminder?.recurrenceRule) }
+    // var recurrenceEnd by remember { mutableStateOf(reminder?.recurrenceEnd) }
 
     // 서브태스크 관련 (편집 모드일 때만)
     val subTasksFlow = if (reminder != null) {
@@ -523,26 +511,12 @@ fun AddEditReminderScreen(
                 )
             }
 
-            // 간편 모드에서는 반복 일정 숨기기
-            if (!simpleMode) {
-                HorizontalDivider()
-
-                RecurrenceSelector(
-                    recurrencePattern = recurrencePattern,
-                    onPatternChange = { recurrencePattern = it },
-                    recurrenceInterval = recurrenceInterval,
-                    onIntervalChange = { recurrenceInterval = it },
-                    recurrenceDaysOfWeek = recurrenceDaysOfWeek,
-                    onDaysOfWeekChange = { recurrenceDaysOfWeek = it },
-                    recurrenceEndDate = recurrenceEndDate,
-                    onEndDateChange = { recurrenceEndDate = it },
-                    startDateTime = if (selectedDate != null && selectedTime != null) {
-                        LocalDateTime.of(selectedDate, selectedTime)
-                    } else {
-                        null
-                    }
-                )
-            }
+            // TODO v1.65.0: RecurrenceRule UI 구현 필요
+            // 반복 일정 기능은 v1.64.0에서 임시로 비활성화됨
+            // if (!simpleMode) {
+            //     HorizontalDivider()
+            //     // RecurrenceSelector with RecurrenceRule here
+            // }
 
             // 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
@@ -732,27 +706,22 @@ fun AddEditReminderScreen(
                             null
                         }
 
-                        val daysOfWeekString = recurrenceDaysOfWeek
-                            ?.joinToString(",") { it.name }
-
                         // v1.22.0: 위치 데이터 파싱
                         val lat = locationLatitude.toDoubleOrNull()
                         val lon = locationLongitude.toDoubleOrNull()
                         val radius = locationRadius.toFloatOrNull()
 
                         if (reminder == null) {
+                            // TODO v1.65.0: RecurrenceRule 파라미터 추가 필요
                             viewModel.addReminder(
                                 title = title,
                                 description = description,
                                 priority = priority,
                                 category = category,
-                                dueDateTime = dueDateTime,
-                                recurrencePattern = recurrencePattern,
-                                recurrenceInterval = recurrenceInterval,
-                                recurrenceDaysOfWeek = daysOfWeekString,
-                                recurrenceEndDate = recurrenceEndDate
+                                dueDateTime = dueDateTime
                             )
                         } else {
+                            // TODO v1.65.0: RecurrenceRule 필드 추가 필요
                             var updatedReminder = reminder.copy(
                                 title = title,
                                 description = description,
@@ -761,10 +730,6 @@ fun AddEditReminderScreen(
                                 category = category,
                                 dueDateTime = dueDateTime,
                                 updatedAt = LocalDateTime.now(),
-                                recurrencePattern = recurrencePattern,
-                                recurrenceInterval = recurrenceInterval,
-                                recurrenceDaysOfWeek = daysOfWeekString,
-                                recurrenceEndDate = recurrenceEndDate,
                                 // v1.22.0: 위치 필드
                                 locationLatitude = lat,
                                 locationLongitude = lon,

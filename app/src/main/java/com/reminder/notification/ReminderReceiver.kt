@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.google.gson.Gson
 import com.reminder.data.entity.Priority
-import com.reminder.data.entity.RecurrencePattern
 import com.reminder.data.entity.ReminderEntity
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
 import java.time.LocalDateTime
 
 /**
@@ -17,6 +19,8 @@ class ReminderReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "ReminderReceiver"
     }
+
+    private val gson = Gson()
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Alarm received")
@@ -53,53 +57,22 @@ class ReminderReceiver : BroadcastReceiver() {
 
         Log.d(TAG, "Notification shown for reminder: $title")
 
-        // 반복 알람 처리
-        val patternName = intent.getStringExtra(AlarmScheduler.EXTRA_RECURRENCE_PATTERN) ?: RecurrencePattern.NONE.name
-        val pattern = try {
-            RecurrencePattern.valueOf(patternName)
-        } catch (e: IllegalArgumentException) {
-            RecurrencePattern.NONE
-        }
+        // v1.64.0: RecurrenceRule 처리
+        val recurrenceRuleJson = intent.getStringExtra(AlarmScheduler.EXTRA_RECURRENCE_RULE)
+        val recurrenceEndJson = intent.getStringExtra(AlarmScheduler.EXTRA_RECURRENCE_END)
 
-        if (pattern != RecurrencePattern.NONE) {
-            val interval = intent.getIntExtra(AlarmScheduler.EXTRA_RECURRENCE_INTERVAL, 1)
-            val daysOfWeek = intent.getStringExtra(AlarmScheduler.EXTRA_RECURRENCE_DAYS_OF_WEEK)
-            val endDateString = intent.getStringExtra(AlarmScheduler.EXTRA_RECURRENCE_END_DATE)
-            val endDate = endDateString?.let {
-                try {
-                    LocalDateTime.parse(it)
-                } catch (e: Exception) {
-                    null
+        if (recurrenceRuleJson != null) {
+            try {
+                val recurrenceRule = gson.fromJson(recurrenceRuleJson, RecurrenceRule::class.java)
+                val recurrenceEnd = recurrenceEndJson?.let {
+                    gson.fromJson(it, RecurrenceEnd::class.java)
                 }
-            }
 
-            // 다음 반복 알람 계산
-            val nextOccurrence = AlarmScheduler.calculateNextOccurrence(
-                currentDateTime = LocalDateTime.now(),
-                pattern = pattern,
-                interval = interval,
-                daysOfWeek = daysOfWeek,
-                endDate = endDate
-            )
-
-            // 다음 알람 스케줄링
-            if (nextOccurrence != null) {
-                val nextReminder = ReminderEntity(
-                    id = reminderId,
-                    title = title,
-                    description = description,
-                    priority = priority,
-                    dueDateTime = nextOccurrence,
-                    recurrencePattern = pattern,
-                    recurrenceInterval = interval,
-                    recurrenceDaysOfWeek = daysOfWeek,
-                    recurrenceEndDate = endDate
-                )
-                val alarmScheduler = AlarmScheduler(context)
-                alarmScheduler.schedule(nextReminder)
-                Log.d(TAG, "Next recurrence scheduled for: $nextOccurrence")
-            } else {
-                Log.d(TAG, "No more recurrences for reminder: $reminderId")
+                // TODO v1.65.0: RecurrenceRule을 사용한 다음 발생 시간 계산 로직 구현 필요
+                // RecurrenceCalculator 클래스를 만들어서 RecurrenceRule에서 다음 발생 시간을 계산해야 함
+                Log.d(TAG, "Recurrence detected: $recurrenceRule, TODO: implement next occurrence calculation")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to parse recurrence rule: ${e.message}")
             }
         }
     }

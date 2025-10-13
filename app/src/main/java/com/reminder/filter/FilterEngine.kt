@@ -119,9 +119,9 @@ class FilterEngine {
             }
         }
 
-        // 반복 설정 여부 필터
+        // 반복 설정 여부 필터 (v1.64.0: RecurrenceRule 사용)
         if (filter.hasRecurrence != null) {
-            val hasRecurrence = reminder.recurrencePattern != com.reminder.data.entity.RecurrencePattern.NONE
+            val hasRecurrence = reminder.recurrenceRule != null
             if (hasRecurrence != filter.hasRecurrence) {
                 return false
             }

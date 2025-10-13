@@ -60,17 +60,7 @@ data class ReminderEntity(
 
     // v1.35.0: 반복 작업 고급 옵션
     val recurrenceRule: RecurrenceRule? = null,  // 반복 규칙 (DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM)
-    val recurrenceEnd: RecurrenceEnd? = null,    // 반복 종료 조건 (Never, AfterOccurrences, OnDate)
-
-    // 반복 리마인더 (레거시 - 하위 호환성 유지)
-    @Deprecated("Use recurrenceRule instead")
-    val recurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
-    @Deprecated("Use recurrenceRule instead")
-    val recurrenceInterval: Int = 1,
-    @Deprecated("Use recurrenceRule instead")
-    val recurrenceDaysOfWeek: String? = null,  // "MONDAY,WEDNESDAY,FRIDAY"
-    @Deprecated("Use recurrenceEnd instead")
-    val recurrenceEndDate: LocalDateTime? = null
+    val recurrenceEnd: RecurrenceEnd? = null    // 반복 종료 조건 (Never, AfterOccurrences, OnDate)
 )
 
 enum class Priority {

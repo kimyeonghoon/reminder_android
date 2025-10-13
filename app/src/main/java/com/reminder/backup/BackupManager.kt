@@ -2,9 +2,12 @@ package com.reminder.backup
 
 import android.content.Context
 import android.net.Uri
+import com.google.gson.Gson
 import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.entity.SubTask
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -27,6 +30,7 @@ class BackupManager(
 ) {
 
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    private val gson = Gson()
 
     /**
      * 모든 데이터를 JSON으로 내보내기
@@ -115,10 +119,9 @@ class BackupManager(
                 put("isCompleted", reminder.isCompleted)
                 put("createdAt", reminder.createdAt.format(dateFormatter))
                 put("updatedAt", reminder.updatedAt.format(dateFormatter))
-                put("recurrencePattern", reminder.recurrencePattern.name)
-                put("recurrenceInterval", reminder.recurrenceInterval)
-                put("recurrenceDaysOfWeek", reminder.recurrenceDaysOfWeek)
-                put("recurrenceEndDate", reminder.recurrenceEndDate?.format(dateFormatter))
+                // v1.64.0: RecurrenceRule 직렬화
+                put("recurrenceRule", reminder.recurrenceRule?.let { gson.toJson(it) })
+                put("recurrenceEnd", reminder.recurrenceEnd?.let { gson.toJson(it) })
             })
         }
         return jsonArray
@@ -155,13 +158,11 @@ class BackupManager(
                     isCompleted = json.getBoolean("isCompleted"),
                     createdAt = LocalDateTime.parse(json.getString("createdAt"), dateFormatter),
                     updatedAt = LocalDateTime.parse(json.getString("updatedAt"), dateFormatter),
-                    recurrencePattern = com.reminder.data.entity.RecurrencePattern.valueOf(
-                        json.getString("recurrencePattern")
-                    ),
-                    recurrenceInterval = json.getInt("recurrenceInterval"),
-                    recurrenceDaysOfWeek = json.optString("recurrenceDaysOfWeek").takeIf { it.isNotEmpty() },
-                    recurrenceEndDate = json.optString("recurrenceEndDate").takeIf { it.isNotEmpty() }
-                        ?.let { LocalDateTime.parse(it, dateFormatter) }
+                    // v1.64.0: RecurrenceRule 역직렬화
+                    recurrenceRule = json.optString("recurrenceRule").takeIf { it.isNotEmpty() }
+                        ?.let { gson.fromJson(it, RecurrenceRule::class.java) },
+                    recurrenceEnd = json.optString("recurrenceEnd").takeIf { it.isNotEmpty() }
+                        ?.let { gson.fromJson(it, RecurrenceEnd::class.java) }
                 )
             )
         }

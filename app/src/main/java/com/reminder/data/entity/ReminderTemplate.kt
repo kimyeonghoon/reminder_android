@@ -2,12 +2,16 @@ package com.reminder.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.reminder.recurrence.RecurrenceEnd
+import com.reminder.recurrence.RecurrenceRule
 import java.time.LocalDateTime
 
 /**
  * 리마인더 템플릿 엔티티
  *
  * 자주 사용하는 리마인더의 구조를 템플릿으로 저장
+ *
+ * v1.64.0: RecurrencePattern → RecurrenceRule 마이그레이션
  */
 @Entity(tableName = "reminder_templates")
 data class ReminderTemplate(
@@ -40,14 +44,14 @@ data class ReminderTemplate(
     val defaultCategory: String = "",
 
     /**
-     * 기본 반복 패턴
+     * 기본 반복 규칙 (v1.64.0)
      */
-    val defaultRecurrencePattern: RecurrencePattern = RecurrencePattern.NONE,
+    val defaultRecurrenceRule: RecurrenceRule? = null,
 
     /**
-     * 기본 반복 간격
+     * 기본 반복 종료 조건 (v1.64.0)
      */
-    val defaultRecurrenceInterval: Int = 1,
+    val defaultRecurrenceEnd: RecurrenceEnd? = null,
 
     /**
      * 생성 일시
