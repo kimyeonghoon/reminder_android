@@ -1,8 +1,6 @@
 package com.reminder.repository
 
-import com.reminder.api.kakao.KakaoLocalApi
-import com.reminder.api.kakao.KakaoPlace
-import com.reminder.api.kakao.KakaoPlaceResponse
+import com.reminder.api.kakao.*
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -35,7 +33,7 @@ class LocationSearchRepositoryTest {
     fun searchPlaces_withValidQuery_returnsResults() = runTest {
         // Given
         val query = "스타벅스"
-        val mockResponse = KakaoPlaceResponse(
+        val mockPlaceResponse = KakaoPlaceResponse(
             documents = listOf(
                 KakaoPlace(
                     placeName = "스타벅스 강남점",
@@ -45,7 +43,10 @@ class LocationSearchRepositoryTest {
                 )
             )
         )
-        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(mockResponse)
+        val mockAddressResponse = KakaoAddressResponse(documents = emptyList())
+
+        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(mockPlaceResponse)
+        whenever(kakaoApi.searchAddress(any(), any(), any())).thenReturn(mockAddressResponse)
 
         // When
         val result = repository.searchPlaces(query)
@@ -65,8 +66,11 @@ class LocationSearchRepositoryTest {
     fun searchPlaces_withNoResults_returnsEmptyList() = runTest {
         // Given
         val query = "존재하지않는장소"
-        val emptyResponse = KakaoPlaceResponse(documents = emptyList())
-        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(emptyResponse)
+        val emptyPlaceResponse = KakaoPlaceResponse(documents = emptyList())
+        val emptyAddressResponse = KakaoAddressResponse(documents = emptyList())
+
+        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(emptyPlaceResponse)
+        whenever(kakaoApi.searchAddress(any(), any(), any())).thenReturn(emptyAddressResponse)
 
         // When
         val result = repository.searchPlaces(query)
@@ -114,11 +118,88 @@ class LocationSearchRepositoryTest {
         val query = "스타벅스"
         whenever(kakaoApi.searchPlaces(any(), any(), any()))
             .thenThrow(RuntimeException("Network error"))
+        whenever(kakaoApi.searchAddress(any(), any(), any()))
+            .thenThrow(RuntimeException("Network error"))
 
         // When
         val result = repository.searchPlaces(query)
 
         // Then
         assertTrue(result.isEmpty())
+    }
+
+    /**
+     * 주소 검색 결과 반환 확인
+     */
+    @Test
+    fun searchPlaces_withAddress_returnsAddressResults() = runTest {
+        // Given
+        val query = "서울 강남구 역삼동 123-45"
+        val mockPlaceResponse = KakaoPlaceResponse(documents = emptyList())
+        val mockAddressResponse = KakaoAddressResponse(
+            documents = listOf(
+                KakaoAddress(
+                    addressName = "서울 강남구 역삼동 123-45",
+                    addressType = "REGION_ADDR",
+                    longitude = "127.028",
+                    latitude = "37.498",
+                    roadAddress = null
+                )
+            )
+        )
+
+        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(mockPlaceResponse)
+        whenever(kakaoApi.searchAddress(any(), any(), any())).thenReturn(mockAddressResponse)
+
+        // When
+        val result = repository.searchPlaces(query)
+
+        // Then
+        assertEquals(1, result.size)
+        assertEquals("서울 강남구 역삼동 123-45", result[0].placeName)
+        assertEquals("127.028", result[0].longitude)
+        assertEquals("37.498", result[0].latitude)
+    }
+
+    /**
+     * 장소 검색과 주소 검색 결과 합치기 확인
+     */
+    @Test
+    fun searchPlaces_combinesPlaceAndAddressResults() = runTest {
+        // Given
+        val query = "강남"
+        val mockPlaceResponse = KakaoPlaceResponse(
+            documents = listOf(
+                KakaoPlace(
+                    placeName = "강남역",
+                    addressName = "서울 강남구 역삼동",
+                    longitude = "127.028",
+                    latitude = "37.498"
+                )
+            )
+        )
+        val mockAddressResponse = KakaoAddressResponse(
+            documents = listOf(
+                KakaoAddress(
+                    addressName = "서울 강남구 역삼동 123",
+                    addressType = "REGION_ADDR",
+                    longitude = "127.030",
+                    latitude = "37.500",
+                    roadAddress = null
+                )
+            )
+        )
+
+        whenever(kakaoApi.searchPlaces(any(), any(), any())).thenReturn(mockPlaceResponse)
+        whenever(kakaoApi.searchAddress(any(), any(), any())).thenReturn(mockAddressResponse)
+
+        // When
+        val result = repository.searchPlaces(query)
+
+        // Then
+        assertEquals(2, result.size)
+        // 키워드 검색 결과가 먼저
+        assertEquals("강남역", result[0].placeName)
+        assertEquals("서울 강남구 역삼동 123", result[1].placeName)
     }
 }

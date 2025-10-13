@@ -123,8 +123,20 @@ class ReminderApplication : Application(), ImageLoaderFactory {
 
     // v1.67.0: 장소 검색 (카카오 로컬 API)
     private val kakaoLocalApi by lazy {
+        // OkHttp 인터셉터로 KA 헤더 추가 (카카오 API 요구사항)
+        // 형식: os/<os> sdk/<version> origin/<package>
+        val client = okhttp3.OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("KA", "os/android sdk/1.0 origin/com.reminder")
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+
         val retrofit = retrofit2.Retrofit.Builder()
             .baseUrl("https://dapi.kakao.com/")
+            .client(client)
             .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
             .build()
         retrofit.create(com.reminder.api.kakao.KakaoLocalApi::class.java)

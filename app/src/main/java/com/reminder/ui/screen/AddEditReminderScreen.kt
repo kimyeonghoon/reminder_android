@@ -543,121 +543,119 @@ fun AddEditReminderScreen(
                 }
             }
 
-            // v1.67.0: 위치 검색 (카카오 로컬 API) - 간편 모드 제외
-            if (!simpleMode) {
-                HorizontalDivider()
-                Text(
-                    text = "📍 위치 기반 알림 (선택사항)",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            // v1.67.0: 위치 검색 (카카오 로컬 API) - 간편 모드에서도 표시
+            HorizontalDivider()
+            Text(
+                text = "📍 위치 기반 알림 (선택사항)",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-                // 위치 이름 검색 TextField
-                OutlinedTextField(
-                    value = locationName,
-                    onValueChange = {
-                        locationName = it
-                        // 검색은 LaunchedEffect에서 자동으로 실행됨 (debounced)
-                    },
-                    label = { Text("위치 이름") },
+            // 위치 이름 검색 TextField
+            OutlinedTextField(
+                value = locationName,
+                onValueChange = {
+                    locationName = it
+                    // 검색은 LaunchedEffect에서 자동으로 실행됨 (debounced)
+                },
+                label = { Text("위치 이름") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text("예: 스타벅스 강남점") },
+                supportingText = {
+                    Text("2글자 이상 입력하면 자동으로 검색됩니다")
+                }
+            )
+
+            // 검색 결과 목록 (있을 때만 표시)
+            if (locationSearchResults.isNotEmpty()) {
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    placeholder = { Text("예: 스타벅스 강남점") },
-                    supportingText = {
-                        Text("2글자 이상 입력하면 자동으로 검색됩니다")
-                    }
-                )
-
-                // 검색 결과 목록 (있을 때만 표시)
-                if (locationSearchResults.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 200.dp)
-                        ) {
-                            locationSearchResults.forEach { place ->
-                                ListItem(
-                                    headlineContent = { Text(place.placeName) },
-                                    supportingContent = { Text(place.addressName) },
-                                    modifier = Modifier.clickable {
-                                        // 선택 시 위치 정보 자동 입력
-                                        locationName = place.placeName
-                                        locationLatitude = place.latitude
-                                        locationLongitude = place.longitude
-                                        locationSearchResults = emptyList() // 결과 목록 닫기
-                                    },
-                                    colors = ListItemDefaults.colors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                    )
+                        locationSearchResults.forEach { place ->
+                            ListItem(
+                                headlineContent = { Text(place.placeName) },
+                                supportingContent = { Text(place.addressName) },
+                                modifier = Modifier.clickable {
+                                    // 선택 시 위치 정보 자동 입력
+                                    locationName = place.placeName
+                                    locationLatitude = place.latitude
+                                    locationLongitude = place.longitude
+                                    locationSearchResults = emptyList() // 결과 목록 닫기
+                                },
+                                colors = ListItemDefaults.colors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 )
-                                if (place != locationSearchResults.last()) {
-                                    HorizontalDivider()
-                                }
+                            )
+                            if (place != locationSearchResults.last()) {
+                                HorizontalDivider()
                             }
                         }
                     }
                 }
+            }
 
-                // 위치 상태 표시
-                if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = "Geofencing 활성화됨 (좌표: ${locationLatitude.take(8)}, ${locationLongitude.take(9)})",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                } else if (locationName.isNotBlank()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = "위치 메모만 저장됨 (알림 없음)",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                // 반경 설정 (Geofencing이 활성화된 경우에만 표시)
-                if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
-                    OutlinedTextField(
-                        value = locationRadius,
-                        onValueChange = { locationRadius = it },
-                        label = { Text("반경 (미터)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        placeholder = { Text("100") }
+            // 위치 상태 표시
+            if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "Geofencing 활성화됨 (좌표: ${locationLatitude.take(8)}, ${locationLongitude.take(9)})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
+            } else if (locationName.isNotBlank()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "위치 메모만 저장됨 (알림 없음)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // 반경 설정 (Geofencing이 활성화된 경우에만 표시)
+            if (locationLatitude.isNotBlank() && locationLongitude.isNotBlank()) {
+                OutlinedTextField(
+                    value = locationRadius,
+                    onValueChange = { locationRadius = it },
+                    label = { Text("반경 (미터)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("100") }
+                )
             }
 
             // v1.65.0: RecurrenceRule UI 복원
@@ -886,7 +884,12 @@ fun AddEditReminderScreen(
                                 recurrenceRule = recurrenceRule,
                                 recurrenceEnd = recurrenceEnd,
                                 advanceNotificationMinutes = advanceNotificationMinutes,
-                                hasTime = hasTime
+                                hasTime = hasTime,
+                                // v1.67.0: 위치 파라미터 추가
+                                locationLatitude = lat,
+                                locationLongitude = lon,
+                                locationName = locationName.ifBlank { null },
+                                locationRadius = radius
                             )
                         } else {
                             // v1.65.0: RecurrenceRule 필드 추가

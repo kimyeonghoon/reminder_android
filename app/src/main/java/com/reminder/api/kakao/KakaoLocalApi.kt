@@ -25,4 +25,19 @@ interface KakaoLocalApi {
         @Query("query") query: String,
         @Query("size") size: Int = 5
     ): KakaoPlaceResponse
+
+    /**
+     * 주소 검색 (지번, 도로명)
+     *
+     * @param authorization REST API 키 ("KakaoAK {REST_API_KEY}")
+     * @param query 검색할 주소 (예: "서울 강남구 역삼동 123-45" 또는 "서울 강남구 강남대로 123")
+     * @param size 검색 결과 개수 (기본 5개)
+     * @return 주소 검색 결과
+     */
+    @GET("v2/local/search/address.json")
+    suspend fun searchAddress(
+        @Header("Authorization") authorization: String,
+        @Query("query") query: String,
+        @Query("size") size: Int = 5
+    ): KakaoAddressResponse
 }

@@ -60,6 +60,12 @@
             </intent-filter>
         </receiver>
 
+        <!-- v1.67.0: Geofence Broadcast Receiver (위치 기반 알림) -->
+        <receiver
+            android:name=".location.GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <receiver
             android:name=".widget.ReminderWidgetProvider"
             android:exported="true">

@@ -436,4 +436,94 @@ class AddEditReminderScreenTest {
         composeTestRule.onNodeWithText("반복 설정").assertDoesNotExist()
         composeTestRule.onNodeWithText("태그").assertDoesNotExist()
     }
+
+    /**
+     * v1.67.0: 위치 검색 필드 표시 확인
+     */
+    @Test
+    fun locationSearchFieldIsDisplayed() {
+        // Given
+        val viewModel = createMockViewModel()
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = null,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("📍 위치 기반 알림 (선택사항)").assertExists()
+        composeTestRule.onNodeWithText("위치 이름").assertExists()
+    }
+
+    /**
+     * v1.67.0: 위치 검색 도움말 텍스트 확인
+     */
+    @Test
+    fun locationSearchHelperTextIsDisplayed() {
+        // Given
+        val viewModel = createMockViewModel()
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = null,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("2글자 이상 입력하면 자동으로 검색됩니다").assertExists()
+    }
+
+    /**
+     * v1.67.0: 간편 모드에서도 위치 검색 표시 확인
+     */
+    @Test
+    fun locationSearchIsDisplayedInSimpleMode() {
+        // Given
+        val viewModel = createMockViewModel()
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = null,
+                onNavigateBack = {},
+                simpleMode = true
+            )
+        }
+
+        // Then - v1.67.0: 간편 모드에서도 위치 검색 표시
+        composeTestRule.onNodeWithText("📍 위치 기반 알림 (선택사항)").assertExists()
+        composeTestRule.onNodeWithText("위치 이름").assertExists()
+    }
+
+    /**
+     * v1.67.0: 위치 이름 입력 가능 확인
+     */
+    @Test
+    fun locationNameCanBeEntered() {
+        // Given
+        val viewModel = createMockViewModel()
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = null,
+                onNavigateBack = {}
+            )
+        }
+
+        // 위치 이름 입력
+        composeTestRule.onNodeWithText("위치 이름").performTextInput("스타벅스 강남점")
+
+        // Then
+        composeTestRule.onNodeWithText("스타벅스 강남점").assertExists()
+    }
 }

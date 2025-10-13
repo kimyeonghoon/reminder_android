@@ -55,7 +55,12 @@ class ReminderViewModel(
         recurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
         recurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null,
         advanceNotificationMinutes: Int? = null,  // v1.66.0: 미리 알림
-        hasTime: Boolean = true  // v1.66.0: 시간 설정 여부
+        hasTime: Boolean = true,  // v1.66.0: 시간 설정 여부
+        // v1.67.0: 위치 파라미터 추가
+        locationLatitude: Double? = null,
+        locationLongitude: Double? = null,
+        locationName: String? = null,
+        locationRadius: Float? = null
     ) {
         viewModelScope.launch {
             val reminder = ReminderEntity(
@@ -67,13 +72,28 @@ class ReminderViewModel(
                 recurrenceRule = recurrenceRule,
                 recurrenceEnd = recurrenceEnd,
                 advanceNotificationMinutes = advanceNotificationMinutes,  // v1.66.0
-                hasTime = hasTime  // v1.66.0
+                hasTime = hasTime,  // v1.66.0
+                // v1.67.0: 위치 필드
+                locationLatitude = locationLatitude,
+                locationLongitude = locationLongitude,
+                locationName = locationName,
+                locationRadius = locationRadius
             )
-            repository.insertReminder(reminder)
+            val reminderId = repository.insertReminder(reminder)
 
             // 알람 스케줄링
             if (dueDateTime != null) {
-                alarmScheduler.schedule(reminder)
+                alarmScheduler.schedule(reminder.copy(id = reminderId))
+            }
+
+            // v1.67.0: 지오펜스 등록 (위치가 있으면)
+            if (locationLatitude != null && locationLongitude != null && locationRadius != null) {
+                locationManager.setupGeofence(
+                    reminderId = reminderId,
+                    latitude = locationLatitude,
+                    longitude = locationLongitude,
+                    radius = locationRadius
+                )
             }
 
             // Analytics 이벤트 로깅
@@ -96,6 +116,25 @@ class ReminderViewModel(
                 alarmScheduler.schedule(updatedReminder)
             }
 
+            // v1.67.0: 지오펜스 재등록 (위치가 있으면)
+            val lat = updatedReminder.locationLatitude
+            val lon = updatedReminder.locationLongitude
+            val radius = updatedReminder.locationRadius
+
+            if (lat != null && lon != null && radius != null) {
+                // 기존 지오펜스 제거 후 재등록
+                locationManager.removeGeofence(updatedReminder.id)
+                locationManager.setupGeofence(
+                    reminderId = updatedReminder.id,
+                    latitude = lat,
+                    longitude = lon,
+                    radius = radius
+                )
+            } else {
+                // 위치가 없으면 지오펜스 제거
+                locationManager.removeGeofence(updatedReminder.id)
+            }
+
             // Analytics 이벤트 로깅
             analyticsHelper.logReminderEdited()
         }
@@ -106,6 +145,8 @@ class ReminderViewModel(
             repository.deleteReminder(reminder)
             // 알람 취소
             alarmScheduler.cancel(reminder.id)
+            // v1.67.0: 지오펜스 제거
+            locationManager.removeGeofence(reminder.id)
 
             // Analytics 이벤트 로깅
             analyticsHelper.logReminderDeleted()
@@ -584,6 +625,8 @@ class ReminderViewModel(
 
     /**
      * 리마인더에 위치 추가
+     *
+     * v1.67.0: 지오펜스 자동 등록
      */
     fun addLocationToReminder(
         reminder: ReminderEntity,
@@ -602,6 +645,14 @@ class ReminderViewModel(
             )
             repository.updateReminder(updated)
 
+            // v1.67.0: 지오펜스 등록
+            locationManager.setupGeofence(
+                reminderId = updated.id,
+                latitude = latitude,
+                longitude = longitude,
+                radius = radius
+            )
+
             // Analytics 이벤트 로깅
             analyticsHelper.logLocationAdded()
         }
@@ -609,6 +660,8 @@ class ReminderViewModel(
 
     /**
      * 리마인더에서 위치 제거
+     *
+     * v1.67.0: 지오펜스 자동 제거
      */
     fun removeLocationFromReminder(reminder: ReminderEntity) {
         viewModelScope.launch {
@@ -620,6 +673,9 @@ class ReminderViewModel(
                 updatedAt = LocalDateTime.now()
             )
             repository.updateReminder(updated)
+
+            // v1.67.0: 지오펜스 제거
+            locationManager.removeGeofence(reminder.id)
         }
     }
 

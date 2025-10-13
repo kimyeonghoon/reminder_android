@@ -1,10 +1,16 @@
 package com.reminder.location
 
 import android.Manifest
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.util.Log
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -17,11 +23,15 @@ import kotlin.coroutines.resumeWithException
  * 위치 관리자
  *
  * 사용자의 현재 위치를 가져오고, 위치 기반 리마인더 기능을 제공합니다.
+ * v1.67.0: Geofencing API 통합 (자동 알림)
  */
 class LocationManager(private val context: Context) {
 
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
+
+    private val geofencingClient: GeofencingClient =
+        LocationServices.getGeofencingClient(context)
 
     /**
      * 위치 권한이 부여되었는지 확인
@@ -149,7 +159,137 @@ class LocationManager(private val context: Context) {
         }
     }
 
+    /**
+     * v1.67.0: 지오펜스 ID 생성
+     *
+     * @param reminderId 리마인더 ID
+     * @return 지오펜스 ID (예: "reminder_geofence_123")
+     */
+    fun generateGeofenceId(reminderId: Long): String {
+        return "reminder_geofence_$reminderId"
+    }
+
+    /**
+     * v1.67.0: 지오펜스 파라미터 유효성 검증
+     *
+     * @param latitude 위도 (-90 ~ 90)
+     * @param longitude 경도 (-180 ~ 180)
+     * @param radius 반경 (최소 50m)
+     * @return 유효하면 true
+     */
+    fun validateGeofenceParams(latitude: Double, longitude: Double, radius: Float): Boolean {
+        return latitude in -90.0..90.0 &&
+                longitude in -180.0..180.0 &&
+                radius >= MIN_GEOFENCE_RADIUS
+    }
+
+    /**
+     * v1.67.0: 지오펜스 등록 (위치 진입 시 자동 알림)
+     *
+     * @param reminderId 리마인더 ID
+     * @param latitude 위도
+     * @param longitude 경도
+     * @param radius 반경 (미터)
+     * @return 성공 여부
+     */
+    suspend fun setupGeofence(
+        reminderId: Long,
+        latitude: Double,
+        longitude: Double,
+        radius: Float
+    ): Boolean = suspendCancellableCoroutine { continuation ->
+        Log.d(TAG, "setupGeofence called: reminderId=$reminderId, lat=$latitude, lon=$longitude, radius=$radius")
+
+        // 권한 확인
+        if (!hasLocationPermission() || !hasBackgroundLocationPermission()) {
+            Log.w(TAG, "setupGeofence failed: missing permissions")
+            continuation.resume(false)
+            return@suspendCancellableCoroutine
+        }
+
+        // 파라미터 검증
+        if (!validateGeofenceParams(latitude, longitude, radius)) {
+            Log.w(TAG, "setupGeofence failed: invalid parameters")
+            continuation.resume(false)
+            return@suspendCancellableCoroutine
+        }
+
+        try {
+            val geofenceId = generateGeofenceId(reminderId)
+            Log.d(TAG, "Generated geofence ID: $geofenceId")
+
+            // 지오펜스 생성
+            val geofence = Geofence.Builder()
+                .setRequestId(geofenceId)
+                .setCircularRegion(latitude, longitude, radius)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .build()
+
+            // 지오펜싱 요청 생성
+            val geofencingRequest = GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofence(geofence)
+                .build()
+
+            // 지오펜스 등록
+            geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
+                .addOnSuccessListener {
+                    Log.i(TAG, "Geofence registered successfully: $geofenceId")
+                    continuation.resume(true)
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Geofence registration failed: ${exception.message}", exception)
+                    continuation.resume(false)
+                }
+        } catch (e: SecurityException) {
+            Log.e(TAG, "SecurityException during geofence setup: ${e.message}")
+            continuation.resume(false)
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception during geofence setup: ${e.message}", e)
+            continuation.resume(false)
+        }
+    }
+
+    /**
+     * v1.67.0: 지오펜스 제거
+     *
+     * @param reminderId 리마인더 ID
+     * @return 성공 여부
+     */
+    suspend fun removeGeofence(reminderId: Long): Boolean = suspendCancellableCoroutine { continuation ->
+        try {
+            val geofenceId = generateGeofenceId(reminderId)
+            geofencingClient.removeGeofences(listOf(geofenceId))
+                .addOnSuccessListener {
+                    continuation.resume(true)
+                }
+                .addOnFailureListener {
+                    continuation.resume(false)
+                }
+        } catch (e: Exception) {
+            continuation.resume(false)
+        }
+    }
+
+    /**
+     * v1.67.0: 지오펜스 PendingIntent 생성
+     *
+     * BroadcastReceiver로 지오펜스 이벤트를 전달합니다.
+     */
+    private fun getGeofencePendingIntent(): PendingIntent {
+        val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+        return PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
+    }
+
     companion object {
+        private const val TAG = "LocationManager"
         const val DEFAULT_RADIUS = 100f // 기본 반경 100미터
+        const val MIN_GEOFENCE_RADIUS = 50f // 지오펜스 최소 반경 50미터
     }
 }
