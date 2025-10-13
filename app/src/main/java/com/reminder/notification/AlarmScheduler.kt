@@ -25,6 +25,8 @@ class AlarmScheduler(private val context: Context) {
         const val EXTRA_REMINDER_PRIORITY = "reminder_priority"
         const val EXTRA_RECURRENCE_RULE = "recurrence_rule"  // v1.64.0
         const val EXTRA_RECURRENCE_END = "recurrence_end"    // v1.64.0
+        const val EXTRA_IS_ADVANCE_NOTIFICATION = "is_advance_notification"  // v1.66.0
+        private const val ADVANCE_ALARM_OFFSET = 1000000000  // v1.66.0: 미리 알림 알람 ID 오프셋
     }
 
     /**
@@ -94,12 +96,78 @@ class AlarmScheduler(private val context: Context) {
             )
             Log.d(TAG, "Exact alarm scheduled for reminder ${reminder.id} at $dueDateTime")
         }
+
+        // v1.66.0: 미리 알림 스케줄링
+        reminder.advanceNotificationMinutes?.let { advanceMinutes ->
+            if (advanceMinutes > 0) {
+                val advanceDateTime = dueDateTime.minusMinutes(advanceMinutes.toLong())
+
+                // 미리 알림 시간이 현재보다 미래인 경우에만 스케줄
+                if (advanceDateTime.isAfter(LocalDateTime.now())) {
+                    val advanceTriggerAtMillis = advanceDateTime
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+
+                    val advanceIntent = Intent(context, ReminderReceiver::class.java).apply {
+                        putExtra(EXTRA_REMINDER_ID, reminder.id)
+                        putExtra(EXTRA_REMINDER_TITLE, reminder.title)
+                        putExtra(EXTRA_REMINDER_DESCRIPTION, reminder.description)
+                        putExtra(EXTRA_REMINDER_PRIORITY, reminder.priority.name)
+                        putExtra(EXTRA_IS_ADVANCE_NOTIFICATION, true)  // 미리 알림 플래그
+                        // RecurrenceRule 직렬화
+                        reminder.recurrenceRule?.let {
+                            putExtra(EXTRA_RECURRENCE_RULE, gson.toJson(it))
+                        }
+                        reminder.recurrenceEnd?.let {
+                            putExtra(EXTRA_RECURRENCE_END, gson.toJson(it))
+                        }
+                    }
+
+                    val advancePendingIntent = PendingIntent.getBroadcast(
+                        context,
+                        reminder.id.toInt() + ADVANCE_ALARM_OFFSET,  // 다른 request code 사용
+                        advanceIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+
+                    // 미리 알림 알람 스케줄
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        if (alarmManager.canScheduleExactAlarms()) {
+                            alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                advanceTriggerAtMillis,
+                                advancePendingIntent
+                            )
+                            Log.d(TAG, "Advance alarm scheduled for reminder ${reminder.id} at $advanceDateTime (${advanceMinutes}분 전)")
+                        } else {
+                            alarmManager.setAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                advanceTriggerAtMillis,
+                                advancePendingIntent
+                            )
+                            Log.w(TAG, "Scheduled approximate advance alarm for reminder ${reminder.id}")
+                        }
+                    } else {
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            advanceTriggerAtMillis,
+                            advancePendingIntent
+                        )
+                        Log.d(TAG, "Advance alarm scheduled for reminder ${reminder.id} at $advanceDateTime (${advanceMinutes}분 전)")
+                    }
+                } else {
+                    Log.w(TAG, "Advance notification time is in the past for reminder ${reminder.id}, skipping advance alarm")
+                }
+            }
+        }
     }
 
     /**
      * 알람 취소
      */
     fun cancel(reminderId: Long) {
+        // 일반 알람 취소
         val intent = Intent(context, ReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -112,6 +180,21 @@ class AlarmScheduler(private val context: Context) {
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
             Log.d(TAG, "Alarm cancelled for reminder $reminderId")
+        }
+
+        // v1.66.0: 미리 알림 알람 취소
+        val advanceIntent = Intent(context, ReminderReceiver::class.java)
+        val advancePendingIntent = PendingIntent.getBroadcast(
+            context,
+            reminderId.toInt() + ADVANCE_ALARM_OFFSET,
+            advanceIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+        )
+
+        if (advancePendingIntent != null) {
+            alarmManager.cancel(advancePendingIntent)
+            advancePendingIntent.cancel()
+            Log.d(TAG, "Advance alarm cancelled for reminder $reminderId")
         }
     }
 

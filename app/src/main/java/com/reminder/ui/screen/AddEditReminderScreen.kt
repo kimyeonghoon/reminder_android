@@ -82,6 +82,10 @@ fun AddEditReminderScreen(
     // v1.24.0: TTS 자동 읽기
     var readAloud by remember { mutableStateOf(reminder?.readAloud ?: false) }
 
+    // v1.66.0: 미리 알림
+    var advanceNotificationMinutes by remember { mutableStateOf(reminder?.advanceNotificationMinutes) }
+    var advanceNotificationExpanded by remember { mutableStateOf(false) }
+
     // v1.25.0: 카테고리 제안
     var categorySuggestions by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -290,81 +294,84 @@ fun AddEditReminderScreen(
                 }
             }
 
-            ExposedDropdownMenuBox(
-                expanded = priorityExpanded,
-                onExpandedChange = { priorityExpanded = !priorityExpanded }
-            ) {
-                OutlinedTextField(
-                    value = when (priority) {
-                        Priority.HIGH -> "높음"
-                        Priority.MEDIUM -> "중간"
-                        Priority.LOW -> "낮음"
-                    },
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("중요도") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                )
-
-                ExposedDropdownMenu(
+            // 간편 모드에서는 중요도와 긴급도 숨김
+            if (!simpleMode) {
+                ExposedDropdownMenuBox(
                     expanded = priorityExpanded,
-                    onDismissRequest = { priorityExpanded = false }
+                    onExpandedChange = { priorityExpanded = !priorityExpanded }
                 ) {
-                    Priority.entries.forEach { p ->
-                        DropdownMenuItem(
-                            text = { Text(when (p) {
-                                Priority.HIGH -> "높음"
-                                Priority.MEDIUM -> "중간"
-                                Priority.LOW -> "낮음"
-                            }) },
-                            onClick = {
-                                priority = p
-                                priorityExpanded = false
-                            }
-                        )
+                    OutlinedTextField(
+                        value = when (priority) {
+                            Priority.HIGH -> "높음"
+                            Priority.MEDIUM -> "중간"
+                            Priority.LOW -> "낮음"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("중요도") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = priorityExpanded,
+                        onDismissRequest = { priorityExpanded = false }
+                    ) {
+                        Priority.entries.forEach { p ->
+                            DropdownMenuItem(
+                                text = { Text(when (p) {
+                                    Priority.HIGH -> "높음"
+                                    Priority.MEDIUM -> "중간"
+                                    Priority.LOW -> "낮음"
+                                }) },
+                                onClick = {
+                                    priority = p
+                                    priorityExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            // v1.47.0: Urgency (긴급도) 선택
-            ExposedDropdownMenuBox(
-                expanded = urgencyExpanded,
-                onExpandedChange = { urgencyExpanded = !urgencyExpanded }
-            ) {
-                OutlinedTextField(
-                    value = when (urgency) {
-                        Urgency.HIGH -> "높음"
-                        Urgency.MEDIUM -> "중간"
-                        Urgency.LOW -> "낮음"
-                    },
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("긴급도") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = urgencyExpanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                )
-
-                ExposedDropdownMenu(
+                // v1.47.0: Urgency (긴급도) 선택
+                ExposedDropdownMenuBox(
                     expanded = urgencyExpanded,
-                    onDismissRequest = { urgencyExpanded = false }
+                    onExpandedChange = { urgencyExpanded = !urgencyExpanded }
                 ) {
-                    Urgency.entries.forEach { u ->
-                        DropdownMenuItem(
-                            text = { Text(when (u) {
-                                Urgency.HIGH -> "높음"
-                                Urgency.MEDIUM -> "중간"
-                                Urgency.LOW -> "낮음"
-                            }) },
-                            onClick = {
-                                urgency = u
-                                urgencyExpanded = false
-                            }
-                        )
+                    OutlinedTextField(
+                        value = when (urgency) {
+                            Urgency.HIGH -> "높음"
+                            Urgency.MEDIUM -> "중간"
+                            Urgency.LOW -> "낮음"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("긴급도") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = urgencyExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = urgencyExpanded,
+                        onDismissRequest = { urgencyExpanded = false }
+                    ) {
+                        Urgency.entries.forEach { u ->
+                            DropdownMenuItem(
+                                text = { Text(when (u) {
+                                    Urgency.HIGH -> "높음"
+                                    Urgency.MEDIUM -> "중간"
+                                    Urgency.LOW -> "낮음"
+                                }) },
+                                onClick = {
+                                    urgency = u
+                                    urgencyExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -412,6 +419,61 @@ fun AddEditReminderScreen(
                 selectedTime = selectedTime,
                 onTimeSelected = { selectedTime = it }
             )
+
+            // v1.66.0: 미리 알림 (간편 모드에서도 표시 - 70대에게 유용)
+            // 날짜와 시간을 모두 선택해야만 미리 알림 UI 표시
+            if (selectedDate != null && selectedTime != null) {
+                ExposedDropdownMenuBox(
+                    expanded = advanceNotificationExpanded,
+                    onExpandedChange = { advanceNotificationExpanded = !advanceNotificationExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = when (advanceNotificationMinutes) {
+                            null -> "없음"
+                            5 -> "5분 전"
+                            10 -> "10분 전"
+                            15 -> "15분 전"
+                            30 -> "30분 전"
+                            60 -> "1시간 전"
+                            120 -> "2시간 전"
+                            1440 -> "1일 전"
+                            else -> "${advanceNotificationMinutes}분 전"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("⏰ 미리 알림") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = advanceNotificationExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = advanceNotificationExpanded,
+                        onDismissRequest = { advanceNotificationExpanded = false }
+                    ) {
+                        val options = listOf(
+                            null to "없음",
+                            5 to "5분 전",
+                            10 to "10분 전",
+                            15 to "15분 전",
+                            30 to "30분 전",
+                            60 to "1시간 전",
+                            120 to "2시간 전",
+                            1440 to "1일 전"
+                        )
+                        options.forEach { (minutes, label) ->
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = {
+                                    advanceNotificationMinutes = minutes
+                                    advanceNotificationExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             // v1.26.0: 최적 시간 제안 (간편 모드 제외)
             if (!simpleMode && selectedDate != null) {
@@ -709,6 +771,9 @@ fun AddEditReminderScreen(
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
+                        // v1.66.0: hasTime 계산 (시간이 명시적으로 선택되었는지 여부)
+                        val hasTime = selectedTime != null
+
                         val dueDateTime = if (selectedDate != null && selectedTime != null) {
                             LocalDateTime.of(selectedDate, selectedTime)
                         } else if (selectedDate != null) {
@@ -723,7 +788,7 @@ fun AddEditReminderScreen(
                         val radius = locationRadius.toFloatOrNull()
 
                         if (reminder == null) {
-                            // v1.65.0: RecurrenceRule 파라미터 추가
+                            // v1.66.0: 미리 알림 및 hasTime 파라미터 추가
                             viewModel.addReminder(
                                 title = title,
                                 description = description,
@@ -731,7 +796,9 @@ fun AddEditReminderScreen(
                                 category = category,
                                 dueDateTime = dueDateTime,
                                 recurrenceRule = recurrenceRule,
-                                recurrenceEnd = recurrenceEnd
+                                recurrenceEnd = recurrenceEnd,
+                                advanceNotificationMinutes = advanceNotificationMinutes,
+                                hasTime = hasTime
                             )
                         } else {
                             // v1.65.0: RecurrenceRule 필드 추가
@@ -754,7 +821,10 @@ fun AddEditReminderScreen(
                                 readAloud = readAloud,
                                 // v1.65.0: RecurrenceRule
                                 recurrenceRule = recurrenceRule,
-                                recurrenceEnd = recurrenceEnd
+                                recurrenceEnd = recurrenceEnd,
+                                // v1.66.0: 미리 알림 및 hasTime
+                                advanceNotificationMinutes = advanceNotificationMinutes,
+                                hasTime = hasTime
                             )
                             viewModel.updateReminder(updatedReminder)
                         }

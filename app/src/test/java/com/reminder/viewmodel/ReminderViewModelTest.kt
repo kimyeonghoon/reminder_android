@@ -508,4 +508,165 @@ class ReminderViewModelTest {
         assertEquals("둘째", sorted[1].title)
         assertEquals("첫째", sorted[2].title)
     }
+
+    // ==================== v1.66.0: 미리 알림 기능 테스트 ====================
+
+    /**
+     * addReminder에 미리 알림 시간을 전달하면 repository에 저장된다
+     */
+    @Test
+    fun addReminder_withAdvanceNotification_savesAdvanceNotificationMinutes() = runTest {
+        // Given
+        val title = "병원 예약"
+        val advanceMinutes = 30
+
+        // When
+        viewModel.addReminder(
+            title = title,
+            advanceNotificationMinutes = advanceMinutes
+        )
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.advanceNotificationMinutes == advanceMinutes
+        })
+    }
+
+    /**
+     * addReminder에 미리 알림을 null로 전달하면 미리 알림이 없는 상태로 저장된다
+     */
+    @Test
+    fun addReminder_withNullAdvanceNotification_savesWithoutAdvanceNotification() = runTest {
+        // Given
+        val title = "일반 할일"
+
+        // When
+        viewModel.addReminder(
+            title = title,
+            advanceNotificationMinutes = null
+        )
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.advanceNotificationMinutes == null
+        })
+    }
+
+    /**
+     * addReminder에 미리 알림 파라미터를 생략하면 기본값 null로 저장된다
+     */
+    @Test
+    fun addReminder_withoutAdvanceNotificationParam_savesWithDefaultNull() = runTest {
+        // Given
+        val title = "기본 할일"
+
+        // When
+        viewModel.addReminder(title = title)
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.advanceNotificationMinutes == null
+        })
+    }
+
+    /**
+     * 다양한 미리 알림 시간 값이 올바르게 저장된다
+     */
+    @Test
+    fun addReminder_withVariousAdvanceNotificationValues_savesCorrectly() = runTest {
+        // Given
+        val testCases = listOf(
+            5,      // 5분 전
+            10,     // 10분 전
+            15,     // 15분 전
+            30,     // 30분 전
+            60,     // 1시간 전
+            120,    // 2시간 전
+            1440    // 1일 전
+        )
+
+        // When & Then
+        testCases.forEach { minutes ->
+            viewModel.addReminder(
+                title = "테스트 ${minutes}분 전",
+                advanceNotificationMinutes = minutes
+            )
+            advanceUntilIdle()
+
+            verify(repository).insertReminder(argThat { reminder ->
+                reminder.advanceNotificationMinutes == minutes
+            })
+        }
+    }
+
+    // ==================== v1.66.0: hasTime 필드 테스트 ====================
+
+    /**
+     * addReminder에 hasTime=true를 전달하면 시간이 설정된 상태로 저장된다
+     */
+    @Test
+    fun addReminder_withHasTimeTrue_savesWithTimeEnabled() = runTest {
+        // Given
+        val title = "시간 포함 할일"
+
+        // When
+        viewModel.addReminder(
+            title = title,
+            hasTime = true
+        )
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.hasTime == true
+        })
+    }
+
+    /**
+     * addReminder에 hasTime=false를 전달하면 날짜만 있는 상태로 저장된다
+     */
+    @Test
+    fun addReminder_withHasTimeFalse_savesWithoutTime() = runTest {
+        // Given
+        val title = "날짜만 있는 할일"
+
+        // When
+        viewModel.addReminder(
+            title = title,
+            hasTime = false
+        )
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.hasTime == false
+        })
+    }
+
+    /**
+     * addReminder에 hasTime 파라미터를 생략하면 기본값 true로 저장된다
+     */
+    @Test
+    fun addReminder_withoutHasTimeParam_savesWithDefaultTrue() = runTest {
+        // Given
+        val title = "기본값 할일"
+
+        // When
+        viewModel.addReminder(title = title)
+        advanceUntilIdle()
+
+        // Then
+        verify(repository).insertReminder(argThat { reminder ->
+            reminder.title == title &&
+            reminder.hasTime == true  // 기본값 true
+        })
+    }
 }

@@ -369,7 +369,8 @@ fun HomeScreen(
                                     } else {
                                         selectedReminders + reminder.id
                                     }
-                                }
+                                },
+                                simpleMode = simpleMode // 간편 모드 전달
                             )
                         }
                     }

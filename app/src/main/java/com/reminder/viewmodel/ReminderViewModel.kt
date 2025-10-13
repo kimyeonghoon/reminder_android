@@ -53,7 +53,9 @@ class ReminderViewModel(
         priority: Priority = Priority.MEDIUM,
         category: String = "",
         recurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
-        recurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null
+        recurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null,
+        advanceNotificationMinutes: Int? = null,  // v1.66.0: 미리 알림
+        hasTime: Boolean = true  // v1.66.0: 시간 설정 여부
     ) {
         viewModelScope.launch {
             val reminder = ReminderEntity(
@@ -63,7 +65,9 @@ class ReminderViewModel(
                 priority = priority,
                 category = category,
                 recurrenceRule = recurrenceRule,
-                recurrenceEnd = recurrenceEnd
+                recurrenceEnd = recurrenceEnd,
+                advanceNotificationMinutes = advanceNotificationMinutes,  // v1.66.0
+                hasTime = hasTime  // v1.66.0
             )
             repository.insertReminder(reminder)
 

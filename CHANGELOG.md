@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.66.0] - 2025-10-13
+
+### Added
+- ✅ **hasTime 필드 추가** - 날짜만/날짜+시간 명시적 구분
+  - **ReminderEntity에 hasTime Boolean 필드 추가**
+    - 시간이 설정되었는지 여부 명시적으로 저장
+    - 기본값: true (시간 포함)
+  - **DB 마이그레이션 25→26**
+    - `ALTER TABLE reminders ADD COLUMN hasTime INTEGER NOT NULL DEFAULT 1`
+    - MIGRATION_25_26 추가
+  - **UI 표시 로직 개선**
+    - ReminderCard에서 hasTime 기반 날짜/시간 표시
+    - hasTime=true: "2025-10-13 14:30" (날짜+시간)
+    - hasTime=false: "2025-10-13" (날짜만)
+  - **AddEditReminderScreen 로직 개선**
+    - selectedTime != null로 hasTime 자동 계산
+    - 새 리마인더 추가/수정 시 hasTime 전달
+  - **ReminderViewModel 파라미터 추가**
+    - addReminder()에 hasTime 파라미터 추가
+    - 기본값: true
+
+### Fixed
+- 🐛 **00:00 시간 구분 문제 해결**
+  - **문제**: 시간 미선택(00:00)과 의도적 00:00 선택을 구분할 수 없었음
+  - **해결**: hasTime 필드로 두 경우를 명확히 구분
+    - 시간 미선택 → hasTime=false, DB 00:00 → UI "날짜만"
+    - 00:00 의도 선택 → hasTime=true, DB 00:00 → UI "날짜 00:00"
+
+### Testing
+- **3개 테스트 추가** (총 216개 테스트 100% 통과)
+  - `addReminder_withHasTimeTrue_savesWithTimeEnabled()`
+  - `addReminder_withHasTimeFalse_savesWithoutTime()`
+  - `addReminder_withoutHasTimeParam_savesWithDefaultTrue()`
+
+### Code Quality
+- **데이터 무결성 향상**: 시간 설정 여부를 데이터 모델에 명시적으로 저장
+- **UX 개선**: 사용자가 의도한 날짜/시간 표시 정확성 향상
+- **코드 명확성**: 비즈니스 로직에서 hasTime 필드로 의도 파악 용이
+
 ## [1.63.1] - 2025-10-12
 
 ### Fixed

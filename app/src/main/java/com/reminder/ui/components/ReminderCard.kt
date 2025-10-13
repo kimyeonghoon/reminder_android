@@ -38,7 +38,8 @@ fun ReminderCard(
     onDuplicate: (() -> Unit)? = null,
     isSelected: Boolean = false,
     isSelectionMode: Boolean = false,
-    onSelectionToggle: (() -> Unit)? = null
+    onSelectionToggle: (() -> Unit)? = null,
+    simpleMode: Boolean = false // 간편 모드
 ) {
     val haptic = rememberHapticFeedback()
 
@@ -82,8 +83,11 @@ fun ReminderCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PriorityIndicator(priority = reminder.priority)
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // 간편 모드에서는 우선순위 인디케이터 숨김
+                    if (!simpleMode) {
+                        PriorityIndicator(priority = reminder.priority)
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     Text(
                         text = reminder.title,
                         style = MaterialTheme.typography.titleMedium,
@@ -106,103 +110,115 @@ fun ReminderCard(
 
                 reminder.dueDateTime?.let { dueDate ->
                     Spacer(modifier = Modifier.height(4.dp))
+                    // v1.66.0: hasTime 필드로 시간 표시 여부 결정
+                    val displayText = if (reminder.hasTime) {
+                        dueDate.format(dateTimeFormatter)  // 날짜 + 시간
+                    } else {
+                        dueDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))  // 날짜만
+                    }
                     Text(
-                        text = dueDate.format(dateTimeFormatter),
+                        text = displayText,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
 
-                if (reminder.category.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    SuggestionChip(
-                        onClick = { },
-                        label = { Text(reminder.category) }
-                    )
-                }
+                // 간편 모드에서는 카테고리, 위치, 링크, TTS, 서브태스크 숨김
+                if (!simpleMode) {
+                    if (reminder.category.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        SuggestionChip(
+                            onClick = { },
+                            label = { Text(reminder.category) }
+                        )
+                    }
 
-                // v1.22.0: 위치 표시
-                if (!reminder.locationName.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "📍 ${reminder.locationName}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
+                    // v1.22.0: 위치 표시
+                    if (!reminder.locationName.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "📍 ${reminder.locationName}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
 
-                // v1.23.0: 웹 링크 표시
-                if (!reminder.webLink.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "🔗 ${reminder.webLink}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                    // v1.23.0: 웹 링크 표시
+                    if (!reminder.webLink.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "🔗 ${reminder.webLink}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
-                // v1.24.0: TTS 활성화 표시
-                if (reminder.readAloud) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "🔊 자동 읽기",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    // v1.24.0: TTS 활성화 표시
+                    if (reminder.readAloud) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "🔊 자동 읽기",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
 
-                // 서브태스크 진행률 표시
-                subTaskProgress?.let { (completed, total) ->
-                    if (total > 0) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            LinearProgressIndicator(
-                                progress = { completed.toFloat() / total.toFloat() },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(6.dp),
-                                color = MaterialTheme.colorScheme.tertiary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                            Text(
-                                text = "$completed/$total",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    // 서브태스크 진행률 표시
+                    subTaskProgress?.let { (completed, total) ->
+                        if (total > 0) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                LinearProgressIndicator(
+                                    progress = { completed.toFloat() / total.toFloat() },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(6.dp),
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                                Text(
+                                    text = "$completed/$total",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
             }
 
             if (!isSelectionMode) {
-                onDuplicate?.let { duplicateAction ->
-                    IconButton(onClick = {
-                        haptic.click()
-                        duplicateAction()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ContentCopy,
-                            contentDescription = "복제",
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
+                // 간편 모드에서는 복제/공유 버튼 숨김
+                if (!simpleMode) {
+                    onDuplicate?.let { duplicateAction ->
+                        IconButton(onClick = {
+                            haptic.click()
+                            duplicateAction()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "복제",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
-                }
 
-                onShare?.let { shareAction ->
-                    IconButton(onClick = {
-                        haptic.click()
-                        shareAction()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "공유",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    onShare?.let { shareAction ->
+                        IconButton(onClick = {
+                            haptic.click()
+                            shareAction()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "공유",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
 

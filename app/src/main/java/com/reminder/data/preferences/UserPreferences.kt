@@ -13,7 +13,7 @@ data class UserPreferences(
     val highContrastMode: Boolean = false,  // 고대비 모드 (접근성)
     val onboardingCompleted: Boolean = false,  // 온보딩 완료 여부
     val fontSize: FontSize = FontSize.NORMAL,  // 글씨 크기
-    val simpleMode: Boolean = false,  // 간편 모드
+    val simpleMode: Boolean = true,  // 간편 모드 (디폴트: 70대도 쉽게 사용)
 
     // 알림 설정
     val notificationSound: Boolean = true,  // 알림 소리

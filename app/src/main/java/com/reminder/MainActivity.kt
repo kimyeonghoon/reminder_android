@@ -142,6 +142,15 @@ class MainActivity : ComponentActivity() {
             app.syncManager.initialSync()
         }
 
+        // 테스트 더미 데이터 추가 (한 번만 실행)
+        val prefs = getSharedPreferences("test_data", MODE_PRIVATE)
+        if (!prefs.getBoolean("dummy_data_inserted", false)) {
+            activityScope.launch {
+                insertDummyData(app)
+                prefs.edit().putBoolean("dummy_data_inserted", true).apply()
+            }
+        }
+
         // Android 13+ 알림 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -167,6 +176,104 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ReminderApp()
+        }
+    }
+
+    private suspend fun insertDummyData(app: ReminderApplication) {
+        val now = java.time.LocalDateTime.now()
+        val dummyReminders = listOf(
+            com.reminder.data.entity.ReminderEntity(
+                title = "장보기",
+                description = "우유, 계란, 빵 사기",
+                dueDateTime = now.plusHours(8),
+                priority = com.reminder.data.entity.Priority.MEDIUM,
+                urgency = com.reminder.data.entity.Urgency.MEDIUM,
+                category = "집안일",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "병원 예약",
+                description = "치과 검진 예약하기",
+                dueDateTime = now.plusDays(1).withHour(10).withMinute(0),
+                priority = com.reminder.data.entity.Priority.HIGH,
+                urgency = com.reminder.data.entity.Urgency.HIGH,
+                category = "건강",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "약 먹기",
+                description = "고혈압약 복용",
+                dueDateTime = now.withHour(20).withMinute(0),
+                priority = com.reminder.data.entity.Priority.HIGH,
+                urgency = com.reminder.data.entity.Urgency.HIGH,
+                category = "건강",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "손주 전화하기",
+                description = "손주에게 안부 전화",
+                dueDateTime = now.withHour(15).withMinute(0),
+                priority = com.reminder.data.entity.Priority.MEDIUM,
+                urgency = com.reminder.data.entity.Urgency.MEDIUM,
+                category = "가족",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "운동하기",
+                description = "동네 한 바퀴 산책",
+                dueDateTime = now.plusDays(1).withHour(7).withMinute(0),
+                priority = com.reminder.data.entity.Priority.LOW,
+                urgency = com.reminder.data.entity.Urgency.LOW,
+                category = "건강",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "청구서 납부",
+                description = "전기세 납부하기",
+                dueDateTime = now.plusDays(2).withHour(12).withMinute(0),
+                priority = com.reminder.data.entity.Priority.HIGH,
+                urgency = com.reminder.data.entity.Urgency.HIGH,
+                category = "생활",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "텃밭 물주기",
+                description = "토마토랑 상추 물주기",
+                dueDateTime = now.withHour(17).withMinute(0),
+                priority = com.reminder.data.entity.Priority.LOW,
+                urgency = com.reminder.data.entity.Urgency.LOW,
+                category = "취미",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            ),
+            com.reminder.data.entity.ReminderEntity(
+                title = "경로당 가기",
+                description = "오후 2시 경로당 모임",
+                dueDateTime = now.plusDays(1).withHour(14).withMinute(0),
+                priority = com.reminder.data.entity.Priority.MEDIUM,
+                urgency = com.reminder.data.entity.Urgency.MEDIUM,
+                category = "사회활동",
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = now
+            )
+        )
+
+        dummyReminders.forEach { reminder ->
+            app.repository.insertReminder(reminder)
         }
     }
 }
@@ -384,7 +491,7 @@ fun ReminderAppContent(
                 ) + fadeOut(animationSpec = tween(300))
             }
         ) {
-            selectedReminder = null
+            // selectedReminder = null 제거 (버그 수정)
             HomeScreen(
                 viewModel = viewModel,
                 onAddClick = { navController.navigate("add_edit") },
@@ -430,7 +537,10 @@ fun ReminderAppContent(
             AddEditReminderScreen(
                 viewModel = viewModel,
                 reminder = selectedReminder,
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = {
+                    selectedReminder = null // 뒤로가기 시 초기화
+                    navController.popBackStack()
+                },
                 simpleMode = userPreferences.simpleMode
             )
         }

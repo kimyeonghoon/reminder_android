@@ -73,7 +73,7 @@ class PreferencesRepository(
             val dynamicColor = preferences[PreferencesKeys.DYNAMIC_COLOR] ?: true
             val highContrastMode = preferences[PreferencesKeys.HIGH_CONTRAST_MODE] ?: false
             val onboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
-            val simpleMode = preferences[PreferencesKeys.SIMPLE_MODE] ?: false
+            val simpleMode = preferences[PreferencesKeys.SIMPLE_MODE] ?: true  // v1.66.0: 70대 사용자를 위한 기본값 true
 
             // 알림 설정 (기본값: 모두 활성화)
             val notificationSound = preferences[PreferencesKeys.NOTIFICATION_SOUND] ?: true

@@ -60,7 +60,11 @@ data class ReminderEntity(
 
     // v1.35.0: 반복 작업 고급 옵션
     val recurrenceRule: RecurrenceRule? = null,  // 반복 규칙 (DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM)
-    val recurrenceEnd: RecurrenceEnd? = null    // 반복 종료 조건 (Never, AfterOccurrences, OnDate)
+    val recurrenceEnd: RecurrenceEnd? = null,    // 반복 종료 조건 (Never, AfterOccurrences, OnDate)
+
+    // v1.66.0: 미리 알림 (사전 알림)
+    val advanceNotificationMinutes: Int? = null,  // X분 전에 미리 알림 (null이면 미리 알림 없음)
+    val hasTime: Boolean = true  // v1.66.0: 시간이 설정되었는지 여부 (false면 날짜만, true면 날짜+시간)
 )
 
 enum class Priority {

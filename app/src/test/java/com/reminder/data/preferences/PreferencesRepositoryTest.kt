@@ -96,14 +96,14 @@ class PreferencesRepositoryTest {
         assertEquals(ThemeMode.SYSTEM, updated.themeMode)
     }
 
-    /** UserPreferences 초기 simpleMode는 false이다 */
+    /** UserPreferences 초기 simpleMode는 true이다 (70대 사용자 기본값) */
     @Test
-    fun userPreferencesDefaultSimpleModeIsFalse() {
+    fun userPreferencesDefaultSimpleModeIsTrue() {
         // Given & When
         val preferences = UserPreferences()
 
         // Then
-        assertFalse(preferences.simpleMode)
+        assertTrue(preferences.simpleMode)
     }
 
     /** UserPreferences copy로 simpleMode를 변경할 수 있다 */
