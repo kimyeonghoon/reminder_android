@@ -35,7 +35,7 @@ class ReminderViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         Dispatchers.setMain(testDispatcher)
         repository = mock()
         alarmScheduler = mock()
@@ -69,6 +69,9 @@ class ReminderViewModelTest {
         whenever(repository.allReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.activeReminders).thenReturn(flowOf(emptyList()))
         whenever(repository.completedReminders).thenReturn(flowOf(emptyList()))
+
+        // Mock suspend function insertReminder to return a valid ID
+        whenever(repository.insertReminder(any())).thenAnswer { 1L }
 
         viewModel = ReminderViewModel(repository, alarmScheduler, database, analyticsHelper, snoozeManager, locationManager, ttsHelper, categorySuggestionHelper, completionPatternAnalyzer)
     }

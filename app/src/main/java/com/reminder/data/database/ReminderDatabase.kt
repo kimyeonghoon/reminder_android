@@ -39,7 +39,7 @@ import com.reminder.data.entity.SubTask
 
 @Database(
     entities = [ReminderEntity::class, SubTask::class, ReminderImage::class, com.reminder.data.entity.ReminderTemplate::class, SavedFilterEntity::class, GoalEntity::class, RecurrenceExceptionEntity::class, MLTrainingDataEntity::class, PendingActionEntity::class, ConflictLogEntity::class, ReminderAttachment::class, CalendarSyncConfig::class, HabitEntity::class, HabitCompletion::class, PomodoroSession::class, FocusSessionEntity::class],
-    version = 26,
+    version = 27,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -526,6 +526,136 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_26_27 = object : Migration(26, 27) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // v1.67.1: 레거시 반복 필드 제거 (recurrencePattern, recurrenceInterval, recurrenceDaysOfWeek, recurrenceEndDate)
+                // SQLite는 ALTER TABLE DROP COLUMN을 지원하지 않으므로 테이블 재생성 필요
+
+                // === reminders 테이블 ===
+                // 1. 새 테이블 생성 (레거시 필드 제외)
+                db.execSQL("""
+                    CREATE TABLE reminders_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        title TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        dueDateTime TEXT,
+                        priority INTEGER NOT NULL,
+                        urgency INTEGER NOT NULL,
+                        category TEXT NOT NULL,
+                        tags TEXT NOT NULL,
+                        isCompleted INTEGER NOT NULL,
+                        completedAt TEXT,
+                        isArchived INTEGER NOT NULL,
+                        createdAt TEXT NOT NULL,
+                        updatedAt TEXT NOT NULL,
+                        imageUri TEXT,
+                        snoozeUntil TEXT,
+                        locationLatitude REAL,
+                        locationLongitude REAL,
+                        locationName TEXT,
+                        locationRadius REAL,
+                        webLink TEXT,
+                        readAloud INTEGER NOT NULL,
+                        recurrenceRule TEXT,
+                        recurrenceEnd TEXT,
+                        advanceNotificationMinutes INTEGER,
+                        hasTime INTEGER NOT NULL
+                    )
+                """.trimIndent())
+
+                // 2. 데이터 복사 (레거시 필드 제외)
+                db.execSQL("""
+                    INSERT INTO reminders_new (
+                        id, title, description, dueDateTime, priority, urgency, category, tags,
+                        isCompleted, completedAt, isArchived, createdAt, updatedAt, imageUri, snoozeUntil,
+                        locationLatitude, locationLongitude, locationName, locationRadius,
+                        webLink, readAloud, recurrenceRule, recurrenceEnd, advanceNotificationMinutes, hasTime
+                    )
+                    SELECT
+                        id, title, description, dueDateTime, priority, urgency, category, tags,
+                        isCompleted, completedAt, isArchived, createdAt, updatedAt, imageUri, snoozeUntil,
+                        locationLatitude, locationLongitude, locationName, locationRadius,
+                        webLink, readAloud, recurrenceRule, recurrenceEnd, advanceNotificationMinutes, hasTime
+                    FROM reminders
+                """.trimIndent())
+
+                // 3. 기존 인덱스 제거
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_isCompleted")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_dueDateTime")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_priority")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_category")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_updatedAt")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_isCompleted_dueDateTime")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_urgency")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_priority_urgency")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_isArchived")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_isCompleted_isArchived")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_snoozeUntil")
+                db.execSQL("DROP INDEX IF EXISTS index_reminders_isCompleted_updatedAt")
+
+                // 4. 기존 테이블 삭제
+                db.execSQL("DROP TABLE reminders")
+
+                // 5. 새 테이블 이름 변경
+                db.execSQL("ALTER TABLE reminders_new RENAME TO reminders")
+
+                // 6. 인덱스 재생성
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_isCompleted ON reminders(isCompleted)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_dueDateTime ON reminders(dueDateTime)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_priority ON reminders(priority)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_category ON reminders(category)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_updatedAt ON reminders(updatedAt)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_isCompleted_dueDateTime ON reminders(isCompleted, dueDateTime)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_urgency ON reminders(urgency)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_priority_urgency ON reminders(priority, urgency)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_isArchived ON reminders(isArchived)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_isCompleted_isArchived ON reminders(isCompleted, isArchived)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_snoozeUntil ON reminders(snoozeUntil)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminders_isCompleted_updatedAt ON reminders(isCompleted, updatedAt)")
+
+                // === reminder_templates 테이블 ===
+                // 1. 새 테이블 생성 (레거시 필드 제외)
+                db.execSQL("""
+                    CREATE TABLE reminder_templates_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        titleTemplate TEXT NOT NULL,
+                        descriptionTemplate TEXT NOT NULL,
+                        defaultPriority INTEGER NOT NULL,
+                        defaultCategory TEXT NOT NULL,
+                        defaultRecurrenceRule TEXT,
+                        defaultRecurrenceEnd TEXT,
+                        createdAt TEXT NOT NULL,
+                        updatedAt TEXT NOT NULL
+                    )
+                """.trimIndent())
+
+                // 2. 데이터 복사 (레거시 필드 제외, 새 필드는 NULL)
+                db.execSQL("""
+                    INSERT INTO reminder_templates_new (
+                        id, name, titleTemplate, descriptionTemplate, defaultPriority, defaultCategory,
+                        defaultRecurrenceRule, defaultRecurrenceEnd, createdAt, updatedAt
+                    )
+                    SELECT
+                        id, name, titleTemplate, descriptionTemplate, defaultPriority, defaultCategory,
+                        NULL, NULL, createdAt, updatedAt
+                    FROM reminder_templates
+                """.trimIndent())
+
+                // 3. 기존 인덱스 제거
+                db.execSQL("DROP INDEX IF EXISTS index_reminder_templates_name")
+
+                // 4. 기존 테이블 삭제
+                db.execSQL("DROP TABLE reminder_templates")
+
+                // 5. 새 테이블 이름 변경
+                db.execSQL("ALTER TABLE reminder_templates_new RENAME TO reminder_templates")
+
+                // 6. 인덱스 재생성
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_reminder_templates_name ON reminder_templates(name)")
+            }
+        }
+
         fun getDatabase(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -533,7 +663,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27)
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance
