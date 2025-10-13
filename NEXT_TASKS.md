@@ -1,16 +1,16 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-13 (v1.64.0 완료)
+> 마지막 업데이트: 2025-10-13 (v1.66.0 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.64.0 (versionCode 69)
-- **DB 버전**: v24
-- **총 릴리즈**: 69개 버전
-- **테스트 커버리지**: 268/268 통과 (100% ✅)
+- **최신 버전**: v1.66.0 (versionCode 71)
+- **DB 버전**: v26
+- **총 릴리즈**: 71개 버전
+- **테스트 커버리지**: 216/216 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
 - ✅ CRUD, 알림, Firebase 실시간 동기화
@@ -53,10 +53,12 @@
 - ✅ **Bottom Navigation 통합 (v1.63.0: TopAppBar 아키텍처 개선, UI 정리)** 🎨
 - ✅ **테스트 함수명 표준화 (v1.63.1: 38개 파일, 370+ 함수 영어 변환, UI 테스트 강화)** ✅
 - ✅ **RecurrencePattern 레거시 제거 (v1.64.0: 새 RecurrenceRule 시스템으로 완전 전환)** 🔄
+- ✅ **RecurrenceRule UI 재구현 (v1.65.0: RecurrenceSelector 복원, 미리 알림 기능)** 🔄
+- ✅ **hasTime 필드 추가 (v1.66.0: 날짜/시간 구분 명시화, 00:00 문제 해결)** 🕒
 
 ---
 
-## 🔥 다음 버전 계획 (v1.63.1 이후)
+## 🔥 다음 버전 계획 (v1.66.0 이후)
 
 ### 🎯 향후 개발 방향
 
@@ -464,11 +466,53 @@
   - AlarmSchedulerCalculationTest.kt (deprecated 함수 테스트)
 - **코드 감소**: 762 lines deleted, 116 lines added (net -646 lines)
 - **테스트**: 268/268 통과 ✅
-- **⚠️ v1.65.0 TODO**:
-  - RecurrenceCalculator 구현 (다음 발생 시간 계산)
-  - RecurrenceSelector UI 재구현
-  - AddEditReminderScreen 반복 설정 UI 복원
-  - ReminderReceiver 다음 알람 스케줄링
+
+### v1.65.0: RecurrenceRule UI 재구현 ✅ 🔄
+**완료됨** - 반복 기능 UI 복원 및 미리 알림 기능 추가
+- **RecurrenceSelector UI 재구현**:
+  - RecurrenceRule 기반 새로운 UI
+  - 일/주/월/년 반복 설정
+  - 요일 선택 (주간 반복)
+  - 종료 조건 (날짜, 횟수, 무제한)
+  - 한글 지원 완료
+- **미리 알림 (Advance Notification)**:
+  - advanceNotificationMinutes 필드 추가 (Int?)
+  - 5분/10분/30분/1시간/1일/1주일 전 알림
+  - 날짜+시간 선택 시에만 활성화
+  - DB 마이그레이션 24→25
+- **AddEditReminderScreen 복원**:
+  - 반복 설정 섹션 재활성화
+  - 미리 알림 설정 UI 추가
+  - 원형 아이콘 (Icons.Default.Alarm) 사용
+- **테스트**: 216/216 통과 ✅
+- **버전**: versionCode 70, versionName "1.65.0"
+
+### v1.66.0: hasTime 필드 추가 ✅ 🕒
+**완료됨** - 날짜/시간 구분 명시화, 00:00 문제 해결
+- **hasTime Boolean 필드 추가**:
+  - ReminderEntity에 hasTime 필드 추가
+  - 시간이 명시적으로 설정되었는지 여부 저장
+  - 기본값: true (시간 포함)
+- **DB 마이그레이션 25→26**:
+  - `ALTER TABLE reminders ADD COLUMN hasTime INTEGER NOT NULL DEFAULT 1`
+  - MIGRATION_25_26 추가
+- **00:00 문제 해결**:
+  - **문제**: 시간 미선택(00:00)과 의도적 00:00 선택을 구분할 수 없었음
+  - **해결**: hasTime 필드로 두 경우를 명확히 구분
+    - 시간 미선택 → hasTime=false, DB 00:00 → UI "날짜만"
+    - 00:00 의도 선택 → hasTime=true, DB 00:00 → UI "날짜 00:00"
+- **UI 표시 로직 개선**:
+  - ReminderCard에서 hasTime 기반 날짜/시간 표시
+  - hasTime=true: "2025-10-13 14:30" (날짜+시간)
+  - hasTime=false: "2025-10-13" (날짜만)
+- **AddEditReminderScreen 로직 개선**:
+  - selectedTime != null로 hasTime 자동 계산
+  - 새 리마인더 추가/수정 시 hasTime 전달
+- **ReminderViewModel 파라미터 추가**:
+  - addReminder()에 hasTime 파라미터 추가
+  - 기본값: true
+- **테스트**: 216/216 통과 ✅ (3개 테스트 추가)
+- **버전**: versionCode 71, versionName "1.66.0"
 
 ---
 
@@ -521,17 +565,10 @@ v1.64.0까지 완료! 다음 세션에서는:
 ### 15. ~~**Bottom Navigation 통합 (v1.63.0)**~~ ✅ 완료됨
 ### 16. ~~**테스트 함수명 표준화 (v1.63.1)**~~ ✅ 완료됨
 ### 17. ~~**RecurrencePattern 레거시 제거 (v1.64.0)**~~ ✅ 완료됨
+### 18. ~~**RecurrenceRule UI 재구현 (v1.65.0)**~~ ✅ 완료됨
+### 19. ~~**hasTime 필드 추가 (v1.66.0)**~~ ✅ 완료됨
 
-### 18. **RecurrenceRule UI 재구현 (v1.65.0)** (다음 우선순위) 🔴
-- v1.64.0에서 비활성화된 반복 기능 UI 복원
-- RecurrenceCalculator 구현 (다음 발생 시간 계산)
-- RecurrenceSelector UI 재구현 (RecurrenceRule 기반)
-- AddEditReminderScreen 반복 설정 UI 복원
-- ReminderReceiver 다음 알람 스케줄링
-- TDD 방식 개발 (테스트 먼저)
-- 예상 시간: 2-3시간
-
-### 19. **Wear OS 앱 구현** 🟠
+### 20. **Wear OS 앱 구현** 🟠 (다음 우선순위)
 - 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
@@ -539,7 +576,7 @@ v1.64.0까지 완료! 다음 세션에서는:
 - 리마인더 빠른 완료 기능
 - 예상 시간: 6-7시간
 
-### 20. **시간 블로킹 (Time Blocking)** 🟡
+### 21. **시간 블로킹 (Time Blocking)** 🟡
 - 캘린더와 통합하여 작업 시간 예약
 - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
 - 드래그 앤 드롭으로 시간대 배정
@@ -636,13 +673,15 @@ _v1.64.0까지 69개 버전, 24개 DB 마이그레이션을 완료했습니다. 
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🔴 **RecurrenceRule UI 재구현 (v1.65.0)** (반복 기능 UI 복원, 긴급)
-2. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
-3. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
-4. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
+1. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
+2. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
+3. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
+4. 🔵 **소셜 협업 강화** (댓글, 멘션, 활동 피드)
 
-**⭐ v1.59.0 ~ v1.64.0 하이라이트**:
+**⭐ v1.59.0 ~ v1.66.0 하이라이트**:
 - **v1.59.0~v1.62.0**: 코드 품질 개선으로 Lint Error 0개 달성, Compose 성능 최적화, RemoteViews 호환성 100% 확보 🧹
 - **v1.63.0**: Bottom Navigation 통합 및 TopAppBar 아키텍처 개선으로 UI 일관성 대폭 향상 🎨
 - **v1.63.1**: 테스트 함수명 표준화 (38개 파일, 370+ 함수 영어 변환)로 테스트 안정성 확보, UI 한글화 완료 ✅
 - **v1.64.0**: RecurrencePattern 레거시 완전 제거, RecurrenceRule 시스템으로 전환, 646줄 코드 감소, 268개 테스트 통과 🔄
+- **v1.65.0**: RecurrenceRule UI 재구현, 반복 기능 복원, 미리 알림 기능 추가 🔄
+- **v1.66.0**: hasTime 필드로 날짜/시간 구분 명시화, 00:00 문제 해결, UI 표시 로직 개선 🕒

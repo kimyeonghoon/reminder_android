@@ -8,7 +8,7 @@
 - ✅ **커밋 메시지는 한글로** - type(scope): 한글 제목 형식
 - ✅ **MVVM 아키텍처 준수** - 레이어 분리 엄수
 
-**📋 프로젝트 현황 (2025-10-11 업데이트):**
+**📋 프로젝트 현황 (2025-10-13 업데이트):**
 - ✅ v1.0.0 - 기본 CRUD 기능
 - ✅ v1.1.0 - 날짜/시간 선택 UI
 - ✅ v1.2.0 - 알림/푸시 기능
@@ -73,8 +73,13 @@
 - ✅ v1.60.0 - 최종 코드 정리 (ObsoleteSdkInt 경고 완전 제거, 코드 단순화)
 - ✅ v1.61.0 - Android Lint 추가 정리 (InlinedApi 경고 수정, XML 주석 개선)
 - ✅ v1.62.0 - Lint Error 완전 제거 (RemoteViewLayout 수정, 위젯 안정성 향상)
+- ✅ v1.63.0 - Bottom Navigation 통합 (TopAppBar 아키텍처 개선, UI 정리)
+- ✅ v1.63.1 - 테스트 함수명 표준화 (38개 파일, 370+ 함수 영어 변환)
+- ✅ v1.64.0 - RecurrencePattern 레거시 제거 (새 RecurrenceRule 시스템, 646줄 감소)
+- ✅ v1.65.0 - RecurrenceRule UI 재구현 (RecurrenceSelector 복원, 미리 알림 기능)
+- ✅ v1.66.0 - hasTime 필드 추가 (날짜/시간 구분 명시화, 00:00 문제 해결)
 
-**🎉 현재 버전: v1.62.0 (versionCode 68, DB v24)**
+**🎉 현재 버전: v1.66.0 (versionCode 71, DB v26)**
 
 ---
 
