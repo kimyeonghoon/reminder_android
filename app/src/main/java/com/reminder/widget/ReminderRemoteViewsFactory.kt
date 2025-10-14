@@ -5,9 +5,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.reminder.R
-import com.reminder.data.database.ReminderDatabase
 import com.reminder.data.entity.Priority
-import com.reminder.data.entity.ReminderEntity
 import com.reminder.data.repository.ReminderRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -21,22 +19,28 @@ class ReminderRemoteViewsFactory(
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var widgetItems: List<WidgetData> = emptyList()
-    private lateinit var repository: ReminderRepository
+    private val repository: ReminderRepository by lazy {
+        // Application의 Repository 사용 (올바르게 초기화됨)
+        val app = context.applicationContext as com.reminder.ReminderApplication
+        app.repository
+    }
     private val widgetDataProvider = WidgetDataProvider()
 
     override fun onCreate() {
-        // Repository 초기화
-        val database = ReminderDatabase.getDatabase(context)
-        repository = ReminderRepository(database.reminderDao())
+        // Repository는 lazy 초기화로 처리
     }
 
     override fun onDataSetChanged() {
-        // 데이터 새로고침 (메인 스레드에서 호출됨)
+        // v1.67.1: 데이터 새로고침 (메인 스레드에서 호출됨)
+        // Repository를 통해 최신 데이터 가져오기
         widgetItems = runBlocking {
             try {
+                // activeReminders Flow에서 최신 값 가져오기
                 val reminders = repository.activeReminders.first()
                 widgetDataProvider.prepareWidgetData(reminders)
             } catch (e: Exception) {
+                // 에러 발생 시 빈 목록 반환 (위젯은 계속 표시됨)
+                android.util.Log.e("WidgetFactory", "Failed to load reminders for widget", e)
                 emptyList()
             }
         }

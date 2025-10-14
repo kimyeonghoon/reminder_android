@@ -16,25 +16,24 @@ class WidgetUpdateWorker(
 
     companion object {
         private const val WORK_NAME = "widget_update_work"
-        private const val UPDATE_INTERVAL_MINUTES = 15L
+        // v1.67.1: 업데이트 주기를 15분에서 30분으로 변경 (배터리 절약)
+        private const val UPDATE_INTERVAL_MINUTES = 30L
 
         /**
          * 주기적 위젯 업데이트 작업 예약
+         *
+         * v1.67.1: 배터리 제약 제거 - 위젯은 항상 최신 상태를 유지해야 함
          */
         fun schedulePeriodicUpdate(context: Context) {
             val updateRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
                 UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES
             )
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiresBatteryNotLow(true) // 배터리가 낮지 않을 때만
-                        .build()
-                )
+                // v1.67.1: 배터리 제약 제거 - 위젯은 사용자 경험에 중요
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP, // 이미 예약된 작업이 있으면 유지
+                ExistingPeriodicWorkPolicy.UPDATE, // v1.67.1: KEEP → UPDATE로 변경 (설정 업데이트 적용)
                 updateRequest
             )
         }
