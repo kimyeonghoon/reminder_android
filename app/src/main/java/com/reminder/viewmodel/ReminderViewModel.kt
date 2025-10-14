@@ -696,14 +696,14 @@ class ReminderViewModel(
      * URL이 유효한지 확인
      */
     fun isValidUrl(url: String?): Boolean {
-        return com.reminder.util.UrlValidator.isValidUrl(url)
+        return com.reminder.utils.UrlValidator.isValidUrl(url)
     }
 
     /**
      * URL 정규화 (http:// 또는 https:// 접두사 추가)
      */
     fun normalizeUrl(url: String): String {
-        return com.reminder.util.UrlValidator.normalizeUrl(url)
+        return com.reminder.utils.UrlValidator.normalizeUrl(url)
     }
 
     /**

@@ -28,7 +28,7 @@ import com.reminder.notification.AlarmScheduler
 import com.reminder.notification.NotificationHelper
 import com.reminder.sync.SyncManager
 import com.reminder.sync.SyncWorker
-import com.reminder.util.LocaleHelper
+import com.reminder.utils.LocaleHelper
 import com.reminder.widget.ReminderWidgetProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

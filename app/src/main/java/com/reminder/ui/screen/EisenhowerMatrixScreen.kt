@@ -35,7 +35,7 @@ import com.reminder.domain.filterByQuadrant
 import com.reminder.domain.getInfo
 import com.reminder.domain.getQuadrant
 import com.reminder.ui.components.ReminderCard
-import com.reminder.util.rememberHapticFeedback
+import com.reminder.utils.rememberHapticFeedback
 import com.reminder.viewmodel.ReminderViewModel
 import kotlin.math.roundToInt
 

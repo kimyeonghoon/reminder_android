@@ -1,4 +1,4 @@
-package com.reminder.util
+package com.reminder.utils
 
 import android.app.NotificationManager
 import android.content.Context

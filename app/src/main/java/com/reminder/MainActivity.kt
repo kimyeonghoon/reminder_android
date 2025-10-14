@@ -53,7 +53,7 @@ import com.reminder.ui.screen.PomodoroScreen
 import com.reminder.ui.screen.SettingsScreen
 import com.reminder.ui.screen.StatisticsScreen
 import com.reminder.ui.theme.ReminderTheme
-import com.reminder.util.LocaleHelper
+import com.reminder.utils.LocaleHelper
 import com.reminder.viewmodel.ArchiveViewModel
 import com.reminder.viewmodel.ArchiveViewModelFactory
 import com.reminder.viewmodel.CalendarSyncViewModel

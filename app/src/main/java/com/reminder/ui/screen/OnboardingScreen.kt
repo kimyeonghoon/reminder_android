@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.reminder.util.rememberHapticFeedback
+import com.reminder.utils.rememberHapticFeedback
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 

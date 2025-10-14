@@ -39,7 +39,7 @@ import com.reminder.ui.components.FilterChips
 import com.reminder.ui.components.FilterPresetChips
 import com.reminder.ui.components.ReminderCard
 import com.reminder.ui.components.SortDropdown
-import com.reminder.util.rememberHapticFeedback
+import com.reminder.utils.rememberHapticFeedback
 import com.reminder.viewmodel.ReminderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

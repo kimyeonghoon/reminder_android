@@ -1,4 +1,4 @@
-package com.reminder.util
+package com.reminder.utils
 
 import android.view.HapticFeedbackConstants
 import android.view.View

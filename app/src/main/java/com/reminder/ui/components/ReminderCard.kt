@@ -20,7 +20,7 @@ import com.reminder.data.entity.ReminderEntity
 import com.reminder.ui.theme.HighPriority
 import com.reminder.ui.theme.LowPriority
 import com.reminder.ui.theme.MediumPriority
-import com.reminder.util.rememberHapticFeedback
+import com.reminder.utils.rememberHapticFeedback
 import java.time.format.DateTimeFormatter
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
