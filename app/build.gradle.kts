@@ -24,8 +24,8 @@ android {
         applicationId = "com.reminder"
         minSdk = 26
         targetSdk = 34
-        versionCode = 74
-        versionName = "1.67.2"
+        versionCode = 75
+        versionName = "1.68.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -38,6 +38,9 @@ android {
             "KAKAO_REST_API_KEY",
             "\"${localProperties.getProperty("KAKAO_REST_API_KEY", "")}\""
         )
+
+        // v1.68.0: Kakao Native App Key (for Map SDK)
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = localProperties.getProperty("KAKAO_NATIVE_APP_KEY", "")
     }
 
     buildTypes {
@@ -150,6 +153,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // v1.68.0: Kakao Map SDK
+    implementation("com.kakao.maps.open:android:2.6.0")
 
     // Testing (Updated)
     testImplementation("junit:junit:4.13.2")

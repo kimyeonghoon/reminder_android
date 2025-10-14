@@ -63,6 +63,7 @@ fun AddEditReminderScreen(
     viewModel: ReminderViewModel,
     reminder: ReminderEntity?,
     onNavigateBack: () -> Unit,
+    onNavigateToMap: (Double, Double, String) -> Unit = { _, _, _ -> }, // v1.68.0: 지도 화면 이동
     simpleMode: Boolean = false
 ) {
     val context = LocalContext.current
@@ -621,8 +622,29 @@ fun AddEditReminderScreen(
                     Text(
                         text = "Geofencing 활성화됨 (좌표: ${locationLatitude.take(8)}, ${locationLongitude.take(9)})",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
                     )
+                }
+
+                // v1.68.0: 지도에서 보기 버튼
+                OutlinedButton(
+                    onClick = {
+                        val lat = locationLatitude.toDoubleOrNull()
+                        val lon = locationLongitude.toDoubleOrNull()
+                        if (lat != null && lon != null) {
+                            onNavigateToMap(lat, lon, locationName.ifBlank { "선택한 위치" })
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("🗺️ 지도에서 위치 확인")
                 }
             } else if (locationName.isNotBlank()) {
                 Row(

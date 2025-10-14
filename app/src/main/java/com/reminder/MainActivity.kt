@@ -47,6 +47,7 @@ import com.reminder.ui.screen.FocusModeScreen
 import com.reminder.ui.screen.HabitTrackerScreen
 import com.reminder.ui.screen.HelpScreen
 import com.reminder.ui.screen.HomeScreen
+import com.reminder.ui.screen.MapScreen  // v1.68.0
 import com.reminder.ui.screen.OnboardingScreen
 import com.reminder.ui.screen.PatternAnalysisScreen
 import com.reminder.ui.screen.PomodoroScreen
@@ -541,6 +542,10 @@ fun ReminderAppContent(
                     selectedReminder = null // 뒤로가기 시 초기화
                     navController.popBackStack()
                 },
+                onNavigateToMap = { latitude, longitude, placeName ->
+                    // v1.68.0: 지도 화면으로 이동
+                    navController.navigate("map/$latitude/$longitude/$placeName")
+                },
                 simpleMode = userPreferences.simpleMode
             )
         }
@@ -905,6 +910,50 @@ fun ReminderAppContent(
         ) {
             FocusModeScreen(
                 application = app
+            )
+        }
+        // v1.68.0: MapScreen 라우트
+        composable(
+            "map/{latitude}/{longitude}/{placeName}",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) { backStackEntry ->
+            val latitude = backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
+            val longitude = backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
+            val placeName = backStackEntry.arguments?.getString("placeName") ?: ""
+
+            MapScreen(
+                latitude = latitude,
+                longitude = longitude,
+                placeName = placeName,
+                onBackClick = { navController.popBackStack() },
+                onLocationConfirm = { lat, lon, name ->
+                    // 위치 확인 완료 시 - 현재는 단순히 뒤로가기
+                    // 향후 AddEditReminderScreen으로 결과 전달 가능
+                    navController.popBackStack()
+                }
             )
         }
         }
