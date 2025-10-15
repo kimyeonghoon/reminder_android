@@ -526,4 +526,116 @@ class AddEditReminderScreenTest {
         // Then
         composeTestRule.onNodeWithText("스타벅스 강남점").assertExists()
     }
+
+    /**
+     * v1.68.1: 위치 정보 입력 후 지도 버튼 표시 확인
+     */
+    @Test
+    fun mapButtonIsDisplayedWhenLocationIsSet() {
+        // Given
+        val viewModel = createMockViewModel()
+        val reminder = ReminderEntity(
+            id = 1L,
+            title = "테스트",
+            priority = Priority.MEDIUM,
+            isCompleted = false,
+            locationName = "스타벅스 강남점",
+            locationLatitude = 37.4979,
+            locationLongitude = 127.0276
+        )
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = reminder,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("🗺️ 지도에서 위치 확인").assertExists()
+        composeTestRule.onNodeWithText("Geofencing 활성화됨", substring = true).assertExists()
+    }
+
+    /**
+     * v1.68.1: 위치 미설정 시 지도 버튼 숨김 확인
+     */
+    @Test
+    fun mapButtonIsHiddenWhenLocationIsNotSet() {
+        // Given
+        val viewModel = createMockViewModel()
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = null,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("🗺️ 지도에서 위치 확인").assertDoesNotExist()
+    }
+
+    /**
+     * v1.68.1: 위치 이름만 입력 시 메모만 저장 안내 확인
+     */
+    @Test
+    fun locationMemoOnlyMessageIsDisplayedWhenCoordinatesAreMissing() {
+        // Given
+        val viewModel = createMockViewModel()
+        val reminder = ReminderEntity(
+            id = 1L,
+            title = "테스트",
+            priority = Priority.MEDIUM,
+            isCompleted = false,
+            locationName = "집 근처",
+            locationLatitude = null,
+            locationLongitude = null
+        )
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = reminder,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("위치 메모만 저장됨 (알림 없음)").assertExists()
+    }
+
+    /**
+     * v1.68.1: 위치 반경 필드는 좌표 설정 시에만 표시
+     */
+    @Test
+    fun radiusFieldIsDisplayedOnlyWhenCoordinatesAreSet() {
+        // Given
+        val viewModel = createMockViewModel()
+        val reminder = ReminderEntity(
+            id = 1L,
+            title = "테스트",
+            priority = Priority.MEDIUM,
+            isCompleted = false,
+            locationName = "스타벅스 강남점",
+            locationLatitude = 37.4979,
+            locationLongitude = 127.0276
+        )
+
+        // When
+        composeTestRule.setContent {
+            AddEditReminderScreen(
+                viewModel = viewModel,
+                reminder = reminder,
+                onNavigateBack = {}
+            )
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("반경 (미터)").assertExists()
+    }
 }
