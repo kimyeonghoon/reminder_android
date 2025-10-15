@@ -487,32 +487,9 @@ fun ReminderAppContent(
             startDestination = "home",
             modifier = Modifier.padding(paddingValues)
         ) {
-        composable(
-            "home",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "home",
+            fromLeft = true
         ) {
             // selectedReminder = null 제거 (버그 수정)
             HomeScreen(
@@ -532,32 +509,8 @@ fun ReminderAppContent(
                 }
             )
         }
-        composable(
-            "add_edit",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "add_edit"
         ) {
             AddEditReminderScreen(
                 viewModel = viewModel,
@@ -575,32 +528,8 @@ fun ReminderAppContent(
                 simpleMode = userPreferences.simpleMode
             )
         }
-        composable(
-            "statistics",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "statistics"
         ) {
             StatisticsScreen(
                 viewModel = statisticsViewModel,
@@ -608,64 +537,16 @@ fun ReminderAppContent(
                 onPatternAnalysisClick = { navController.navigate("pattern_analysis") }
             )
         }
-        composable(
-            "completion_history",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "completion_history"
         ) {
             com.reminder.ui.screen.CompletionHistoryScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-        composable(
-            "settings",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "settings"
         ) {
             SettingsScreen(
                 viewModel = settingsViewModel,
@@ -675,63 +556,15 @@ fun ReminderAppContent(
                 onArchiveClick = { navController.navigate("archive") }
             )
         }
-        composable(
-            "help",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "help"
         ) {
             HelpScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-        composable(
-            "pattern_analysis",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "pattern_analysis"
         ) {
             PatternAnalysisScreen(
                 viewModel = viewModel,
@@ -739,32 +572,8 @@ fun ReminderAppContent(
             )
         }
         // v1.40.1: CalendarSyncScreen 라우트
-        composable(
-            "calendar_sync",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "calendar_sync"
         ) {
             CalendarSyncScreen(
                 viewModel = calendarSyncViewModel,
@@ -772,32 +581,8 @@ fun ReminderAppContent(
             )
         }
         // v1.43.0: ArchiveScreen 라우트
-        composable(
-            "archive",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "archive"
         ) {
             ArchiveScreen(
                 viewModel = archiveViewModel,
@@ -805,96 +590,24 @@ fun ReminderAppContent(
             )
         }
         // v1.44.0: HabitTrackerScreen 라우트
-        composable(
-            "habit_tracker",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "habit_tracker"
         ) {
             HabitTrackerScreen(
                 viewModel = habitViewModel
             )
         }
         // v1.46.0: PomodoroScreen 라우트
-        composable(
-            "pomodoro",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "pomodoro"
         ) {
             PomodoroScreen(
                 viewModel = pomodoroViewModel
             )
         }
         // v1.47.0: EisenhowerMatrixScreen 라우트
-        composable(
-            "eisenhower_matrix",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "eisenhower_matrix"
         ) {
             EisenhowerMatrixScreen(
                 viewModel = viewModel,
@@ -907,64 +620,16 @@ fun ReminderAppContent(
             )
         }
         // v1.51.0: FocusModeScreen 라우트
-        composable(
-            "focus_mode",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "focus_mode"
         ) {
             FocusModeScreen(
                 application = app
             )
         }
         // v1.68.0: MapScreen 라우트
-        composable(
-            "map/{latitude}/{longitude}/{placeName}",
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+        composableWithTransition(
+            route = "map/{latitude}/{longitude}/{placeName}"
         ) { backStackEntry ->
             val latitude = backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
             val longitude = backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
@@ -983,5 +648,43 @@ fun ReminderAppContent(
             )
         }
         }
+    }
+}
+
+// Navigation transition helper functions
+private fun slideInFromLeft() = slideInHorizontally(
+    initialOffsetX = { -it },
+    animationSpec = tween(300)
+) + fadeIn(animationSpec = tween(300))
+
+private fun slideInFromRight() = slideInHorizontally(
+    initialOffsetX = { it },
+    animationSpec = tween(300)
+) + fadeIn(animationSpec = tween(300))
+
+private fun slideOutToLeft() = slideOutHorizontally(
+    targetOffsetX = { -it },
+    animationSpec = tween(300)
+) + fadeOut(animationSpec = tween(300))
+
+private fun slideOutToRight() = slideOutHorizontally(
+    targetOffsetX = { it },
+    animationSpec = tween(300)
+) + fadeOut(animationSpec = tween(300))
+
+// NavGraphBuilder extension function for standard transitions
+private fun androidx.navigation.NavGraphBuilder.composableWithTransition(
+    route: String,
+    fromLeft: Boolean = false,
+    content: @Composable (androidx.navigation.NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        enterTransition = { if (fromLeft) slideInFromLeft() else slideInFromRight() },
+        exitTransition = { if (fromLeft) slideOutToLeft() else slideOutToRight() },
+        popEnterTransition = { if (fromLeft) slideInFromLeft() else slideInFromRight() },
+        popExitTransition = { if (fromLeft) slideOutToRight() else slideOutToLeft() }
+    ) { backStackEntry ->
+        content(backStackEntry)
     }
 }
