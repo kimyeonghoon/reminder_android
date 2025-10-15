@@ -1,728 +1,198 @@
 # CLAUDE.md
 
-⚠️ **Claude Code 세션 시작 시 필수**: 이 파일을 먼저 읽고 규칙을 숙지할 것!
+⚠️ **세션 시작 시 필수**: 이 파일을 먼저 읽고 규칙을 숙지할 것!
 
-**핵심 규칙 (절대 잊지 말 것):**
-- ✅ **항상 TDD** - 테스트 먼저 작성, 구현은 나중
-- ✅ **민감 정보 절대 커밋 금지** - API 키, 비밀번호 하드코딩 금지
-- ✅ **커밋 메시지는 한글로** - type(scope): 한글 제목 형식
-- ✅ **MVVM 아키텍처 준수** - 레이어 분리 엄수
+---
 
-**📋 프로젝트 현황 (2025-10-13 업데이트):**
-- ✅ v1.0.0 - 기본 CRUD 기능
-- ✅ v1.1.0 - 날짜/시간 선택 UI
-- ✅ v1.2.0 - 알림/푸시 기능
-- ✅ v1.3.0 - Firebase 실시간 동기화 (프로덕션 완료)
-- ✅ v1.4.0 - 필터링 & 정렬
-- ✅ v1.5.0 - 통계/대시보드
-- ✅ v1.6.0 - 테마/설정
-- ✅ v1.7.0 - 홈 화면 위젯
-- ✅ v1.8.0 - 접근성, 글씨 크기, 간편 모드, 도움말, 음성 입력
-- ✅ v1.9.0 - 서브태스크, 이미지 첨부, 백업/복원
-- ✅ v1.10.0 - 완료 이력 달력
-- ✅ v1.11.0 - 성능 최적화 (R8, WAL, Coil), 공유 기능, 드래그 앤 드롭
-- ✅ v1.12.0 - 템플릿 시스템, 배치 작업, 복제 기능
-- ✅ v1.13.0 - 태그 시스템
-- ✅ v1.14.0 - 최종 안정화
-- ✅ v1.15.0 ~ v1.18.1 - UX/UI 개선, 햅틱 피드백, 고대비 모드, 온보딩 애니메이션
-- ✅ v1.19.0 - 배지 카운트 (ShortcutBadger)
-- ✅ v1.20.0 - 스누즈 기능 (5분, 10분, 30분, 1시간, 내일)
-- ✅ v1.21.0 - 빠른 메모 위젯
-- ✅ v1.22.0 - 위치 기반 리마인더 (Geofencing)
-- ✅ v1.23.0 - 웹 링크 첨부 (URL 유효성 검사 및 정규화)
-- ✅ v1.24.0 - 음성 알림 (TTS, 한국어 지원)
-- ✅ v1.25.0 - 자동 카테고리 제안 (통계 기반 패턴 분석)
-- ✅ v1.26.0 - 완료 패턴 분석 (시간대/요일별 생산성 분석)
-- ✅ v1.27.0 - UI 통합 업데이트 (v1.22.0~v1.26.0 백엔드 기능 UI 구현)
-- ✅ v1.27.1 - 테스트 커버리지 확대 & Firebase 동기화 개선
-- ✅ v1.28.0 - 통계 차트 시각화 강화 (주간/월간 완료 트렌드 그래프)
-- ✅ v1.29.0 - FCM 푸시 알림 고도화 (우선순위별 채널, 리치 알림, 액션 버튼)
-- ✅ v1.30.0 - 다국어 지원 (i18n: 한국어, 영어, 중국어)
-- ✅ v1.31.0 - 테마 프리셋 확장 (10가지 색상 테마, 색상 미리보기)
-- ✅ v1.32.0 - 고급 검색 및 필터링 시스템 (복합 필터, 프리셋, 저장된 필터)
-- ✅ v1.33.0 - 통계 대시보드 고도화 (목표 설정 시스템, 생산성 인사이트)
-- ✅ v1.34.0 - 위젯 2.0 (위젯 설정, 주기적 업데이트, SharedPreferences 기반 설정 저장)
-- ✅ v1.35.0 - 반복 작업 고급 옵션 (일/주/월/년 반복, 예외 날짜, 종료 조건)
-- ✅ v1.36.0 - 협업 기능 (권한 관리, 공유 리스트, Firestore 기반)
-- ✅ v1.37.0 - AI 스마트 추천 (ML 기반 우선순위/카테고리/마감일/알림시간 예측)
-- ✅ v1.38.0 - 오프라인 모드 강화 (작업 큐, 충돌 해결, 네트워크 모니터링)
-- ✅ v1.39.0 - 첨부파일 시스템 고도화 (PDF, DOC, XLS, TXT, OCR)
-- ✅ v1.40.0 - 캘린더 통합 (CalendarContract API, 단방향/양방향 동기화)
-- ✅ v1.40.1 - 캘린더 동기화 UI (권한 요청, 캘린더 목록, 동기화 화면)
-- ✅ v1.42.0 - Quick Settings Tile (알림창 빠른 추가, 네이티브 Android 기능)
-- ✅ v1.43.0 - Archive System (완료된 리마인더 자동 아카이브, 메인 화면 정리)
-- ✅ v1.44.0 - Habit Tracker (매일 반복하는 습관 추적 및 Streak 관리 시스템)
-- ✅ v1.45.0 - Pomodoro Timer (25/5/15분 집중/휴식 타이머, Streak 추적)
-- ✅ v1.45.1 - 데이터 모델 강화 & 테스트 안정성 개선 (Fake 구현 패턴, 213개 테스트 100% 통과)
-- ✅ v1.46.0 - Bottom Navigation Bar (5개 메인 탭 통합, 사용자 경험 대폭 향상)
-- ✅ v1.46.1 - HomeScreen UI 정리 (중복 버튼 제거, Bottom Navigation 일관성 향상)
-- ✅ v1.46.2 - Bottom Navigation 화면 UI 정리 (뒤로가기 버튼 제거, 중복 메뉴 제거)
-- ✅ v1.47.0 - Eisenhower Matrix (중요도×긴급도 매트릭스, 4개 쿼드런트)
-- ✅ v1.48.0 - AI 긴급도 자동 예측 (키워드 기반 NLP, 자동 제안)
-- ✅ v1.49.0 - Eisenhower Matrix 고도화 2단계 (통계 대시보드, 쿼드런트 이동)
-- ✅ v1.50.0 - Eisenhower Matrix 고도화 3단계 (이동 메뉴 UI, 트렌드 분석)
-- ✅ v1.51.0 - 포커스 모드 (집중 타이머, DO_FIRST 연동, 세션 관리)
-- ✅ v1.52.0 - 포커스 모드 Bottom Navigation 통합 (1탭 접근, UX 향상)
-- ✅ v1.53.0 - Eisenhower Matrix Long Press (쿼드런트 이동 UX 개선)
-- ✅ v1.54.0 - 방해 금지 모드 (DND 자동 활성화, 세션 연동)
-- ✅ v1.55.0 - 성능 최적화 (Room 인덱스, 앱 시작 15-20ms 개선)
-- ✅ v1.56.0 - UI 일관성 검토 (Material 3, 8dp 그리드 99% 준수)
-- ✅ v1.57.0 - 접근성 검토 (WCAG AA 100% 준수, TalkBack 완벽 지원)
-- ✅ v1.58.0 - 온보딩 개선 (6개 페이지, 한국어, 신규 기능 소개)
-- ✅ v1.59.0 - 코드 품질 개선 (Lint 경고 25개 수정, Compose 성능 최적화)
-- ✅ v1.60.0 - 최종 코드 정리 (ObsoleteSdkInt 경고 완전 제거, 코드 단순화)
-- ✅ v1.61.0 - Android Lint 추가 정리 (InlinedApi 경고 수정, XML 주석 개선)
-- ✅ v1.62.0 - Lint Error 완전 제거 (RemoteViewLayout 수정, 위젯 안정성 향상)
-- ✅ v1.63.0 - Bottom Navigation 통합 (TopAppBar 아키텍처 개선, UI 정리)
-- ✅ v1.63.1 - 테스트 함수명 표준화 (38개 파일, 370+ 함수 영어 변환)
-- ✅ v1.64.0 - RecurrencePattern 레거시 제거 (새 RecurrenceRule 시스템, 646줄 감소)
-- ✅ v1.65.0 - RecurrenceRule UI 재구현 (RecurrenceSelector 복원, 미리 알림 기능)
-- ✅ v1.66.0 - hasTime 필드 추가 (날짜/시간 구분 명시화, 00:00 문제 해결)
-- ✅ v1.67.0 - 카카오 로컬 API 장소 검색 (실시간 자동완성, 하이브리드 입력, TDD 완료)
-- ✅ v1.67.1 - 위젯 데이터 표시 버그 수정 (Repository 싱글톤 사용, 배터리 제약 제거)
+## 🔥 핵심 규칙 (절대 잊지 말 것!)
+
+### 1. TDD 엄수 ✅
+- **항상 테스트 먼저 작성, 구현은 나중**
+- Red → Green → Refactor 사이클
+- 테스트 없는 코드 = 불완전한 코드
+
+### 2. 세션 시작 워크플로우 🚀
+**"다음 작업 진행해줘" 요청 시 자동 실행:**
+```bash
+./gradlew test           # 1. 테스트 먼저 실행 (필수)
+# 테스트 통과 확인 후
+# NEXT_TASKS.md 읽고 다음 작업 시작
+```
+
+### 3. 민감 정보 절대 커밋 금지 🔒
+- API 키, 비밀번호 하드코딩 금지
+- `local.properties`에 저장, BuildConfig로 사용
+- `.example` 파일에는 placeholder만
+
+### 4. 커밋 규칙 📝
+- 형식: `type(scope): 한글 제목`
+- 예: `feat(map): 카카오맵 SDK 통합`
+- 커밋 전 민감정보 재확인
+
+### 5. MVVM 아키텍처 준수 🏗️
+- UI → ViewModel → Repository → DAO → Database
+- ViewModel에 Context 전달 금지
+- 레이어 건너뛰기 금지
+
+---
+
+## 📊 프로젝트 현황
+
+**현재 버전**: v1.68.0 (versionCode 75, DB v26)
+**테스트 커버리지**: 326/326 통과 (100% ✅)
+
+**최근 릴리즈** (v1.64.0~v1.68.0):
 - ✅ v1.68.0 - 카카오맵 SDK 통합 (지도 시각화, 위치 선택 UI, MapViewModel TDD)
+- ✅ v1.67.1 - 위젯 데이터 표시 버그 수정 (Repository 싱글톤 사용)
+- ✅ v1.67.0 - 카카오 로컬 API 장소 검색 (실시간 자동완성, TDD 완료)
+- ✅ v1.66.0 - hasTime 필드 추가 (날짜/시간 구분 명시화, 00:00 문제 해결)
+- ✅ v1.65.0 - RecurrenceRule UI 재구현 (반복 기능 복원)
+- ✅ v1.64.0 - RecurrencePattern 레거시 제거 (646줄 코드 감소)
 
-**🎉 현재 버전: v1.68.0 (versionCode 75, DB v26)**
-
----
-
-이 파일은 Claude Code(claude.ai/code)가 이 저장소의 코드 작업 시 참고하는 가이드입니다.
-
-## 🚀 세션 시작 워크플로우 (자동 실행)
-
-**⚠️ 중요: 사용자가 "다음 작업 진행해줘" 또는 유사한 요청을 하면 다음 순서를 자동으로 따릅니다:**
-
-### 1단계: 테스트 실행 (필수, 먼저 실행)
-```bash
-# 유닛 테스트 실행
-./gradlew test
-
-# 빌드 검증
-./gradlew build
-```
-
-**목적**:
-- 기존 코드가 정상 동작하는지 확인
-- 회귀 버그 조기 발견
-- 안정적인 코드베이스 위에서 새 작업 시작
-
-**테스트 실패 시**:
-- 실패 원인 분석
-- 버그 수정
-- 다시 테스트
-- 통과 후 커밋
-
-### 2단계: 테스트 통과 확인 후 다음 작업
-```bash
-# NEXT_TASKS.md 읽기
-# 다음 작업 계획 확인
-# 새로운 기능 개발 시작
-```
-
-**워크플로우 예시**:
-```
-사용자: "다음 작업 진행해줘"
-
-Claude:
-1. "테스트를 먼저 실행하겠습니다."
-2. ./gradlew test 실행
-3. 결과 확인:
-   - ✅ 통과: "모든 테스트가 통과했습니다. 다음 작업을 시작하겠습니다."
-   - ❌ 실패: "테스트가 실패했습니다. 수정하겠습니다."
-4. NEXT_TASKS.md 확인
-5. v1.46.0 또는 통합 작업 시작
-```
-
-**예외 상황**:
-- Android SDK가 없는 환경: "SDK가 없어서 테스트를 건너뜁니다. 집에서 테스트해주세요."
-- 사용자가 명시적으로 테스트 건너뛰기 요청: "테스트 없이 진행하겠습니다."
+**주요 완성 기능**: CRUD, Firebase 동기화, 알림, 필터/정렬, 통계, 테마, 위젯, 서브태스크, 이미지 첨부, 백업/복원, 완료 이력, 템플릿, 태그, 배지, 스누즈, 위치 기반 리마인더, TTS, AI 추천, 오프라인, 캘린더 통합, 아카이브, 습관 추적, 포모도로, Eisenhower Matrix, 포커스 모드, 성능 최적화, UI/접근성 개선
 
 ---
 
-## 프로젝트 개요
+## 🛠️ 기술 스택
 
-Reminder는 Kotlin과 Jetpack Compose로 구축된 네이티브 Android TODO 애플리케이션입니다. MVVM 아키텍처를 사용하며 로컬 데이터 저장을 위해 Room Database를 활용합니다.
+- **언어**: Kotlin 1.9.20
+- **UI**: Jetpack Compose (Material 3)
+- **아키텍처**: MVVM
+- **DB**: Room (v26), WAL mode
+- **DI**: 수동 DI (Application 레벨)
+- **비동기**: Coroutines + Flow
+- **백엔드**: Firebase (Firestore, Auth, FCM, Crashlytics)
+- **SDK**: Min 26 (Android 8.0), Target 34 (Android 14)
 
-## 빌드 및 실행 명령어
+---
 
-### 프로젝트 빌드
-```bash
-./gradlew build
-```
+## 📂 패키지 구조
 
-### 테스트 실행
-```bash
-# 모든 유닛 테스트 실행
-./gradlew test
-
-# 모든 계측 테스트 실행 (에뮬레이터 또는 실제 기기 필요)
-./gradlew connectedAndroidTest
-```
-
-### 디바이스/에뮬레이터에 설치
-```bash
-./gradlew installDebug
-```
-
-### 클린 빌드
-```bash
-./gradlew clean
-```
-
-## 아키텍처
-
-### MVVM 패턴
-- **Model**: `data/entity/ReminderEntity.kt` - Priority enum을 포함한 Room 엔티티
-- **View**: `ui/screen/*` - Compose 화면들 (HomeScreen, AddEditReminderScreen)
-- **ViewModel**: `viewmodel/ReminderViewModel.kt` - Kotlin Flow를 사용한 상태 관리
-
-### 데이터 레이어
-- **Room Database**: `ReminderDatabase.kt`의 싱글톤 패턴
-- **DAO**: `ReminderDao.kt`는 반응형 업데이트를 위한 Flow 기반 쿼리 제공
-- **Repository**: `ReminderRepository.kt`는 데이터 접근을 추상화
-- **Type Converters**: `Converters.kt`는 LocalDateTime과 Priority enum 변환 처리
-
-### 의존성 주입
-`ReminderApplication.kt`를 통한 수동 DI:
-- Database와 Repository는 애플리케이션 레벨에서 lazy 초기화됨
-- ViewModel은 `ReminderViewModelFactory.kt`를 통해 Repository를 받음
-
-### 네비게이션
-두 개의 라우트를 가진 Navigation Compose:
-- `"home"` - 메인 리스트 화면
-- `"add_edit"` - 리마인더 생성/수정 화면
-
-편집을 위한 상태는 MainActivity의 ReminderApp composable에서 `selectedReminder`로 관리됩니다.
-
-### UI 컴포넌트
-- **ReminderCard**: 체크박스, 우선순위 표시, 삭제 버튼이 있는 재사용 가능한 카드
-- **Theme**: Material 3, Android 12+ 동적 컬러 지원
-- 우선순위 색상: 높음(빨강), 중간(주황), 낮음(초록)
-
-## 주요 기술 세부사항
-
-- **Min SDK**: 26 (Android 8.0)
-- **Target SDK**: 34 (Android 14)
-- **Kotlin 버전**: 1.9.20
-- **Compose Compiler**: 1.5.4
-- **KSP**: Room 어노테이션 프로세싱에 사용
-
-## 데이터베이스 스키마
-
-ReminderEntity 필드:
-- `id` (Long, 자동 생성)
-- `title` (String, 필수)
-- `description` (String)
-- `dueDateTime` (LocalDateTime?, nullable)
-- `priority` (Priority enum: LOW, MEDIUM, HIGH)
-- `category` (String)
-- `isCompleted` (Boolean)
-- `createdAt`, `updatedAt` (LocalDateTime)
-
-## 개발 참고사항
-
-- Room 쿼리는 반응형 UI 업데이트를 위해 `Flow<List<ReminderEntity>>`를 반환
-- ViewModel에서 Compose 상태 관리를 위해 StateFlow 사용
-- 검색 필터링은 ViewModel의 `getFilteredReminders()`를 통해 메모리 내에서 수행
-- 리마인더 완료 토글은 `isCompleted`와 `updatedAt` 필드를 원자적으로 업데이트
-
-## 코딩 규약
-
-### 네이밍 규칙
-
-**클래스와 오브젝트**
-- 클래스: `PascalCase` (예: `ReminderEntity`, `ReminderViewModel`)
-- 인터페이스: `PascalCase`, 설명적인 이름 (예: `ReminderDao`)
-- 오브젝트: `PascalCase` (예: `ReminderDatabase.Companion`)
-
-**함수와 변수**
-- 함수: `camelCase`, 동사 접두사 사용 (예: `getReminderById`, `toggleReminderCompletion`)
-- 변수: `camelCase` (예: `selectedReminder`, `isCompleted`)
-- 상수: `UPPER_SNAKE_CASE` (예: `DATABASE_NAME`)
-- Private 프로퍼티: backing properties에는 언더스코어 접두사 (예: MutableStateFlow용 `_selectedReminder`)
-
-**Compose 함수**
-- Composable 함수: `PascalCase` (예: `HomeScreen`, `ReminderCard`)
-- Composable 파라미터: `camelCase`, 콜백에는 `on` 접두사 (예: `onAddClick`, `onReminderClick`)
-
-**파일명**
-- 주요 클래스 이름과 일치 (예: `ReminderEntity.kt`, `HomeScreen.kt`)
-- 관련된 작은 클래스들은 적절한 경우 한 파일에 그룹화 (예: `ReminderEntity.kt`의 Priority enum)
-
-### 코드 구조
-
-**패키지 구조**
 ```
 com.reminder/
 ├── data/
-│   ├── entity/      # 데이터 모델과 enum
-│   ├── dao/         # Room DAO
-│   ├── database/    # 데이터베이스와 컨버터
-│   └── repository/  # 데이터 저장소
+│   ├── entity/       # Room Entity, Enum
+│   ├── dao/          # DAO (Flow 기반)
+│   ├── database/     # Database, Converters
+│   └── repository/   # Repository (SSoT)
 ├── ui/
-│   ├── screen/      # 전체 화면
-│   ├── components/  # 재사용 가능한 UI 컴포넌트
-│   └── theme/       # 테마 관련 파일
-└── viewmodel/       # ViewModel과 Factory
+│   ├── screen/       # 전체 화면 (Compose)
+│   ├── components/   # 재사용 컴포넌트
+│   └── theme/        # Material 3 테마
+├── viewmodel/        # ViewModel + Factory
+├── notification/     # 알림, AlarmScheduler
+├── location/         # Geofencing, LocationManager
+├── ml/               # AI 추천, NLP
+├── analytics/        # Analytics, 패턴 분석
+├── firebase/         # Firebase 동기화
+├── recurrence/       # 반복 규칙 (RecurrenceRule)
+├── tts/              # TTS 음성 알림
+└── utils/            # 유틸리티
 ```
 
-**파일 내 순서**
-1. 패키지 선언
-2. Import (Android → Third-party → Java/Kotlin → Internal)
-3. 클래스/인터페이스 선언
-4. Companion object
-5. 프로퍼티 (public → private)
-6. Init 블록
-7. 생성자
-8. Override 함수
-9. Public 함수
-10. Private 함수
+---
+
+## ✍️ 코딩 규약 (핵심만)
+
+### 네이밍
+- 클래스/인터페이스: `PascalCase`
+- 함수/변수: `camelCase` (함수는 동사 시작)
+- 상수: `UPPER_SNAKE_CASE`
+- Composable: `PascalCase`
+- Private backing field: `_propertyName`
 
 ### Kotlin 스타일
+- `val` > `var`
+- `?.` > `!!` (확실할 때만 `!!`)
+- `data class` copy() 활용
+- 불변 컬렉션 선호
 
-**Null 허용 여부**
-- 필요할 때 nullable 타입(`?`)을 명시적으로 사용
-- `!!`보다 안전 호출(`?.`) 선호 (절대 확실한 경우가 아니면 `!!` 지양)
-- 의존성 주입에는 `lateinit`, 선택적 데이터에는 nullable 타입 사용
+### Compose
+- State hoisting 원칙
+- `remember` (UI 상태) / `StateFlow` (비즈니스 로직)
+- `modifier` 파라미터 항상 제공
+- `collectAsState()`로 Flow 수집
 
-**불변성**
-- `var`보다 `val` 선호
-- 업데이트에는 `data class`의 copy 사용 (예: `reminder.copy(isCompleted = true)`)
-- 가능한 경우 불변 컬렉션 사용
+### Room
+- `Flow<T>` 반환 (반응형 쿼리)
+- `suspend fun` (단일 작업)
+- `createdAt`, `updatedAt` 타임스탬프 필수
+- `@PrimaryKey(autoGenerate = true)`
 
-**Flow와 Coroutines**
-- DAO의 모든 데이터베이스 작업은 suspend 함수
-- ViewModel 코루틴에는 `viewModelScope` 사용
-- Compose 상태 관리를 위해 ViewModel에서 Flow를 StateFlow로 노출
-- Flow를 StateFlow로 변환 시 `stateIn()`과 `SharingStarted.WhileSubscribed(5000)` 사용
+### 테스트
+- **테스트 함수명**: 영어 camelCase + 한글 주석
+- **AAA 패턴**: Given → When → Then
+- **독립성**: 테스트 간 의존성 없음
+- **커버리지 목표**: ViewModel 80%, Repository 70%, DAO 100%
 
-### Compose 가이드라인
+---
 
-**상태 관리**
-- State hoisting: 부모로부터 상태와 콜백을 전달
-- UI 상태에는 `remember` 사용 (예: 텍스트 필드 값)
-- 비즈니스 로직 상태에는 ViewModel StateFlow 사용
-- Composable에서 `collectAsState()`로 StateFlow 수집
+## 🔄 Git 워크플로우
 
-**Composable 구조**
-```kotlin
-@Composable
-fun ComponentName(
-    data: DataType,              // 데이터 파라미터 먼저
-    modifier: Modifier = Modifier,  // 기본값을 가진 Modifier
-    onAction: () -> Unit         // 콜백 마지막
-) {
-    // 구현
-}
+### 커밋 메시지
+```
+type(scope): 한글 제목
+
+body (선택사항, 한글)
 ```
 
-**Modifier 사용**
-- 항상 `modifier: Modifier = Modifier` 파라미터 받기
-- 받은 modifier를 먼저 적용: `modifier.then(localModifiers)`
-- 레이아웃 modifier 전에 의미론적 modifier 사용
+**타입**: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`
+**Scope**: `ui`, `database`, `viewmodel`, `map`, `location` 등
 
-### Room Database
+### 릴리즈
+1. `build.gradle.kts`에서 `versionCode`, `versionName` 업데이트
+2. `CLAUDE.md`, `NEXT_TASKS.md` 업데이트
+3. 커밋 및 Push
+4. GitHub Release 생성 (태그: `v1.x.x`)
 
-**엔티티 설계**
-- 항상 `createdAt`과 `updatedAt` 타임스탬프 포함
-- ID 필드에는 `@PrimaryKey(autoGenerate = true)` 사용
-- 선택적 필드에는 기본값 제공
+---
 
-**DAO 쿼리**
-- 반응형 업데이트가 필요한 쿼리는 `Flow<T>` 반환
-- 단일 작업(insert/update/delete)은 `suspend fun` 반환
-- 명확하고 설명적인 쿼리 함수 이름 사용
+## 🚫 주의사항
 
-### 주석과 문서화
+### 절대 하지 말 것
+- ❌ TDD 없이 구현
+- ❌ API 키 하드코딩
+- ❌ ViewModel에 Context 전달
+- ❌ 레이어 건너뛰기 (UI → DAO 직접 접근 등)
+- ❌ 테스트 없이 커밋
+- ❌ `--no-verify`로 hook 우회
 
-**주석이 필요한 경우**
-- 설명이 필요한 복잡한 비즈니스 로직
-- 명확하지 않은 Room 쿼리나 Compose 로직
-- 컨텍스트가 있는 TODO: `// TODO: 알림 스케줄링 추가`
+### 항상 할 것
+- ✅ 테스트 먼저 작성
+- ✅ local.properties에 민감정보 저장
+- ✅ MVVM 아키텍처 준수
+- ✅ Flow/StateFlow 활용
+- ✅ 커밋 전 민감정보 확인
+- ✅ 한글 커밋 메시지
 
-**주석이 불필요한 경우**
-- 자명한 코드
-- 코드가 하는 일을 단순히 반복하는 경우
-- 주석 처리된 코드 (삭제할 것)
+---
 
-### 테스트 주도 개발 (TDD)
-
-**TDD 사이클 (필수)**
-1. **Red** - 실패하는 테스트를 먼저 작성
-2. **Green** - 테스트를 통과하는 최소한의 코드 작성
-3. **Refactor** - 코드 품질 개선 (테스트는 여전히 통과)
-
-**중요: 항상 테스트를 먼저 작성한다!**
-
-**테스트 종류**
-
-**1. Unit Tests (유닛 테스트)**
-- 위치: `app/src/test/java/`
-- 대상: ViewModel, Repository, 비즈니스 로직
-- 프레임워크: JUnit4/5, Mockito, MockK
-- 실행: JVM에서 빠르게 실행
-
-```kotlin
-// 예시: ReminderViewModelTest.kt
-/**
- * 리마인더 추가 시 목록 반영 확인
- */
-@Test
-fun addReminderIsReflectedInList() {
-    // Given
-    val title = "테스트 할일"
-
-    // When
-    viewModel.addReminder(title)
-
-    // Then
-    val reminders = viewModel.allReminders.value
-    assertTrue(reminders.any { it.title == title })
-}
-```
-
-**2. Integration Tests (통합 테스트)**
-- 위치: `app/src/androidTest/java/`
-- 대상: Room Database, Repository와 DAO 통합
-- 프레임워크: AndroidJUnit4, Room Testing
-- 실행: Android 디바이스/에뮬레이터 필요
-
-```kotlin
-// 예시: ReminderDaoTest.kt
-@Test
-fun insertAndGetReminder() = runTest {
-    // Given
-    val reminder = ReminderEntity(title = "테스트")
-
-    // When
-    dao.insertReminder(reminder)
-
-    // Then
-    val loaded = dao.getAllReminders().first()
-    assertEquals(1, loaded.size)
-    assertEquals("테스트", loaded[0].title)
-}
-```
-
-**3. UI Tests (Compose 테스트)**
-- 위치: `app/src/androidTest/java/`
-- 대상: Composable 함수, 화면 상호작용
-- 프레임워크: Compose Testing, Espresso
-- 실행: Android 디바이스/에뮬레이터 필요
-
-```kotlin
-// 예시: HomeScreenTest.kt
-@Test
-fun addButton_whenClicked_navigatesToAddScreen() {
-    composeTestRule.setContent {
-        HomeScreen(viewModel, onAddClick = { navigated = true })
-    }
-
-    composeTestRule.onNodeWithContentDescription("Add Reminder").performClick()
-
-    assertTrue(navigated)
-}
-```
-
-**테스트 작성 규칙**
-
-1. **테스트 이름**: 영어 함수명 + 한글 주석
-   - 함수명은 영어 camelCase: `fun addReminderIsReflectedInList()`
-   - 함수 위에 한글 주석으로 설명 추가:
-   ```kotlin
-   /**
-    * 리마인더 추가 시 목록 반영 확인
-    */
-   @Test
-   fun addReminderIsReflectedInList() { ... }
-   ```
-   - **중요**: 한글 함수명(예: `fun 리마인더_추가_시_목록에_반영된다()`)은 테스트 실패 문제로 인해 사용하지 않음
-
-2. **AAA 패턴 사용**
-   - **Arrange** (Given): 테스트 준비
-   - **Act** (When): 실행
-   - **Assert** (Then): 검증
-
-3. **테스트는 독립적**
-   - 다른 테스트에 의존하지 않음
-   - 실행 순서에 무관하게 통과
-
-4. **테스트는 빠르게**
-   - Unit Test는 1초 이내
-   - 느린 테스트는 통합 테스트로 분리
-
-**테스트 커버리지 목표**
-- ViewModel: 80% 이상
-- Repository: 70% 이상
-- DAO: 주요 쿼리 100%
-- UI: 주요 사용자 시나리오
-
-**TDD 워크플로우 예시**
+## 📋 자주 쓰는 명령어
 
 ```bash
-# 1. 실패하는 테스트 작성
-# ReminderViewModelTest.kt에 새 테스트 추가
+# 빌드 & 테스트
+./gradlew test                    # 유닛 테스트
+./gradlew connectedAndroidTest    # 계측 테스트 (에뮬레이터 필요)
+./gradlew build                   # 빌드
+./gradlew clean                   # 클린 빌드
 
-# 2. 테스트 실행 (실패 확인)
-./gradlew test
+# 설치
+./gradlew installDebug            # 디바이스/에뮬레이터 설치
 
-# 3. 최소 코드 구현
-# ReminderViewModel.kt에 기능 추가
-
-# 4. 테스트 실행 (통과 확인)
-./gradlew test
-
-# 5. 리팩토링
-# 코드 개선, 테스트는 여전히 통과
-
-# 6. 커밋
-git commit -m "feat(viewmodel): 리마인더 추가 기능 구현"
+# Git
+git add .
+git commit -m "type(scope): 제목"
+git push origin main
 ```
 
-**Mock 사용**
-- Repository를 테스트할 때는 DAO를 Mock
-- ViewModel을 테스트할 때는 Repository를 Mock
-- 실제 객체는 통합 테스트에서만 사용
+---
 
-**테스트 도구**
-```kotlin
-// build.gradle.kts에 이미 포함됨
-testImplementation("junit:junit:4.13.2")
-testImplementation("org.mockito:mockito-core:5.7.0")
-testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-```
+## 🎯 다음 작업
 
-**중요: Claude Code 작업 시**
-- 새 기능 구현 요청 시, 테스트부터 작성
-- "테스트 먼저, 구현 나중에" 원칙 엄수
-- 테스트 없는 코드는 불완전한 코드
+**NEXT_TASKS.md 참고**
 
-### 아키텍처 규칙
+---
 
-**ViewModel**
-- ViewModel에 Context를 절대 전달하지 않기
-- Android 프레임워크 의존성 금지 (lifecycle 제외)
-- UI에 불변 상태(StateFlow) 노출
-- 모든 비즈니스 로직은 여기에 위치
+**Happy Coding! 🚀**
 
-**Repository**
-- 데이터 접근의 단일 진실 공급원(Single Source of Truth)
-- 데이터 소스 추상화 (Room, network 등)
-- 현재 앱에서는 단순 패스스루이지만 확장 가능하도록 준비
-
-**UI Layer**
-- 화면은 로컬 UI 상태를 제외하고 무상태(stateless)여야 함
-- 직접적인 데이터베이스나 저장소 접근 금지
-- 모든 비즈니스 로직은 ViewModel에 위임
-
-**의존성 흐름**
-- UI → ViewModel → Repository → DAO → Database
-- 레이어를 건너뛰거나 순환 의존성을 만들지 않기
-
-## Git 워크플로우
-
-### 브랜치 전략 (GitHub Flow)
-
-**메인 브랜치**
-- `main` - 항상 배포 가능한 상태 유지, 태그로 버전 관리
-
-**작업 브랜치**
-- `feature/기능명` - 새로운 기능 개발
-- `fix/버그명` - 버그 수정
-- `refactor/내용` - 리팩토링
-- `docs/내용` - 문서 작업
-
-**작업 흐름**
-1. `main`에서 작업 브랜치 생성
-2. 작업 완료 후 Pull Request 생성
-3. 리뷰 및 테스트
-4. `main`에 병합
-5. 작업 브랜치 삭제
-
-### 커밋 메시지 규칙 (Conventional Commits)
-
-**형식**
-```
-type(scope): subject
-
-body (선택사항)
-```
-
-**타입**
-- `feat`: 새로운 기능 추가
-- `fix`: 버그 수정
-- `refactor`: 코드 리팩토링 (기능 변경 없음)
-- `style`: 코드 포맷팅, 세미콜론 누락 등
-- `docs`: 문서 수정
-- `test`: 테스트 코드 추가/수정
-- `chore`: 빌드 스크립트, 패키지 매니저 설정 등
-- `perf`: 성능 개선
-
-**Scope (선택사항)**
-- `ui`: UI 관련
-- `database`: 데이터베이스 관련
-- `viewmodel`: ViewModel 관련
-- `repository`: Repository 관련
-
-**예시**
-```
-feat(ui): 리마인더 날짜 선택기 추가
-fix(database): null 값 반환 오류 수정
-refactor(viewmodel): 상태 관리 로직 단순화
-docs: README에 빌드 방법 추가
-chore: Gradle 8.4로 업그레이드
-```
-
-**규칙**
-- type과 scope는 영어로 유지
-- subject는 한글로 작성, 50자 이내로 간결하게
-- subject 끝에 마침표 생략
-- body는 선택사항, 한글로 작성
-- body에는 "무엇을", "왜" 변경했는지 작성
-
-### 버전 관리 (Semantic Versioning)
-
-**버전 형식**: `MAJOR.MINOR.PATCH` (예: `1.2.3`)
-
-- **MAJOR**: 호환되지 않는 API 변경
-- **MINOR**: 하위 호환성을 유지하는 기능 추가
-- **PATCH**: 하위 호환성을 유지하는 버그 수정
-
-**versionCode vs versionName**
-- `versionCode`: 정수, 매 릴리즈마다 증가 (1, 2, 3, ...)
-- `versionName`: 문자열, Semantic Versioning ("1.0.0", "1.1.0", ...)
-
-### 릴리즈 프로세스
-
-1. 버전 번호 결정 (Semantic Versioning 기준)
-2. `app/build.gradle.kts`에서 `versionCode`와 `versionName` 업데이트
-3. `CHANGELOG.md` 업데이트
-4. 커밋 및 Push
-5. GitHub에서 Release 생성
-   - 태그: `v1.0.0` 형식
-   - Release notes: CHANGELOG 내용 복사
-   - APK 파일 첨부
-6. 태그 생성 및 Push
-
-### Pull Request 가이드
-
-**PR 제목**
-- 커밋 메시지 규칙과 동일 (`feat(ui): 알림 기능 추가`)
-
-**PR 설명에 포함할 내용**
-- 변경 사항 요약
-- 변경 이유
-- 테스트 방법
-- 스크린샷 (UI 변경 시)
-- 관련 이슈 번호
-
-**리뷰 규칙**
-- 최소 1명의 승인 필요 (팀 프로젝트 시)
-- 빌드 성공 확인
-- 충돌 해결 후 병합
-
-### Issue 관리
-
-**레이블**
-- `bug`: 버그 리포트
-- `enhancement`: 기능 개선 제안
-- `feature`: 새로운 기능 요청
-- `documentation`: 문서 관련
-- `good first issue`: 초보자 친화적인 이슈
-- `help wanted`: 도움 필요
-
-**Milestone**
-- 버전별로 milestone 생성 (v1.0.0, v1.1.0 등)
-- 해당 버전에 포함될 이슈들을 milestone에 할당
-
-## 민감 정보 관리
-
-### 절대 커밋하지 말아야 할 것들
-
-**파일**
-- `*.keystore`, `*.jks` - 앱 서명 키
-- `key.properties` - 서명 설정
-- `google-services.json` - Firebase 설정 (프로덕션)
-- `local.properties` - SDK 경로 및 로컬 설정
-- `.env` 파일 - 환경 변수
-- `secrets.xml` - 민감한 리소스
-
-**코드 내 하드코딩 금지**
-- API 키 (Google Maps, Weather API 등)
-- 비밀번호, 토큰
-- 서버 URL (프로덕션)
-- OAuth 클라이언트 시크릿
-- 데이터베이스 연결 정보
-
-### 민감 정보 관리 방법
-
-**1. local.properties 사용 (권장)**
-```properties
-# local.properties
-MAPS_API_KEY=your_actual_api_key_here
-API_BASE_URL=https://api.example.com
-```
-
-```kotlin
-// build.gradle.kts에서 읽기
-val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
-
-android {
-    defaultConfig {
-        buildConfigField("String", "MAPS_API_KEY",
-            "\"${localProperties.getProperty("MAPS_API_KEY")}\"")
-    }
-}
-```
-
-**2. BuildConfig 활용**
-```kotlin
-// 코드에서 사용
-val apiKey = BuildConfig.MAPS_API_KEY
-```
-
-**3. 환경 변수 사용**
-```kotlin
-// build.gradle.kts
-buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
-```
-
-**4. strings.xml 분리 (비공개 리소스)**
-```xml
-<!-- app/src/main/res/values/secrets.xml (git-ignored) -->
-<resources>
-    <string name="api_key">your_api_key</string>
-</resources>
-```
-
-### 예시 파일 제공
-
-프로젝트에는 `.example` 파일을 포함:
-- `local.properties.example` - 로컬 설정 예시
-- `key.properties.example` - 서명 설정 예시 (미래)
-- `secrets.xml.example` - 리소스 예시 (미래)
-
-개발자는 `.example` 파일을 복사하여 실제 값으로 채워야 합니다.
-
-### Pre-commit Hook
-
-프로젝트에는 민감 정보 커밋을 방지하는 pre-commit hook이 설정되어 있습니다:
-- `.git/hooks/pre-commit`
-- 민감한 파일 및 패턴 자동 검사
-- 감지 시 커밋 차단
-
-### Claude Code 작업 시 주의사항
-
-**절대 하지 말 것:**
-- 실제 API 키를 코드에 하드코딩
-- `.example` 파일에 실제 값 입력
-- 민감한 파일을 git add
-- `--no-verify` 플래그로 hook 우회
-
-**항상 할 것:**
-- 민감 정보는 local.properties에 저장
-- 예시 파일에는 placeholder만 사용
-- 커밋 전 민감 정보 재확인
-- README에 설정 방법 문서화
+_v1.68.0 완료 - 75개 버전, 26개 DB 마이그레이션, 326개 테스트 100% 통과_
