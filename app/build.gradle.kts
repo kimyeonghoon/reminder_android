@@ -176,6 +176,8 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("org.mockito:mockito-android:5.14.2")
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

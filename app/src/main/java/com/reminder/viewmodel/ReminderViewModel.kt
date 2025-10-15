@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class ReminderViewModel(
+// v1.68.1: open class for mockito testing
+open class ReminderViewModel(
     private val repository: ReminderRepository,
     private val alarmScheduler: AlarmScheduler,
     private val database: com.reminder.data.database.ReminderDatabase,
