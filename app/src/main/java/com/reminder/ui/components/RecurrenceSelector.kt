@@ -25,7 +25,6 @@ fun RecurrenceSelector(
     onRecurrenceRuleChange: (RecurrenceRule?) -> Unit,
     recurrenceEnd: RecurrenceEnd,
     onRecurrenceEndChange: (RecurrenceEnd) -> Unit,
-    startDateTime: LocalDateTime? = null,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }

@@ -697,10 +697,7 @@ fun AddEditReminderScreen(
                     recurrenceRule = recurrenceRule,
                     onRecurrenceRuleChange = { recurrenceRule = it },
                     recurrenceEnd = recurrenceEnd,
-                    onRecurrenceEndChange = { recurrenceEnd = it },
-                    startDateTime = if (selectedDate != null && selectedTime != null) {
-                        LocalDateTime.of(selectedDate, selectedTime)
-                    } else null
+                    onRecurrenceEndChange = { recurrenceEnd = it }
                 )
             }
 

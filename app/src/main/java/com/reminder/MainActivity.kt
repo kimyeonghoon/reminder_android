@@ -949,7 +949,7 @@ fun ReminderAppContent(
                 longitude = longitude,
                 placeName = placeName,
                 onBackClick = { navController.popBackStack() },
-                onLocationConfirm = { lat, lon, name ->
+                onLocationConfirm = { _, _, _ ->
                     // 위치 확인 완료 시 - 현재는 단순히 뒤로가기
                     // 향후 AddEditReminderScreen으로 결과 전달 가능
                     navController.popBackStack()

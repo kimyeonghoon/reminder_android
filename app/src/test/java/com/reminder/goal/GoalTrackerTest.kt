@@ -6,28 +6,39 @@ import com.reminder.data.entity.ReminderEntity
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 /**
  * v1.33.0: GoalTracker 테스트
  *
  * TDD Red Phase - 테스트 먼저 작성
+ *
+ * v1.68.1: Clock 주입으로 flaky test 해결
  */
 class GoalTrackerTest {
 
     private lateinit var goalTracker: GoalTracker
     private lateinit var testReminders: List<ReminderEntity>
+    private lateinit var fixedClock: Clock
+    private lateinit var today: LocalDate
 
     @Before
     fun setup() {
-        goalTracker = GoalTracker()
+        // 고정된 시간 사용 (2025-10-15 12:00:00 UTC)
+        fixedClock = Clock.fixed(
+            Instant.parse("2025-10-15T12:00:00Z"),
+            ZoneId.of("UTC")
+        )
+        goalTracker = GoalTracker(fixedClock)
 
-        // 테스트용 리마인더 데이터 생성
-        val today = LocalDate.now()
-        val thisWeek = today.minusDays(3)
-        // 이번 달 범위 내에서 날짜 설정 (flaky test 방지)
-        val thisMonthMid = today.withDayOfMonth(15) // 이번 달 중순
+        // 고정된 today 값 사용
+        today = LocalDate.now(fixedClock)  // 2025-10-15
+        val thisWeek = today.minusDays(3)  // 2025-10-12
+        val thisMonthMid = today.withDayOfMonth(5)  // 2025-10-05 (주간 범위 밖)
 
         testReminders = listOf(
             // 이번 주 완료 (3개)
@@ -90,8 +101,8 @@ class GoalTrackerTest {
             id = 1,
             type = GoalType.DAILY,
             targetCount = 2,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now(),
+            startDate = today,
+            endDate = today,
             isActive = true
         )
 
@@ -114,8 +125,8 @@ class GoalTrackerTest {
             id = 1,
             type = GoalType.DAILY,
             targetCount = 5,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now(),
+            startDate = today,
+            endDate = today,
             isActive = true
         )
 
@@ -133,8 +144,8 @@ class GoalTrackerTest {
     @Test
     fun calculateWeeklyGoalProgress() {
         // Given
-        val startOfWeek = LocalDate.now().minusDays(6)
-        val endOfWeek = LocalDate.now()
+        val startOfWeek = today.minusDays(6)
+        val endOfWeek = today
         val goal = Goal(
             id = 2,
             type = GoalType.WEEKLY,
@@ -158,8 +169,8 @@ class GoalTrackerTest {
     @Test
     fun calculateMonthlyGoalProgress() {
         // Given
-        val startOfMonth = LocalDate.now().withDayOfMonth(1)
-        val endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())
+        val startOfMonth = today.withDayOfMonth(1)
+        val endOfMonth = today.withDayOfMonth(today.lengthOfMonth())
         val goal = Goal(
             id = 3,
             type = GoalType.MONTHLY,
@@ -188,8 +199,8 @@ class GoalTrackerTest {
             type = GoalType.WEEKLY,
             targetCount = 2,
             category = "업무",
-            startDate = LocalDate.now().minusDays(6),
-            endDate = LocalDate.now(),
+            startDate = today.minusDays(6),
+            endDate = today,
             isActive = true
         )
 
@@ -210,8 +221,8 @@ class GoalTrackerTest {
             id = 5,
             type = GoalType.DAILY,
             targetCount = 1,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now(),
+            startDate = today,
+            endDate = today,
             isActive = true
         )
 
@@ -233,8 +244,8 @@ class GoalTrackerTest {
             id = 6,
             type = GoalType.WEEKLY,
             targetCount = 5,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now().plusDays(3),
+            startDate = today,
+            endDate = today.plusDays(3),
             isActive = true
         )
 
@@ -253,8 +264,8 @@ class GoalTrackerTest {
             id = 7,
             type = GoalType.WEEKLY,
             targetCount = 5,
-            startDate = LocalDate.now().minusDays(14),
-            endDate = LocalDate.now().minusDays(7), // 1주일 전 만료
+            startDate = today.minusDays(14),
+            endDate = today.minusDays(7), // 1주일 전 만료
             isActive = true
         )
 

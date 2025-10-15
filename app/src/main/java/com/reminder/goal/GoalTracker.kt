@@ -3,6 +3,7 @@ package com.reminder.goal
 import com.reminder.data.entity.GoalEntity
 import com.reminder.data.entity.GoalType
 import com.reminder.data.entity.ReminderEntity
+import java.time.Clock
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -47,8 +48,12 @@ data class GoalProgress(
 
 /**
  * 목표 추적기 클래스
+ *
+ * @param clock 시간 제공자 (테스트용 주입 가능)
  */
-class GoalTracker {
+class GoalTracker(
+    private val clock: Clock = Clock.systemDefaultZone()
+) {
 
     /**
      * 목표 진행률 계산
@@ -113,7 +118,7 @@ class GoalTracker {
      * 남은 일수 계산 (오늘부터 종료일까지)
      */
     private fun calculateRemainingDays(endDate: LocalDate): Int {
-        val today = LocalDate.now()
+        val today = LocalDate.now(clock)
         val days = ChronoUnit.DAYS.between(today, endDate).toInt()
         return if (days < 0) 0 else days
     }

@@ -59,27 +59,27 @@ fun MapScreen(
         viewModel.setLocation(latitude, longitude, placeName)
     }
 
+    // 현재 위치로 이동하는 공통 함수
+    val moveToCurrentLocation: () -> Unit = {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                viewModel.updateMapCenter(it.latitude, it.longitude)
+                kakaoMap?.moveCamera(
+                    CameraUpdateFactory.newCenterPosition(
+                        LatLng.from(it.latitude, it.longitude)
+                    )
+                )
+            }
+        }
+    }
+
     // 위치 권한 요청
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // 권한이 승인되면 현재 위치로 이동
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-            try {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        viewModel.updateMapCenter(it.latitude, it.longitude)
-                        kakaoMap?.moveCamera(
-                            CameraUpdateFactory.newCenterPosition(
-                                LatLng.from(it.latitude, it.longitude)
-                            )
-                        )
-                    }
-                }
-            } catch (e: SecurityException) {
-                // 권한이 없을 경우 무시
-            }
+            moveToCurrentLocation()
         }
     }
 
@@ -105,21 +105,7 @@ fun MapScreen(
                                     Manifest.permission.ACCESS_FINE_LOCATION
                                 ) -> {
                                     // 권한이 있으면 현재 위치로 이동
-                                    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                                    try {
-                                        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                                            location?.let {
-                                                viewModel.updateMapCenter(it.latitude, it.longitude)
-                                                kakaoMap?.moveCamera(
-                                                    CameraUpdateFactory.newCenterPosition(
-                                                        LatLng.from(it.latitude, it.longitude)
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    } catch (e: SecurityException) {
-                                        // 권한이 없을 경우 무시
-                                    }
+                                    moveToCurrentLocation()
                                 }
                                 else -> {
                                     // 권한 요청
@@ -148,9 +134,9 @@ fun MapScreen(
                 ) {
                     val selectedLocation by viewModel.selectedLocation.collectAsState()
 
-                    if (selectedLocation != null) {
+                    selectedLocation?.let { location ->
                         Text(
-                            text = selectedLocation!!.name,
+                            text = location.name,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -158,8 +144,7 @@ fun MapScreen(
 
                     Button(
                         onClick = {
-                            val location = viewModel.selectedLocation.value
-                            if (location != null) {
+                            selectedLocation?.let { location ->
                                 onLocationConfirm(
                                     location.latitude,
                                     location.longitude,
@@ -168,7 +153,7 @@ fun MapScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = viewModel.selectedLocation.value != null
+                        enabled = selectedLocation != null
                     ) {
                         Text("이 위치로 설정")
                     }
