@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -77,11 +78,11 @@ fun AddEditReminderScreen(
     var priorityExpanded by remember { mutableStateOf(false) }
     var urgencyExpanded by remember { mutableStateOf(false) }  // v1.47.0
 
-    // v1.22.0: 위치 관련
-    var locationLatitude by remember { mutableStateOf(reminder?.locationLatitude?.toString() ?: "") }
-    var locationLongitude by remember { mutableStateOf(reminder?.locationLongitude?.toString() ?: "") }
-    var locationName by remember { mutableStateOf(reminder?.locationName ?: "") }
-    var locationRadius by remember { mutableStateOf(reminder?.locationRadius?.toString() ?: "100") }
+    // v1.22.0: 위치 관련 (v1.68.1: rememberSaveable로 변경 - 화면 전환 시에도 유지)
+    var locationLatitude by rememberSaveable { mutableStateOf(reminder?.locationLatitude?.toString() ?: "") }
+    var locationLongitude by rememberSaveable { mutableStateOf(reminder?.locationLongitude?.toString() ?: "") }
+    var locationName by rememberSaveable { mutableStateOf(reminder?.locationName ?: "") }
+    var locationRadius by rememberSaveable { mutableStateOf(reminder?.locationRadius?.toString() ?: "100") }
 
     // v1.67.0: 카카오 장소 검색 결과
     var locationSearchResults by remember { mutableStateOf<List<KakaoPlace>>(emptyList()) }
