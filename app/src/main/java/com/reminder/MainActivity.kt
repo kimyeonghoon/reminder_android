@@ -376,6 +376,28 @@ fun ReminderAppContent(
         factory = PomodoroViewModelFactory(app.pomodoroManager)
     )
 
+    // v1.68.1: 분리된 ViewModel 추가
+    val subTaskViewModel: com.reminder.viewmodel.SubTaskViewModel = viewModel(
+        factory = com.reminder.viewmodel.SubTaskViewModelFactory(
+            app.database.subTaskDao(),
+            app.analyticsHelper
+        )
+    )
+
+    val attachmentViewModel: com.reminder.viewmodel.AttachmentViewModel = viewModel(
+        factory = com.reminder.viewmodel.AttachmentViewModelFactory(
+            app.database.reminderImageDao(),
+            app.analyticsHelper
+        )
+    )
+
+    val filterViewModel: com.reminder.viewmodel.FilterViewModel = viewModel(
+        factory = com.reminder.viewmodel.FilterViewModelFactory(
+            app.database.savedFilterDao(),
+            app.analyticsHelper
+        )
+    )
+
     val userPreferences by settingsViewModel.userPreferences.collectAsState()
     var selectedReminder by remember { mutableStateOf<ReminderEntity?>(null) }
 
@@ -495,6 +517,8 @@ fun ReminderAppContent(
             // selectedReminder = null 제거 (버그 수정)
             HomeScreen(
                 viewModel = viewModel,
+                filterViewModel = filterViewModel, // v1.68.1
+                subTaskViewModel = subTaskViewModel, // v1.68.1
                 onAddClick = { navController.navigate("add_edit") },
                 onReminderClick = { reminder ->
                     selectedReminder = reminder
@@ -537,6 +561,8 @@ fun ReminderAppContent(
         ) {
             AddEditReminderScreen(
                 viewModel = viewModel,
+                subTaskViewModel = subTaskViewModel, // v1.68.1
+                attachmentViewModel = attachmentViewModel, // v1.68.1
                 reminder = selectedReminder,
                 onNavigateBack = {
                     selectedReminder = null // 뒤로가기 시 초기화

@@ -278,104 +278,7 @@ open class ReminderViewModel(
         }
     }
 
-    // ==================== 서브태스크 관련 함수 ====================
-
-    /**
-     * 리마인더의 서브태스크 목록 조회
-     */
-    fun getSubTasks(reminderId: Long) =
-        database.subTaskDao().getSubTasksByReminderId(reminderId)
-
-    /**
-     * 서브태스크 추가
-     */
-    fun addSubTask(reminderId: Long, title: String) {
-        viewModelScope.launch {
-            val subTask = com.reminder.data.entity.SubTask(
-                reminderId = reminderId,
-                title = title,
-                position = database.subTaskDao().getTotalSubTasksCount(reminderId)
-            )
-            database.subTaskDao().insert(subTask)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logSubtaskAdded()
-        }
-    }
-
-    /**
-     * 서브태스크 완료 상태 토글
-     */
-    fun toggleSubTaskCompletion(subTask: com.reminder.data.entity.SubTask) {
-        viewModelScope.launch {
-            val updated = subTask.copy(isCompleted = !subTask.isCompleted)
-            database.subTaskDao().update(updated)
-        }
-    }
-
-    /**
-     * 서브태스크 삭제
-     */
-    fun deleteSubTask(subTask: com.reminder.data.entity.SubTask) {
-        viewModelScope.launch {
-            database.subTaskDao().delete(subTask)
-        }
-    }
-
-    /**
-     * 서브태스크 재정렬 (드래그 앤 드롭)
-     */
-    fun reorderSubTasks(subTasks: List<com.reminder.data.entity.SubTask>) {
-        viewModelScope.launch {
-            // position 값을 새로운 순서로 업데이트
-            val reorderedSubTasks = subTasks.mapIndexed { index, subTask ->
-                subTask.copy(position = index)
-            }
-            database.subTaskDao().updateAll(reorderedSubTasks)
-        }
-    }
-
-    /**
-     * 서브태스크 진행률 계산 (완료/전체)
-     */
-    suspend fun getSubTaskProgress(reminderId: Long): Pair<Int, Int> {
-        val completed = database.subTaskDao().getCompletedSubTasksCount(reminderId)
-        val total = database.subTaskDao().getTotalSubTasksCount(reminderId)
-        return Pair(completed, total)
-    }
-
-    // ==================== 이미지 첨부 관련 함수 ====================
-
-    /**
-     * 리마인더의 이미지 목록 조회
-     */
-    fun getImages(reminderId: Long) =
-        database.reminderImageDao().getImagesByReminderId(reminderId)
-
-    /**
-     * 이미지 추가
-     */
-    fun addImage(reminderId: Long, imageUri: String) {
-        viewModelScope.launch {
-            val image = com.reminder.data.entity.ReminderImage(
-                reminderId = reminderId,
-                imageUri = imageUri
-            )
-            database.reminderImageDao().insert(image)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logImageAttached()
-        }
-    }
-
-    /**
-     * 이미지 삭제
-     */
-    fun deleteImage(image: com.reminder.data.entity.ReminderImage) {
-        viewModelScope.launch {
-            database.reminderImageDao().delete(image)
-        }
-    }
+    // v1.68.1: 서브태스크, 이미지 첨부 기능은 SubTaskViewModel, AttachmentViewModel로 분리됨
 
     // ==================== 완료 이력 관련 함수 ====================
 
@@ -409,48 +312,10 @@ open class ReminderViewModel(
             .mapValues { it.value.size }
     }
 
-    // ==================== 템플릿 관련 함수 ====================
+    // v1.68.1: 템플릿 기능은 TemplateViewModel로 분리됨
 
     /**
-     * 모든 템플릿 조회
-     */
-    fun getAllTemplates() = database.reminderTemplateDao().getAllTemplates()
-
-    /**
-     * 템플릿 추가
-     *
-     * v1.64.0: RecurrenceRule 사용
-     */
-    fun addTemplate(
-        name: String,
-        titleTemplate: String,
-        descriptionTemplate: String = "",
-        defaultPriority: Priority = Priority.MEDIUM,
-        defaultCategory: String = "",
-        defaultRecurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
-        defaultRecurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null
-    ) {
-        viewModelScope.launch {
-            val template = com.reminder.data.entity.ReminderTemplate(
-                name = name,
-                titleTemplate = titleTemplate,
-                descriptionTemplate = descriptionTemplate,
-                defaultPriority = defaultPriority,
-                defaultCategory = defaultCategory,
-                defaultRecurrenceRule = defaultRecurrenceRule,
-                defaultRecurrenceEnd = defaultRecurrenceEnd
-            )
-            database.reminderTemplateDao().insert(template)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logTemplateCreated()
-        }
-    }
-
-    /**
-     * 템플릿에서 리마인더 생성
-     *
-     * v1.64.0: RecurrenceRule 사용
+     * 템플릿에서 리마인더 생성 (핵심 CRUD이므로 유지)
      */
     fun createReminderFromTemplate(template: com.reminder.data.entity.ReminderTemplate, dueDateTime: LocalDateTime? = null) {
         viewModelScope.launch {
@@ -472,38 +337,6 @@ open class ReminderViewModel(
 
             // Analytics 이벤트 로깅
             analyticsHelper.logTemplateUsed(template.name)
-        }
-    }
-
-    /**
-     * 템플릿 삭제
-     */
-    fun deleteTemplate(template: com.reminder.data.entity.ReminderTemplate) {
-        viewModelScope.launch {
-            database.reminderTemplateDao().delete(template)
-        }
-    }
-
-    /**
-     * 현재 리마인더를 템플릿으로 저장
-     *
-     * v1.64.0: RecurrenceRule 사용
-     */
-    fun saveAsTemplate(
-        reminder: ReminderEntity,
-        templateName: String
-    ) {
-        viewModelScope.launch {
-            val template = com.reminder.data.entity.ReminderTemplate(
-                name = templateName,
-                titleTemplate = reminder.title,
-                descriptionTemplate = reminder.description,
-                defaultPriority = reminder.priority,
-                defaultCategory = reminder.category,
-                defaultRecurrenceRule = reminder.recurrenceRule,
-                defaultRecurrenceEnd = reminder.recurrenceEnd
-            )
-            database.reminderTemplateDao().insert(template)
         }
     }
 
@@ -590,106 +423,8 @@ open class ReminderViewModel(
     val snoozedReminders = database.reminderDao().getSnoozedReminders()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // ==================== 위치 기반 리마인더 관련 함수 ====================
-
-    /**
-     * 위치 권한 확인
-     */
-    fun hasLocationPermission(): Boolean {
-        return locationManager.hasLocationPermission()
-    }
-
-    /**
-     * 백그라운드 위치 권한 확인
-     */
-    fun hasBackgroundLocationPermission(): Boolean {
-        return locationManager.hasBackgroundLocationPermission()
-    }
-
-    /**
-     * 현재 위치 가져오기
-     */
-    suspend fun getCurrentLocation(): Pair<Double, Double>? {
-        return try {
-            locationManager.getCurrentLocation()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    /**
-     * 마지막으로 알려진 위치 가져오기
-     */
-    suspend fun getLastKnownLocation(): Pair<Double, Double>? {
-        return locationManager.getLastKnownLocation()
-    }
-
-    /**
-     * 리마인더에 위치 추가
-     *
-     * v1.67.0: 지오펜스 자동 등록
-     */
-    fun addLocationToReminder(
-        reminder: ReminderEntity,
-        latitude: Double,
-        longitude: Double,
-        locationName: String,
-        radius: Float = com.reminder.location.LocationManager.DEFAULT_RADIUS
-    ) {
-        viewModelScope.launch {
-            val updated = reminder.copy(
-                locationLatitude = latitude,
-                locationLongitude = longitude,
-                locationName = locationName,
-                locationRadius = radius,
-                updatedAt = LocalDateTime.now()
-            )
-            repository.updateReminder(updated)
-
-            // v1.67.0: 지오펜스 등록
-            locationManager.setupGeofence(
-                reminderId = updated.id,
-                latitude = latitude,
-                longitude = longitude,
-                radius = radius
-            )
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logLocationAdded()
-        }
-    }
-
-    /**
-     * 리마인더에서 위치 제거
-     *
-     * v1.67.0: 지오펜스 자동 제거
-     */
-    fun removeLocationFromReminder(reminder: ReminderEntity) {
-        viewModelScope.launch {
-            val updated = reminder.copy(
-                locationLatitude = null,
-                locationLongitude = null,
-                locationName = null,
-                locationRadius = null,
-                updatedAt = LocalDateTime.now()
-            )
-            repository.updateReminder(updated)
-
-            // v1.67.0: 지오펜스 제거
-            locationManager.removeGeofence(reminder.id)
-        }
-    }
-
-    /**
-     * 현재 위치가 리마인더 위치 범위 내에 있는지 확인
-     */
-    suspend fun isWithinReminderRadius(reminder: ReminderEntity): Boolean {
-        val lat = reminder.locationLatitude ?: return false
-        val lon = reminder.locationLongitude ?: return false
-        val radius = reminder.locationRadius ?: com.reminder.location.LocationManager.DEFAULT_RADIUS
-
-        return locationManager.isWithinRadius(lat, lon, radius)
-    }
+    // v1.68.1: 위치 기반 리마인더 기능은 LocationViewModel로 분리됨
+    // 참고: addReminder, updateReminder, deleteReminder의 지오펜스 관리 코드는 CRUD 일부로 유지됨
 
     // ==================== 웹 링크 관련 함수 ====================
 
@@ -915,117 +650,7 @@ open class ReminderViewModel(
         return completionPatternAnalyzer.getCompletionProbability(pattern, day)
     }
 
-    // ==================== 고급 필터 시스템 (v1.32.0) ====================
-
-    private val filterEngine = com.reminder.filter.FilterEngine()
-
-    /**
-     * 현재 적용된 필터
-     */
-    private val _currentFilter = MutableStateFlow<com.reminder.filter.ReminderFilter?>(null)
-    val currentFilter: StateFlow<com.reminder.filter.ReminderFilter?> = _currentFilter.asStateFlow()
-
-    /**
-     * 저장된 필터 목록 조회
-     */
-    val savedFilters = database.savedFilterDao().getAllSavedFilters()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    /**
-     * 필터를 적용하여 필터링된 리마인더 목록 반환
-     */
-    fun applyFilter(filter: com.reminder.filter.ReminderFilter) {
-        _currentFilter.value = filter
-
-        // Analytics 이벤트 로깅
-        analyticsHelper.logFilterApplied()
-    }
-
-    /**
-     * 필터 초기화
-     */
-    fun clearFilter() {
-        _currentFilter.value = null
-
-        // Analytics 이벤트 로깅
-        analyticsHelper.logFilterCleared()
-    }
-
-    /**
-     * 현재 필터가 적용된 리마인더 목록 반환
-     */
-    fun getFilteredRemindersWithFilter(reminders: List<ReminderEntity>): List<ReminderEntity> {
-        val filter = _currentFilter.value ?: return reminders
-        return filterEngine.applyFilter(reminders, filter)
-    }
-
-    /**
-     * 필터 프리셋 적용
-     */
-    fun applyFilterPreset(presetId: String) {
-        val preset = com.reminder.filter.FilterPresets.getPresetById(presetId)
-        if (preset != null) {
-            applyFilter(preset.filter)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logPresetUsed(presetId)
-        }
-    }
-
-    /**
-     * 필터를 저장된 필터로 저장
-     */
-    fun saveFilter(name: String, icon: String, filter: com.reminder.filter.ReminderFilter) {
-        viewModelScope.launch {
-            val filterJson = serializeFilter(filter)
-            val savedFilter = com.reminder.data.entity.SavedFilterEntity(
-                name = name,
-                icon = icon,
-                filterJson = filterJson
-            )
-            database.savedFilterDao().insertSavedFilter(savedFilter)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logFilterSaved()
-        }
-    }
-
-    /**
-     * 저장된 필터 삭제
-     */
-    fun deleteSavedFilter(filter: com.reminder.data.entity.SavedFilterEntity) {
-        viewModelScope.launch {
-            database.savedFilterDao().deleteSavedFilter(filter)
-        }
-    }
-
-    /**
-     * 저장된 필터 적용
-     */
-    fun applySavedFilter(savedFilter: com.reminder.data.entity.SavedFilterEntity) {
-        val filter = deserializeFilter(savedFilter.filterJson)
-        if (filter != null) {
-            applyFilter(filter)
-        }
-    }
-
-    /**
-     * ReminderFilter를 JSON으로 직렬화
-     */
-    private fun serializeFilter(filter: com.reminder.filter.ReminderFilter): String {
-        return com.google.gson.Gson().toJson(filter)
-    }
-
-    /**
-     * JSON을 ReminderFilter로 역직렬화
-     */
-    private fun deserializeFilter(json: String): com.reminder.filter.ReminderFilter? {
-        return try {
-            com.google.gson.Gson().fromJson(json, com.reminder.filter.ReminderFilter::class.java)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    // v1.68.1: 고급 필터 시스템 기능은 FilterViewModel로 분리됨
 
     // ==================== Eisenhower Matrix (v1.49.0) ====================
 

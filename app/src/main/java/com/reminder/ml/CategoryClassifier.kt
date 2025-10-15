@@ -50,11 +50,7 @@ class CategoryClassifier(
             val category = data.outputLabel
             val score = calculateScore(data)
 
-            if (categoryScores.containsKey(category)) {
-                categoryScores[category]!!.add(score)
-            } else {
-                categoryScores[category] = mutableListOf(score)
-            }
+            categoryScores.getOrPut(category) { mutableListOf() }.add(score)
         }
 
         // 카테고리별 평균 점수 계산 및 정렬

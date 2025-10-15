@@ -46,6 +46,8 @@ import com.reminder.viewmodel.ReminderViewModel
 @Composable
 fun HomeScreen(
     viewModel: ReminderViewModel,
+    filterViewModel: com.reminder.viewmodel.FilterViewModel, // v1.68.1: 필터 기능 분리
+    subTaskViewModel: com.reminder.viewmodel.SubTaskViewModel, // v1.68.1: 서브태스크 기능 분리
     onAddClick: () -> Unit,
     onReminderClick: (ReminderEntity) -> Unit,
     onEisenhowerMatrixClick: () -> Unit = {},
@@ -63,7 +65,7 @@ fun HomeScreen(
     var selectedSortOption by remember { mutableStateOf(SortOption.BY_DATE_ASC) }
 
     // v1.32.0: 고급 필터 시스템
-    val currentFilter by viewModel.currentFilter.collectAsState()
+    val currentFilter by filterViewModel.currentFilter.collectAsState()
     var showFilterBottomSheet by remember { mutableStateOf(false) }
 
     // 선택 모드 상태
@@ -87,7 +89,7 @@ fun HomeScreen(
 
             // v1.32.0: 고급 필터 적용
             val advancedFiltered = if (currentFilter != null) {
-                viewModel.getFilteredRemindersWithFilter(searchFiltered)
+                filterViewModel.getFilteredRemindersWithFilter(searchFiltered)
             } else {
                 // 기존 필터 적용 (하위 호환성)
                 val priorityFiltered = viewModel.filterByPriority(searchFiltered, selectedPriorityFilter)
@@ -242,11 +244,11 @@ fun HomeScreen(
                     currentFilter = currentFilter,
                     onPresetClick = { presetId ->
                         haptic.click()
-                        viewModel.applyFilterPreset(presetId)
+                        filterViewModel.applyFilterPreset(presetId)
                     },
                     onClearFilter = {
                         haptic.click()
-                        viewModel.clearFilter()
+                        filterViewModel.clearFilter()
                     }
                 )
 
@@ -293,7 +295,7 @@ fun HomeScreen(
                 ) {
                     val progressMap = mutableMapOf<Long, Pair<Int, Int>>()
                     sortedReminders.forEach { reminder ->
-                        val progress = viewModel.getSubTaskProgress(reminder.id)
+                        val progress = subTaskViewModel.getSubTaskProgress(reminder.id)
                         if (progress.second > 0) { // Only include reminders with subtasks
                             progressMap[reminder.id] = progress
                         }
@@ -423,7 +425,7 @@ fun HomeScreen(
             currentFilter = currentFilter,
             onApplyFilter = { filter ->
                 haptic.confirm()
-                viewModel.applyFilter(filter)
+                filterViewModel.applyFilter(filter)
             },
             onDismiss = { showFilterBottomSheet = false }
         )

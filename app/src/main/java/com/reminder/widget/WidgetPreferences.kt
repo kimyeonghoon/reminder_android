@@ -64,17 +64,17 @@ class WidgetPreferences(private val context: Context) {
         return WidgetConfig(
             themePreset = prefs.getString(KEY_THEME_PRESET + widgetId, "default") ?: "default",
             filterPriority = try {
-                FilterPriority.valueOf(prefs.getString(KEY_FILTER_PRIORITY + widgetId, FilterPriority.ALL.name)!!)
+                FilterPriority.valueOf(prefs.getString(KEY_FILTER_PRIORITY + widgetId, FilterPriority.ALL.name) ?: FilterPriority.ALL.name)
             } catch (e: Exception) {
                 FilterPriority.ALL
             },
             filterDate = try {
-                FilterDate.valueOf(prefs.getString(KEY_FILTER_DATE + widgetId, FilterDate.ALL.name)!!)
+                FilterDate.valueOf(prefs.getString(KEY_FILTER_DATE + widgetId, FilterDate.ALL.name) ?: FilterDate.ALL.name)
             } catch (e: Exception) {
                 FilterDate.ALL
             },
             sortBy = try {
-                SortOption.valueOf(prefs.getString(KEY_SORT_BY + widgetId, SortOption.BY_DATE_ASC.name)!!)
+                SortOption.valueOf(prefs.getString(KEY_SORT_BY + widgetId, SortOption.BY_DATE_ASC.name) ?: SortOption.BY_DATE_ASC.name)
             } catch (e: Exception) {
                 SortOption.BY_DATE_ASC
             },

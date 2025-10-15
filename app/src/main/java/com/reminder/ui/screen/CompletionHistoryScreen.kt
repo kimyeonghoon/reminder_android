@@ -92,21 +92,23 @@ fun CompletionHistoryScreen(
             )
 
             // 선택한 날짜의 리마인더 목록
-            if (selectedDate != null && selectedDayReminders.isNotEmpty()) {
-                HorizontalDivider()
+            selectedDate?.let { date ->
+                if (selectedDayReminders.isNotEmpty()) {
+                    HorizontalDivider()
 
-                Text(
-                    text = "${selectedDate!!.format(DateTimeFormatter.ofPattern("M월 d일"))} 완료 목록",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                    Text(
+                        text = "${date.format(DateTimeFormatter.ofPattern("M월 d일"))} 완료 목록",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(selectedDayReminders) { reminder ->
-                        CompletedReminderItem(reminder)
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(selectedDayReminders) { reminder ->
+                            CompletedReminderItem(reminder)
+                        }
                     }
                 }
             }

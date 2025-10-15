@@ -111,7 +111,7 @@ class FocusModeViewModelTest {
         val state = viewModel.focusState.first()
         assertEquals(FocusState.COMPLETED, state)
         assertEquals(0, viewModel.remainingSeconds.first()) // 타이머 리셋 확인
-        verify(repository).updateSession(argThat { session -> session.isCompleted })
+        verify(repository).updateSession(argThat { s -> s.isCompleted })
     }
 
     /** 세션 중단 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */
@@ -134,7 +134,7 @@ class FocusModeViewModelTest {
         val state = viewModel.focusState.first()
         assertEquals(FocusState.INTERRUPTED, state)
         assertEquals(0, viewModel.remainingSeconds.first()) // 타이머 리셋 확인
-        verify(repository).updateSession(argThat { session -> session.isInterrupted })
+        verify(repository).updateSession(argThat { s -> s.isInterrupted })
     }
 
     /** 리마인더와 연결된 세션 시작 - v1.63.1: 타이머 카운트다운 추가로 인한 테스트 수정 */

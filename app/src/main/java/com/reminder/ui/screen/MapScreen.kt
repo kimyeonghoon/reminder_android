@@ -194,33 +194,36 @@ fun MapScreen(
 
                                     // 마커 추가 (간단한 텍스트 레이블)
                                     val labelManager = map.labelManager
-                                    val labelStyle = LabelStyle.from()
-                                    val labelStyles = LabelStyles.from(labelStyle)
-                                    val styleId = labelManager?.addLabelStyles(labelStyles)
+                                    labelManager?.let { manager ->
+                                        val labelStyle = LabelStyle.from()
+                                        val labelStyles = LabelStyles.from(labelStyle)
+                                        val styleId = manager.addLabelStyles(labelStyles)
 
-                                    if (styleId != null && labelManager != null) {
-                                        val labelOptions = LabelOptions.from(initialPosition)
-                                            .setStyles(styleId)
-                                            .setTexts(placeName)
+                                        styleId?.let { id ->
+                                            val labelOptions = LabelOptions.from(initialPosition)
+                                                .setStyles(id)
+                                                .setTexts(placeName)
+                                            manager.layer?.addLabel(labelOptions)
+                                        }
 
-                                        labelManager.layer?.addLabel(labelOptions)
-                                    }
+                                        // 지도 클릭 이벤트 (위치 변경)
+                                        map.setOnMapClickListener { _, latLng, _, _ ->
+                                            // 클릭한 위치로 마커 이동 및 선택 위치 업데이트
+                                            viewModel.setLocation(
+                                                latLng.latitude,
+                                                latLng.longitude,
+                                                "선택한 위치"
+                                            )
 
-                                    // 지도 클릭 이벤트 (위치 변경)
-                                    map.setOnMapClickListener { _, latLng, _, _ ->
-                                        // 클릭한 위치로 마커 이동 및 선택 위치 업데이트
-                                        viewModel.setLocation(
-                                            latLng.latitude,
-                                            latLng.longitude,
-                                            "선택한 위치"
-                                        )
-
-                                        // 마커 업데이트
-                                        labelManager?.layer?.removeAll()
-                                        val newLabelOptions = LabelOptions.from(latLng)
-                                            .setStyles(styleId!!)
-                                            .setTexts("선택한 위치")
-                                        labelManager.layer?.addLabel(newLabelOptions)
+                                            // 마커 업데이트
+                                            manager.layer?.removeAll()
+                                            styleId?.let { id ->
+                                                val newLabelOptions = LabelOptions.from(latLng)
+                                                    .setStyles(id)
+                                                    .setTexts("선택한 위치")
+                                                manager.layer?.addLabel(newLabelOptions)
+                                            }
+                                        }
                                     }
                                 }
 

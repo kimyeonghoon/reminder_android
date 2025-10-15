@@ -206,8 +206,10 @@ class StatisticsViewModel(
         // 가장 생산적인 시간대 계산
         val productiveHour = reminders
             .filter { it.isCompleted && it.completedAt != null }
-            .groupBy { it.completedAt!!.hour }
-            .maxByOrNull { it.value.size }
+            .mapNotNull { it.completedAt?.hour }
+            .groupingBy { it }
+            .eachCount()
+            .maxByOrNull { it.value }
             ?.key
 
         // 카테고리별 통계

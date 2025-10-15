@@ -72,11 +72,7 @@ class NotificationTimeSuggester(
             val time = LocalTime.parse(data.outputLabel, timeFormatter)
             val hour = time.hour
 
-            if (timeSlots.containsKey(hour)) {
-                timeSlots[hour]!!.add(data)
-            } else {
-                timeSlots[hour] = mutableListOf(data)
-            }
+            timeSlots.getOrPut(hour) { mutableListOf() }.add(data)
         }
 
         // 시간대별 점수 계산 및 정렬

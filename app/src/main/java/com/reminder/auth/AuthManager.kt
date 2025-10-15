@@ -31,11 +31,9 @@ class AuthManager {
     }
 
     suspend fun ensureSignedIn(): Result<FirebaseUser> {
-        return if (isSignedIn) {
-            Result.success(currentUser!!)
-        } else {
-            signInAnonymously()
-        }
+        return currentUser?.let { user ->
+            Result.success(user)
+        } ?: signInAnonymously()
     }
 
     fun signOut() {

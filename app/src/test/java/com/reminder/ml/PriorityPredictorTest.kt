@@ -189,16 +189,16 @@ class FakeMLTrainingDataDao : MLTrainingDataDao {
 
     fun getAllTestData() = data.toList()
 
-    override suspend fun insert(entity: MLTrainingDataEntity): Long {
+    override suspend fun insert(data: MLTrainingDataEntity): Long {
         val id = nextId++
-        data.add(entity.copy(id = id))
+        this.data.add(data.copy(id = id))
         return id
     }
 
-    override suspend fun update(entity: MLTrainingDataEntity) {
-        val index = data.indexOfFirst { it.id == entity.id }
+    override suspend fun update(data: MLTrainingDataEntity) {
+        val index = this.data.indexOfFirst { it.id == data.id }
         if (index >= 0) {
-            data[index] = entity
+            this.data[index] = data
         }
     }
 

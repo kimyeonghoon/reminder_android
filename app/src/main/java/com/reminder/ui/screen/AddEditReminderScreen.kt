@@ -62,6 +62,8 @@ import java.time.LocalTime
 @Composable
 fun AddEditReminderScreen(
     viewModel: ReminderViewModel,
+    subTaskViewModel: com.reminder.viewmodel.SubTaskViewModel, // v1.68.1: SubTask 기능 분리
+    attachmentViewModel: com.reminder.viewmodel.AttachmentViewModel, // v1.68.1: 첨부 기능 분리
     reminder: ReminderEntity?,
     onNavigateBack: () -> Unit,
     onNavigateToMap: (Double, Double, String) -> Unit = { _, _, _ -> }, // v1.68.0: 지도 화면 이동
@@ -172,7 +174,7 @@ fun AddEditReminderScreen(
 
     // 서브태스크 관련 (편집 모드일 때만)
     val subTasksFlow = if (reminder != null) {
-        viewModel.getSubTasks(reminder.id).collectAsState(initial = emptyList())
+        subTaskViewModel.getSubTasks(reminder.id).collectAsState(initial = emptyList())
     } else {
         remember { mutableStateOf(emptyList<SubTask>()) }
     }
@@ -189,7 +191,7 @@ fun AddEditReminderScreen(
 
     // 이미지 관련 (편집 모드일 때만)
     val images = if (reminder != null) {
-        viewModel.getImages(reminder.id).collectAsState(initial = emptyList())
+        attachmentViewModel.getImages(reminder.id).collectAsState(initial = emptyList())
     } else {
         remember { mutableStateOf(emptyList<com.reminder.data.entity.ReminderImage>()) }
     }
@@ -204,7 +206,7 @@ fun AddEditReminderScreen(
                 uri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
-            viewModel.addImage(reminder.id, uri.toString())
+            attachmentViewModel.addImage(reminder.id, uri.toString())
         }
     }
 
@@ -503,20 +505,22 @@ fun AddEditReminderScreen(
             }
 
             // v1.26.0: 최적 시간 제안 (간편 모드 제외)
-            if (!simpleMode && selectedDate != null) {
-                var optimalTime by remember { mutableStateOf<LocalTime?>(null) }
+            selectedDate?.let { date ->
+                if (!simpleMode) {
+                    var optimalTime by remember { mutableStateOf<LocalTime?>(null) }
 
-                LaunchedEffect(selectedDate) {
-                    val optimalDateTime = viewModel.suggestOptimalTime(selectedDate!!)
-                    optimalTime = optimalDateTime.toLocalTime()
-                }
+                        LaunchedEffect(date) {
+                        val optimalDateTime = viewModel.suggestOptimalTime(date)
+                        optimalTime = optimalDateTime.toLocalTime()
+                    }
 
-                if (optimalTime != null) {
-                    OutlinedButton(
-                        onClick = { selectedTime = optimalTime },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("💡 추천 시간: ${optimalTime?.hour}:${optimalTime?.minute?.toString()?.padStart(2, '0')}")
+                    if (optimalTime != null) {
+                        OutlinedButton(
+                            onClick = { selectedTime = optimalTime },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("💡 추천 시간: ${optimalTime?.hour}:${optimalTime?.minute?.toString()?.padStart(2, '0')}")
+                        }
                     }
                 }
             }
@@ -719,7 +723,7 @@ fun AddEditReminderScreen(
                                 add(to.index, removeAt(from.index))
                             }
                             // 드래그 중 즉시 데이터베이스 업데이트
-                            viewModel.reorderSubTasks(subTasks)
+                            subTaskViewModel.reorderSubTasks(subTasks)
                         }
                     )
 
@@ -737,8 +741,8 @@ fun AddEditReminderScreen(
                                 val subTask = subTasks[index]
                                 SubTaskItem(
                                     subTask = subTask,
-                                    onCheckedChange = { viewModel.toggleSubTaskCompletion(subTask) },
-                                    onDelete = { viewModel.deleteSubTask(subTask) },
+                                    onCheckedChange = { subTaskViewModel.toggleSubTaskCompletion(subTask) },
+                                    onDelete = { subTaskViewModel.deleteSubTask(subTask) },
                                     modifier = if (isDragging) {
                                         Modifier.border(
                                             width = 2.dp,
@@ -772,7 +776,7 @@ fun AddEditReminderScreen(
                     FilledIconButton(
                         onClick = {
                             if (newSubTaskTitle.isNotBlank()) {
-                                viewModel.addSubTask(reminder.id, newSubTaskTitle)
+                                subTaskViewModel.addSubTask(reminder.id, newSubTaskTitle)
                                 newSubTaskTitle = ""
                             }
                         },
@@ -851,7 +855,7 @@ fun AddEditReminderScreen(
 
                                 // 삭제 버튼
                                 IconButton(
-                                    onClick = { viewModel.deleteImage(image) },
+                                    onClick = { attachmentViewModel.deleteImage(image) },
                                     modifier = Modifier
                                         .align(androidx.compose.ui.Alignment.TopEnd)
                                         .size(32.dp)

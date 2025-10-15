@@ -117,15 +117,16 @@ fun HabitTrackerScreen(
     }
 
     // 습관 삭제 확인 다이얼로그
-    if (showDeleteDialog && habitToDelete != null) {
-        AlertDialog(
-            onDismissRequest = {
-                showDeleteDialog = false
-                habitToDelete = null
-            },
-            icon = { Icon(Icons.Default.Delete, contentDescription = null) },
-            title = { Text(stringResource(R.string.habit_delete)) },
-            text = { Text(stringResource(R.string.habit_delete_confirm, habitToDelete!!.name)) },
+    habitToDelete?.let { habit ->
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDeleteDialog = false
+                    habitToDelete = null
+                },
+                icon = { Icon(Icons.Default.Delete, contentDescription = null) },
+                title = { Text(stringResource(R.string.habit_delete)) },
+                text = { Text(stringResource(R.string.habit_delete_confirm, habit.name)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -140,17 +141,18 @@ fun HabitTrackerScreen(
                     Text(stringResource(R.string.common_delete))
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                        habitToDelete = null
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            habitToDelete = null
+                        }
+                    ) {
+                        Text(stringResource(R.string.common_cancel))
                     }
-                ) {
-                    Text(stringResource(R.string.common_cancel))
                 }
-            }
-        )
+            )
+        }
     }
 }
 

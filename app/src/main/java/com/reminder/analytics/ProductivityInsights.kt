@@ -147,8 +147,7 @@ class ProductivityInsights {
         val lowCompletionCategories = stats.categoryStats.filter { (_, categoryStats) ->
             categoryStats.total >= 3 && categoryStats.completionRate < 0.5 // 완료율 50% 미만
         }
-        if (lowCompletionCategories.isNotEmpty()) {
-            val (category, categoryStats) = lowCompletionCategories.minByOrNull { it.value.completionRate }!!
+        lowCompletionCategories.minByOrNull { it.value.completionRate }?.let { (category, categoryStats) ->
             val completionPercent = (categoryStats.completionRate * 100).toInt()
             insights.add(
                 Insight(
