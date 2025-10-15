@@ -46,6 +46,7 @@ import com.reminder.ReminderApplication
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 import com.reminder.ui.components.DatePickerField
+import com.reminder.ui.components.ExposedDropdownField
 import com.reminder.ui.components.ImageAttachmentSection
 import com.reminder.ui.components.LocationSearchSection
 import com.reminder.ui.components.RecurrenceSelector
@@ -328,84 +329,44 @@ fun AddEditReminderScreen(
 
             // 간편 모드에서는 중요도와 긴급도 숨김
             if (!simpleMode) {
-                ExposedDropdownMenuBox(
-                    expanded = priorityExpanded,
-                    onExpandedChange = { priorityExpanded = !priorityExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = when (priority) {
+                ExposedDropdownField(
+                    label = "중요도",
+                    value = when (priority) {
+                        Priority.HIGH -> "높음"
+                        Priority.MEDIUM -> "중간"
+                        Priority.LOW -> "낮음"
+                    },
+                    options = Priority.entries.map { p ->
+                        p to when (p) {
                             Priority.HIGH -> "높음"
                             Priority.MEDIUM -> "중간"
                             Priority.LOW -> "낮음"
-                        },
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("중요도") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = priorityExpanded,
-                        onDismissRequest = { priorityExpanded = false }
-                    ) {
-                        Priority.entries.forEach { p ->
-                            DropdownMenuItem(
-                                text = { Text(when (p) {
-                                    Priority.HIGH -> "높음"
-                                    Priority.MEDIUM -> "중간"
-                                    Priority.LOW -> "낮음"
-                                }) },
-                                onClick = {
-                                    priority = p
-                                    priorityExpanded = false
-                                }
-                            )
                         }
-                    }
-                }
+                    },
+                    expanded = priorityExpanded,
+                    onExpandedChange = { priorityExpanded = it },
+                    onSelected = { priority = it }
+                )
 
                 // v1.47.0: Urgency (긴급도) 선택
-                ExposedDropdownMenuBox(
-                    expanded = urgencyExpanded,
-                    onExpandedChange = { urgencyExpanded = !urgencyExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = when (urgency) {
+                ExposedDropdownField(
+                    label = "긴급도",
+                    value = when (urgency) {
+                        Urgency.HIGH -> "높음"
+                        Urgency.MEDIUM -> "중간"
+                        Urgency.LOW -> "낮음"
+                    },
+                    options = Urgency.entries.map { u ->
+                        u to when (u) {
                             Urgency.HIGH -> "높음"
                             Urgency.MEDIUM -> "중간"
                             Urgency.LOW -> "낮음"
-                        },
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("긴급도") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = urgencyExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = urgencyExpanded,
-                        onDismissRequest = { urgencyExpanded = false }
-                    ) {
-                        Urgency.entries.forEach { u ->
-                            DropdownMenuItem(
-                                text = { Text(when (u) {
-                                    Urgency.HIGH -> "높음"
-                                    Urgency.MEDIUM -> "중간"
-                                    Urgency.LOW -> "낮음"
-                                }) },
-                                onClick = {
-                                    urgency = u
-                                    urgencyExpanded = false
-                                }
-                            )
                         }
-                    }
-                }
+                    },
+                    expanded = urgencyExpanded,
+                    onExpandedChange = { urgencyExpanded = it },
+                    onSelected = { urgency = it }
+                )
             }
 
             // v1.48.0: AI 긴급도 예측
@@ -455,56 +416,33 @@ fun AddEditReminderScreen(
             // v1.66.0: 미리 알림 (간편 모드에서도 표시 - 70대에게 유용)
             // 날짜와 시간을 모두 선택해야만 미리 알림 UI 표시
             if (selectedDate != null && selectedTime != null) {
-                ExposedDropdownMenuBox(
+                ExposedDropdownField(
+                    label = "⏰ 미리 알림",
+                    value = when (advanceNotificationMinutes) {
+                        null -> "없음"
+                        5 -> "5분 전"
+                        10 -> "10분 전"
+                        15 -> "15분 전"
+                        30 -> "30분 전"
+                        60 -> "1시간 전"
+                        120 -> "2시간 전"
+                        1440 -> "1일 전"
+                        else -> "${advanceNotificationMinutes}분 전"
+                    },
+                    options = listOf(
+                        null to "없음",
+                        5 to "5분 전",
+                        10 to "10분 전",
+                        15 to "15분 전",
+                        30 to "30분 전",
+                        60 to "1시간 전",
+                        120 to "2시간 전",
+                        1440 to "1일 전"
+                    ),
                     expanded = advanceNotificationExpanded,
-                    onExpandedChange = { advanceNotificationExpanded = !advanceNotificationExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = when (advanceNotificationMinutes) {
-                            null -> "없음"
-                            5 -> "5분 전"
-                            10 -> "10분 전"
-                            15 -> "15분 전"
-                            30 -> "30분 전"
-                            60 -> "1시간 전"
-                            120 -> "2시간 전"
-                            1440 -> "1일 전"
-                            else -> "${advanceNotificationMinutes}분 전"
-                        },
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("⏰ 미리 알림") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = advanceNotificationExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = advanceNotificationExpanded,
-                        onDismissRequest = { advanceNotificationExpanded = false }
-                    ) {
-                        val options = listOf(
-                            null to "없음",
-                            5 to "5분 전",
-                            10 to "10분 전",
-                            15 to "15분 전",
-                            30 to "30분 전",
-                            60 to "1시간 전",
-                            120 to "2시간 전",
-                            1440 to "1일 전"
-                        )
-                        options.forEach { (minutes, label) ->
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = {
-                                    advanceNotificationMinutes = minutes
-                                    advanceNotificationExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                    onExpandedChange = { advanceNotificationExpanded = it },
+                    onSelected = { advanceNotificationMinutes = it }
+                )
             }
 
             // v1.26.0: 최적 시간 제안 (간편 모드 제외)
