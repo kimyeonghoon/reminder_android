@@ -46,9 +46,11 @@ import com.reminder.ReminderApplication
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 import com.reminder.ui.components.DatePickerField
+import com.reminder.ui.components.ImageAttachmentSection
 import com.reminder.ui.components.LocationSearchSection
 import com.reminder.ui.components.RecurrenceSelector
 import com.reminder.ui.components.SubTaskItem
+import com.reminder.ui.components.SubTaskSection
 import com.reminder.ui.components.TimePickerField
 import com.reminder.viewmodel.ReminderViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -594,179 +596,35 @@ fun AddEditReminderScreen(
                 )
             }
 
-            // 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
+            // v1.68.2: 서브태스크 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
-                HorizontalDivider()
-
-                Text(
-                    text = "서브태스크",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                SubTaskSection(
+                    subTasks = subTasks,
+                    onSubTasksReordered = { reorderedSubTasks ->
+                        subTasks = reorderedSubTasks
+                        subTaskViewModel.reorderSubTasks(reorderedSubTasks)
+                    },
+                    onSubTaskToggle = { subTaskViewModel.toggleSubTaskCompletion(it) },
+                    onSubTaskDelete = { subTaskViewModel.deleteSubTask(it) },
+                    newSubTaskTitle = newSubTaskTitle,
+                    onNewSubTaskTitleChange = { newSubTaskTitle = it },
+                    onAddSubTask = {
+                        if (newSubTaskTitle.isNotBlank()) {
+                            subTaskViewModel.addSubTask(reminder.id, newSubTaskTitle)
+                            newSubTaskTitle = ""
+                        }
+                    }
                 )
-
-                // 서브태스크 리스트 (드래그 앤 드롭 가능)
-                if (subTasks.isNotEmpty()) {
-                    val reorderableState = rememberReorderableLazyListState(
-                        onMove = { from, to ->
-                            subTasks = subTasks.toMutableList().apply {
-                                add(to.index, removeAt(from.index))
-                            }
-                            // 드래그 중 즉시 데이터베이스 업데이트
-                            subTaskViewModel.reorderSubTasks(subTasks)
-                        }
-                    )
-
-                    LazyColumn(
-                        state = reorderableState.listState,
-                        modifier = Modifier
-                            .heightIn(max = 300.dp)
-                            .reorderable(reorderableState)
-                    ) {
-                        items(
-                            count = subTasks.size,
-                            key = { index -> subTasks[index].id }
-                        ) { index ->
-                            ReorderableItem(reorderableState, key = subTasks[index].id) { isDragging ->
-                                val subTask = subTasks[index]
-                                SubTaskItem(
-                                    subTask = subTask,
-                                    onCheckedChange = { subTaskViewModel.toggleSubTaskCompletion(subTask) },
-                                    onDelete = { subTaskViewModel.deleteSubTask(subTask) },
-                                    modifier = if (isDragging) {
-                                        Modifier.border(
-                                            width = 2.dp,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            shape = MaterialTheme.shapes.medium
-                                        )
-                                    } else {
-                                        Modifier
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                // 새 서브태스크 추가
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = newSubTaskTitle,
-                        onValueChange = { newSubTaskTitle = it },
-                        label = { Text("새 서브태스크") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true
-                    )
-
-                    FilledIconButton(
-                        onClick = {
-                            if (newSubTaskTitle.isNotBlank()) {
-                                subTaskViewModel.addSubTask(reminder.id, newSubTaskTitle)
-                                newSubTaskTitle = ""
-                            }
-                        },
-                        enabled = newSubTaskTitle.isNotBlank(),
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "서브태스크 추가"
-                        )
-                    }
-                }
             }
 
-            // 이미지 첨부 섹션 (편집 모드일 때만, 간편 모드 제외)
+            // v1.68.2: 이미지 첨부 섹션 (편집 모드일 때만, 간편 모드 제외)
             if (reminder != null && !simpleMode) {
-                HorizontalDivider()
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "이미지",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-
-                    FilledIconButton(
-                        onClick = { imagePickerLauncher.launch("image/*") },
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "이미지 추가",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-
-                // 이미지 목록 (가로 스크롤)
-                if (images.value.isNotEmpty()) {
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(images.value) { image ->
-                            Box(
-                                modifier = Modifier
-                                    .size(120.dp)
-                                    .border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.outline,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                            ) {
-                                // Coil AsyncImage로 실제 이미지 표시
-                                AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(image.imageUri.toUri())
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = "첨부된 이미지",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clickable { selectedImageUri = image.imageUri },
-                                    contentScale = ContentScale.Crop,
-                                    placeholder = androidx.compose.ui.graphics.painter.ColorPainter(
-                                        MaterialTheme.colorScheme.surfaceVariant
-                                    ),
-                                    error = androidx.compose.ui.graphics.painter.ColorPainter(
-                                        MaterialTheme.colorScheme.errorContainer
-                                    )
-                                )
-
-                                // 삭제 버튼
-                                IconButton(
-                                    onClick = { attachmentViewModel.deleteImage(image) },
-                                    modifier = Modifier
-                                        .align(androidx.compose.ui.Alignment.TopEnd)
-                                        .size(32.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "이미지 삭제",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Text(
-                        text = "첨부된 이미지가 없습니다",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
+                ImageAttachmentSection(
+                    images = images.value,
+                    onAddImageClick = { imagePickerLauncher.launch("image/*") },
+                    onImageClick = { uri -> selectedImageUri = uri },
+                    onImageDelete = { attachmentViewModel.deleteImage(it) }
+                )
             }
         }
 
