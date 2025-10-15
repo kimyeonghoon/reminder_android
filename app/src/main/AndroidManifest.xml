@@ -105,9 +105,9 @@
             </intent-filter>
         </service>
 
-        <!-- v1.68.0: Kakao Map SDK -->
+        <!-- v1.68.0: Kakao Map SDK (VectorMap) -->
         <meta-data
-            android:name="com.kakao.sdk.AppKey"
+            android:name="com.kakao.vectormap.APP_KEY"
             android:value="${KAKAO_NATIVE_APP_KEY}" />
     </application>
 

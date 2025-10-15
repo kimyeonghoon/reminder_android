@@ -85,6 +85,7 @@ fun AddEditReminderScreen(
 
     // v1.67.0: 카카오 장소 검색 결과
     var locationSearchResults by remember { mutableStateOf<List<KakaoPlace>>(emptyList()) }
+    var skipLocationSearch by remember { mutableStateOf(false) } // 선택 후 검색 스킵
 
     // v1.23.0: 웹 링크
     var webLink by remember { mutableStateOf(reminder?.webLink ?: "") }
@@ -107,8 +108,10 @@ fun AddEditReminderScreen(
     }
 
     // v1.67.0: 카카오 장소 검색 (debounced)
-    LaunchedEffect(locationName) {
-        if (locationName.length >= 2) {
+    LaunchedEffect(locationName, skipLocationSearch) {
+        if (skipLocationSearch) {
+            skipLocationSearch = false // 플래그 리셋
+        } else if (locationName.length >= 2) {
             delay(500) // 500ms 디바운스
             val app = context.applicationContext as? ReminderApplication
             if (app != null) {
@@ -587,6 +590,7 @@ fun AddEditReminderScreen(
                                 supportingContent = { Text(place.addressName) },
                                 modifier = Modifier.clickable {
                                     // 선택 시 위치 정보 자동 입력
+                                    skipLocationSearch = true // 검색 스킵 플래그 설정
                                     locationName = place.placeName
                                     locationLatitude = place.latitude
                                     locationLongitude = place.longitude
