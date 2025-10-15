@@ -79,8 +79,10 @@
 - ✅ v1.65.0 - RecurrenceRule UI 재구현 (RecurrenceSelector 복원, 미리 알림 기능)
 - ✅ v1.66.0 - hasTime 필드 추가 (날짜/시간 구분 명시화, 00:00 문제 해결)
 - ✅ v1.67.0 - 카카오 로컬 API 장소 검색 (실시간 자동완성, 하이브리드 입력, TDD 완료)
+- ✅ v1.67.1 - 위젯 데이터 표시 버그 수정 (Repository 싱글톤 사용, 배터리 제약 제거)
+- ✅ v1.68.0 - 카카오맵 SDK 통합 (지도 시각화, 위치 선택 UI, MapViewModel TDD)
 
-**🎉 현재 버전: v1.67.0 (versionCode 72, DB v26)**
+**🎉 현재 버전: v1.68.0 (versionCode 75, DB v26)**
 
 ---
 
