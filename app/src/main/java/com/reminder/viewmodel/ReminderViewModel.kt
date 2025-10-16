@@ -19,6 +19,20 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
+/**
+ * v1.68.3: 리팩토링된 ReminderViewModel (Facade Pattern)
+ *
+ * CRUD, 검색/필터/정렬, Analytics 기능을 별도 ViewModel로 분리 완료
+ * ReminderViewModel은 하위 호환성을 위해 유지하며, 내부적으로 3개의 전문 ViewModel에 위임합니다.
+ *
+ * 내부 위임 ViewModel:
+ * - crudViewModel: CRUD 핵심 기능
+ * - searchViewModel: 검색/필터/정렬
+ * - analyticsViewModel: ML 카테고리 제안, 완료 패턴 분석
+ *
+ * 직접 담당 기능:
+ * - 스누즈, 웹링크, TTS
+ */
 // v1.68.1: open class for mockito testing
 open class ReminderViewModel(
     private val repository: ReminderRepository,
@@ -32,20 +46,16 @@ open class ReminderViewModel(
     private val completionPatternAnalyzer: com.reminder.analytics.CompletionPatternAnalyzer
 ) : ViewModel() {
 
-    val allReminders: StateFlow<List<ReminderEntity>> = repository.allReminders
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    // ==================== v1.68.3: 내부 위임 ViewModel ====================
+    private val crudViewModel = ReminderCrudViewModel(repository, alarmScheduler, locationManager, analyticsHelper)
+    private val searchViewModel = ReminderSearchViewModel(analyticsHelper)
+    private val analyticsViewModel = ReminderAnalyticsViewModel(repository, analyticsHelper, categorySuggestionHelper, completionPatternAnalyzer)
 
-    val activeReminders: StateFlow<List<ReminderEntity>> = repository.activeReminders
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    val completedReminders: StateFlow<List<ReminderEntity>> = repository.completedReminders
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    private val _selectedReminder = MutableStateFlow<ReminderEntity?>(null)
-    val selectedReminder: StateFlow<ReminderEntity?> = _selectedReminder.asStateFlow()
-
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    // ==================== v1.68.3: CRUD 함수 (crudViewModel에 위임) ====================
+    val allReminders: StateFlow<List<ReminderEntity>> = crudViewModel.allReminders
+    val activeReminders: StateFlow<List<ReminderEntity>> = crudViewModel.activeReminders
+    val completedReminders: StateFlow<List<ReminderEntity>> = crudViewModel.completedReminders
+    val selectedReminder: StateFlow<ReminderEntity?> = crudViewModel.selectedReminder
 
     fun addReminder(
         title: String,
@@ -55,347 +65,50 @@ open class ReminderViewModel(
         category: String = "",
         recurrenceRule: com.reminder.recurrence.RecurrenceRule? = null,
         recurrenceEnd: com.reminder.recurrence.RecurrenceEnd? = null,
-        advanceNotificationMinutes: Int? = null,  // v1.66.0: 미리 알림
-        hasTime: Boolean = true,  // v1.66.0: 시간 설정 여부
-        // v1.67.0: 위치 파라미터 추가
+        advanceNotificationMinutes: Int? = null,
+        hasTime: Boolean = true,
         locationLatitude: Double? = null,
         locationLongitude: Double? = null,
         locationName: String? = null,
         locationRadius: Float? = null
-    ) {
-        viewModelScope.launch {
-            val reminder = ReminderEntity(
-                title = title,
-                description = description,
-                dueDateTime = dueDateTime,
-                priority = priority,
-                category = category,
-                recurrenceRule = recurrenceRule,
-                recurrenceEnd = recurrenceEnd,
-                advanceNotificationMinutes = advanceNotificationMinutes,  // v1.66.0
-                hasTime = hasTime,  // v1.66.0
-                // v1.67.0: 위치 필드
-                locationLatitude = locationLatitude,
-                locationLongitude = locationLongitude,
-                locationName = locationName,
-                locationRadius = locationRadius
-            )
-            val reminderId = repository.insertReminder(reminder)
+    ) = crudViewModel.addReminder(title, description, dueDateTime, priority, category, recurrenceRule, recurrenceEnd, advanceNotificationMinutes, hasTime, locationLatitude, locationLongitude, locationName, locationRadius)
 
-            // 알람 스케줄링
-            if (dueDateTime != null) {
-                alarmScheduler.schedule(reminder.copy(id = reminderId))
-            }
+    fun updateReminder(reminder: ReminderEntity) = crudViewModel.updateReminder(reminder)
+    fun deleteReminder(reminder: ReminderEntity) = crudViewModel.deleteReminder(reminder)
+    fun toggleReminderCompletion(reminder: ReminderEntity) = crudViewModel.toggleReminderCompletion(reminder)
+    fun deleteAllCompletedReminders() = crudViewModel.deleteAllCompletedReminders()
+    fun selectReminder(reminder: ReminderEntity?) = crudViewModel.selectReminder(reminder)
+    fun deleteReminders(reminders: List<ReminderEntity>) = crudViewModel.deleteReminders(reminders)
+    fun completeReminders(reminders: List<ReminderEntity>) = crudViewModel.completeReminders(reminders)
+    fun duplicateReminder(reminder: ReminderEntity) = crudViewModel.duplicateReminder(reminder)
+    fun createReminderFromTemplate(template: com.reminder.data.entity.ReminderTemplate, dueDateTime: LocalDateTime? = null) = crudViewModel.createReminderFromTemplate(template, dueDateTime)
+    fun moveReminderToQuadrant(reminder: ReminderEntity, targetQuadrant: com.reminder.domain.Quadrant) = crudViewModel.moveReminderToQuadrant(reminder, targetQuadrant)
 
-            // v1.67.0: 지오펜스 등록 (위치가 있으면)
-            if (locationLatitude != null && locationLongitude != null && locationRadius != null) {
-                locationManager.setupGeofence(
-                    reminderId = reminderId,
-                    latitude = locationLatitude,
-                    longitude = locationLongitude,
-                    radius = locationRadius
-                )
-            }
+    // ==================== v1.68.3: 검색/필터/정렬 함수 (searchViewModel에 위임) ====================
+    val searchQuery: StateFlow<String> = searchViewModel.searchQuery
 
-            // Analytics 이벤트 로깅
-            analyticsHelper.logReminderCreated(
-                priority = priority,
-                category = category,
-                hasRecurrence = recurrenceRule != null
-            )
-        }
-    }
+    fun updateSearchQuery(query: String) = searchViewModel.updateSearchQuery(query)
+    fun getFilteredReminders(reminders: List<ReminderEntity>, query: String) = searchViewModel.getFilteredReminders(reminders, query)
+    fun filterByTag(reminders: List<ReminderEntity>, tag: String) = searchViewModel.filterByTag(reminders, tag)
+    fun filterByPriority(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterPriority) = searchViewModel.filterByPriority(reminders, filter)
+    fun filterByDate(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterDate) = searchViewModel.filterByDate(reminders, filter)
+    fun sortReminders(reminders: List<ReminderEntity>, sortOption: com.reminder.data.entity.SortOption) = searchViewModel.sortReminders(reminders, sortOption)
 
-    fun updateReminder(reminder: ReminderEntity) {
-        viewModelScope.launch {
-            val updatedReminder = reminder.copy(updatedAt = LocalDateTime.now())
-            repository.updateReminder(updatedReminder)
-
-            // 알람 재스케줄링
-            alarmScheduler.cancel(updatedReminder.id)
-            if (updatedReminder.dueDateTime != null && !updatedReminder.isCompleted) {
-                alarmScheduler.schedule(updatedReminder)
-            }
-
-            // v1.67.0: 지오펜스 재등록 (위치가 있으면)
-            val lat = updatedReminder.locationLatitude
-            val lon = updatedReminder.locationLongitude
-            val radius = updatedReminder.locationRadius
-
-            if (lat != null && lon != null && radius != null) {
-                // 기존 지오펜스 제거 후 재등록
-                locationManager.removeGeofence(updatedReminder.id)
-                locationManager.setupGeofence(
-                    reminderId = updatedReminder.id,
-                    latitude = lat,
-                    longitude = lon,
-                    radius = radius
-                )
-            } else {
-                // 위치가 없으면 지오펜스 제거
-                locationManager.removeGeofence(updatedReminder.id)
-            }
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logReminderEdited()
-        }
-    }
-
-    fun deleteReminder(reminder: ReminderEntity) {
-        viewModelScope.launch {
-            repository.deleteReminder(reminder)
-            // 알람 취소
-            alarmScheduler.cancel(reminder.id)
-            // v1.67.0: 지오펜스 제거
-            locationManager.removeGeofence(reminder.id)
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logReminderDeleted()
-        }
-    }
-
-    fun toggleReminderCompletion(reminder: ReminderEntity) {
-        viewModelScope.launch {
-            repository.toggleReminderCompletion(reminder)
-
-            // 완료되면 알람 취소, 완료 취소되면 알람 재스케줄링
-            if (!reminder.isCompleted) {
-                // 완료로 변경되면 알람 취소
-                alarmScheduler.cancel(reminder.id)
-
-                // Analytics 이벤트 로깅 (완료 시에만)
-                val daysUntilDue = reminder.dueDateTime?.let {
-                    ChronoUnit.DAYS.between(LocalDateTime.now(), it).toInt()
-                }
-                analyticsHelper.logReminderCompleted(daysUntilDue)
-            } else {
-                // 완료 취소되면 알람 재스케줄링
-                if (reminder.dueDateTime != null) {
-                    alarmScheduler.schedule(reminder)
-                }
-            }
-        }
-    }
-
-    fun deleteAllCompletedReminders() {
-        viewModelScope.launch {
-            repository.deleteAllCompletedReminders()
-        }
-    }
-
-    fun selectReminder(reminder: ReminderEntity?) {
-        _selectedReminder.value = reminder
-    }
-
-    fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
-
-        // Analytics 이벤트 로깅 (검색어가 비어있지 않을 때만)
-        if (query.isNotBlank()) {
-            analyticsHelper.logSearchPerformed(query.length)
-        }
-    }
-
-    fun getFilteredReminders(reminders: List<ReminderEntity>, query: String): List<ReminderEntity> {
-        if (query.isBlank()) return reminders
-        return reminders.filter {
-            it.title.contains(query, ignoreCase = true) ||
-                    it.description.contains(query, ignoreCase = true) ||
-                    it.category.contains(query, ignoreCase = true) ||
-                    it.tags.contains(query, ignoreCase = true)
-        }
-    }
-
-    fun filterByTag(reminders: List<ReminderEntity>, tag: String): List<ReminderEntity> {
-        if (tag.isBlank()) return reminders
-        return reminders.filter {
-            it.tags.split(",").any { it.trim().equals(tag, ignoreCase = true) }
-        }
-    }
-
-    fun filterByPriority(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterPriority): List<ReminderEntity> {
-        return when (filter) {
-            com.reminder.data.entity.FilterPriority.ALL -> reminders
-            com.reminder.data.entity.FilterPriority.HIGH -> reminders.filter { it.priority == Priority.HIGH }
-            com.reminder.data.entity.FilterPriority.MEDIUM -> reminders.filter { it.priority == Priority.MEDIUM }
-            com.reminder.data.entity.FilterPriority.LOW -> reminders.filter { it.priority == Priority.LOW }
-        }
-    }
-
-    fun filterByDate(reminders: List<ReminderEntity>, filter: com.reminder.data.entity.FilterDate): List<ReminderEntity> {
-        val now = LocalDateTime.now()
-        val today = now.toLocalDate()
-        val startOfWeek = today.minusDays(today.dayOfWeek.value.toLong() - 1)
-        val endOfWeek = startOfWeek.plusDays(6)
-        val startOfMonth = today.withDayOfMonth(1)
-        val endOfMonth = today.withDayOfMonth(today.lengthOfMonth())
-
-        return when (filter) {
-            com.reminder.data.entity.FilterDate.ALL -> reminders
-            com.reminder.data.entity.FilterDate.TODAY -> reminders.filter {
-                it.dueDateTime?.toLocalDate() == today
-            }
-            com.reminder.data.entity.FilterDate.THIS_WEEK -> reminders.filter {
-                val dueDate = it.dueDateTime?.toLocalDate()
-                dueDate != null && !dueDate.isBefore(startOfWeek) && !dueDate.isAfter(endOfWeek)
-            }
-            com.reminder.data.entity.FilterDate.THIS_MONTH -> reminders.filter {
-                val dueDate = it.dueDateTime?.toLocalDate()
-                dueDate != null && !dueDate.isBefore(startOfMonth) && !dueDate.isAfter(endOfMonth)
-            }
-            com.reminder.data.entity.FilterDate.OVERDUE -> reminders.filter {
-                it.dueDateTime != null && it.dueDateTime.isBefore(now) && !it.isCompleted
-            }
-        }
-    }
-
-    fun sortReminders(reminders: List<ReminderEntity>, sortOption: com.reminder.data.entity.SortOption): List<ReminderEntity> {
-        return when (sortOption) {
-            com.reminder.data.entity.SortOption.BY_DATE_ASC -> reminders.sortedWith(
-                compareBy(nullsLast()) { it.dueDateTime }
-            )
-            com.reminder.data.entity.SortOption.BY_DATE_DESC -> reminders.sortedWith(
-                compareByDescending(nullsLast()) { it.dueDateTime }
-            )
-            com.reminder.data.entity.SortOption.BY_PRIORITY_HIGH_FIRST -> reminders.sortedBy {
-                when (it.priority) {
-                    Priority.HIGH -> 0
-                    Priority.MEDIUM -> 1
-                    Priority.LOW -> 2
-                }
-            }
-            com.reminder.data.entity.SortOption.BY_PRIORITY_LOW_FIRST -> reminders.sortedBy {
-                when (it.priority) {
-                    Priority.LOW -> 0
-                    Priority.MEDIUM -> 1
-                    Priority.HIGH -> 2
-                }
-            }
-            com.reminder.data.entity.SortOption.BY_TITLE_ASC -> reminders.sortedBy { it.title.lowercase() }
-            com.reminder.data.entity.SortOption.BY_TITLE_DESC -> reminders.sortedByDescending { it.title.lowercase() }
-            com.reminder.data.entity.SortOption.BY_CREATED_ASC -> reminders.sortedBy { it.createdAt }
-            com.reminder.data.entity.SortOption.BY_CREATED_DESC -> reminders.sortedByDescending { it.createdAt }
-        }
-    }
-
-    // v1.68.1: 서브태스크, 이미지 첨부 기능은 SubTaskViewModel, AttachmentViewModel로 분리됨
-
-    // ==================== 완료 이력 관련 함수 ====================
-
-    /**
-     * 특정 날짜에 완료된 리마인더 조회
-     */
-    suspend fun getCompletedRemindersByDate(date: LocalDateTime): List<ReminderEntity> {
-        return repository.getCompletedRemindersByDate(date)
-    }
-
-    /**
-     * 날짜 범위 내 완료된 리마인더 조회
-     */
-    suspend fun getCompletedRemindersInRange(
-        startDate: LocalDateTime,
-        endDate: LocalDateTime
-    ): List<ReminderEntity> {
-        return repository.getCompletedRemindersInRange(startDate, endDate)
-    }
-
-    /**
-     * 월별 완료 개수 맵 생성 (날짜 -> 완료 개수)
-     */
-    suspend fun getCompletionCountByDay(
-        startDate: LocalDateTime,
-        endDate: LocalDateTime
-    ): Map<LocalDateTime, Int> {
-        val reminders = getCompletedRemindersInRange(startDate, endDate)
-        return reminders
-            .groupBy { it.updatedAt.toLocalDate().atStartOfDay() }
-            .mapValues { it.value.size }
-    }
-
-    // v1.68.1: 템플릿 기능은 TemplateViewModel로 분리됨
-
-    /**
-     * 템플릿에서 리마인더 생성 (핵심 CRUD이므로 유지)
-     */
-    fun createReminderFromTemplate(template: com.reminder.data.entity.ReminderTemplate, dueDateTime: LocalDateTime? = null) {
-        viewModelScope.launch {
-            val reminder = ReminderEntity(
-                title = template.titleTemplate,
-                description = template.descriptionTemplate,
-                dueDateTime = dueDateTime,
-                priority = template.defaultPriority,
-                category = template.defaultCategory,
-                recurrenceRule = template.defaultRecurrenceRule,
-                recurrenceEnd = template.defaultRecurrenceEnd
-            )
-            val reminderId = repository.insertReminder(reminder)
-
-            // 알람 스케줄링
-            if (dueDateTime != null) {
-                alarmScheduler.schedule(reminder.copy(id = reminderId))
-            }
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logTemplateUsed(template.name)
-        }
-    }
-
-    // ==================== 배치 작업 관련 함수 ====================
-
-    /**
-     * 여러 리마인더 삭제
-     */
-    fun deleteReminders(reminders: List<ReminderEntity>) {
-        viewModelScope.launch {
-            reminders.forEach { reminder ->
-                repository.deleteReminder(reminder)
-                alarmScheduler.cancel(reminder.id)
-            }
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logBatchOperation("delete", reminders.size)
-        }
-    }
-
-    /**
-     * 여러 리마인더 완료 처리
-     */
-    fun completeReminders(reminders: List<ReminderEntity>) {
-        viewModelScope.launch {
-            reminders.forEach { reminder ->
-                if (!reminder.isCompleted) {
-                    repository.toggleReminderCompletion(reminder)
-                    alarmScheduler.cancel(reminder.id)
-                }
-            }
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logBatchOperation("complete", reminders.size)
-        }
-    }
-
-    // ==================== 복제 관련 함수 ====================
-
-    /**
-     * 리마인더 복제
-     */
-    fun duplicateReminder(reminder: ReminderEntity) {
-        viewModelScope.launch {
-            val duplicated = reminder.copy(
-                id = 0, // 새 ID 생성
-                title = "${reminder.title} (복사본)",
-                isCompleted = false,
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            )
-            val newId = repository.insertReminder(duplicated)
-
-            // 알람 스케줄링
-            if (duplicated.dueDateTime != null) {
-                alarmScheduler.schedule(duplicated.copy(id = newId))
-            }
-        }
-    }
+    // ==================== v1.68.3: Analytics 함수 (analyticsViewModel에 위임) ====================
+    suspend fun getCompletedRemindersByDate(date: LocalDateTime) = analyticsViewModel.getCompletedRemindersByDate(date)
+    suspend fun getCompletedRemindersInRange(startDate: LocalDateTime, endDate: LocalDateTime) = analyticsViewModel.getCompletedRemindersInRange(startDate, endDate)
+    suspend fun getCompletionCountByDay(startDate: LocalDateTime, endDate: LocalDateTime) = analyticsViewModel.getCompletionCountByDay(startDate, endDate)
+    suspend fun suggestCategories(title: String, description: String = "") = analyticsViewModel.suggestCategories(title, description)
+    suspend fun getAllCategories() = analyticsViewModel.getAllCategories()
+    suspend fun getCategoryFrequency() = analyticsViewModel.getCategoryFrequency()
+    fun getDefaultCategories() = analyticsViewModel.getDefaultCategories()
+    suspend fun analyzeCompletionPattern() = analyticsViewModel.analyzeCompletionPattern()
+    suspend fun suggestOptimalTime(dueDate: java.time.LocalDate) = analyticsViewModel.suggestOptimalTime(dueDate)
+    suspend fun getBestCompletionHours() = analyticsViewModel.getBestCompletionHours()
+    suspend fun getBestCompletionDays() = analyticsViewModel.getBestCompletionDays()
+    suspend fun getPatternSummary() = analyticsViewModel.getPatternSummary()
+    suspend fun getCompletionProbabilityByHour(hour: Int) = analyticsViewModel.getCompletionProbabilityByHour(hour)
+    suspend fun getCompletionProbabilityByDay(day: java.time.DayOfWeek) = analyticsViewModel.getCompletionProbabilityByDay(day)
 
     // ==================== 스누즈 관련 함수 ====================
 
@@ -423,9 +136,6 @@ open class ReminderViewModel(
     val snoozedReminders = database.reminderDao().getSnoozedReminders()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // v1.68.1: 위치 기반 리마인더 기능은 LocationViewModel로 분리됨
-    // 참고: addReminder, updateReminder, deleteReminder의 지오펜스 관리 코드는 CRUD 일부로 유지됨
-
     // ==================== 웹 링크 관련 함수 ====================
 
     /**
@@ -450,7 +160,7 @@ open class ReminderViewModel(
             val normalizedUrl = normalizeUrl(webLink)
             val updated = reminder.copy(
                 webLink = normalizedUrl,
-                updatedAt = LocalDateTime.now()
+                updatedAt = java.time.LocalDateTime.now()
             )
             repository.updateReminder(updated)
 
@@ -466,7 +176,7 @@ open class ReminderViewModel(
         viewModelScope.launch {
             val updated = reminder.copy(
                 webLink = null,
-                updatedAt = LocalDateTime.now()
+                updatedAt = java.time.LocalDateTime.now()
             )
             repository.updateReminder(updated)
         }
@@ -526,7 +236,7 @@ open class ReminderViewModel(
         viewModelScope.launch {
             val updated = reminder.copy(
                 readAloud = !reminder.readAloud,
-                updatedAt = LocalDateTime.now()
+                updatedAt = java.time.LocalDateTime.now()
             )
             repository.updateReminder(updated)
 
@@ -543,136 +253,5 @@ open class ReminderViewModel(
     override fun onCleared() {
         super.onCleared()
         ttsHelper.shutdown()
-    }
-
-    // ==================== 카테고리 제안 (ML) 관련 함수 ====================
-
-    /**
-     * 제목과 설명을 기반으로 카테고리 제안
-     */
-    suspend fun suggestCategories(title: String, description: String = ""): List<String> {
-        val allReminders = repository.getAllRemindersList()
-        val suggestions = categorySuggestionHelper.suggestCategories(title, description, allReminders)
-
-        // Analytics 이벤트 로깅
-        if (suggestions.isNotEmpty()) {
-            analyticsHelper.logCategorySuggested(suggestions.size)
-        }
-
-        return suggestions
-    }
-
-    /**
-     * 모든 고유 카테고리 목록 조회
-     */
-    suspend fun getAllCategories(): List<String> {
-        val allReminders = repository.getAllRemindersList()
-        return categorySuggestionHelper.getAllCategories(allReminders)
-    }
-
-    /**
-     * 카테고리 사용 빈도 조회
-     */
-    suspend fun getCategoryFrequency(): Map<String, Int> {
-        val allReminders = repository.getAllRemindersList()
-        return categorySuggestionHelper.getCategoryFrequency(allReminders)
-    }
-
-    /**
-     * 기본 카테고리 목록 반환
-     */
-    fun getDefaultCategories(): List<String> {
-        return com.reminder.ml.CategorySuggestionHelper.DEFAULT_CATEGORIES
-    }
-
-    // ==================== 완료 패턴 분석 관련 함수 ====================
-
-    /**
-     * 완료 패턴 분석
-     */
-    suspend fun analyzeCompletionPattern(): com.reminder.analytics.CompletionPatternAnalyzer.CompletionPattern? {
-        val allReminders = repository.getAllRemindersList()
-        val pattern = completionPatternAnalyzer.analyzeCompletionPattern(allReminders)
-
-        // Analytics 이벤트 로깅
-        if (pattern != null) {
-            analyticsHelper.logPatternAnalyzed(pattern.completionRate)
-        }
-
-        return pattern
-    }
-
-    /**
-     * 최적의 리마인더 시간 제안
-     */
-    suspend fun suggestOptimalTime(dueDate: java.time.LocalDate): LocalDateTime {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.suggestOptimalTime(pattern, dueDate)
-    }
-
-    /**
-     * 완료하기 좋은 시간대 목록
-     */
-    suspend fun getBestCompletionHours(): List<Int> {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.getBestCompletionHours(pattern)
-    }
-
-    /**
-     * 완료하기 좋은 요일 목록
-     */
-    suspend fun getBestCompletionDays(): List<java.time.DayOfWeek> {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.getBestCompletionDays(pattern)
-    }
-
-    /**
-     * 완료 패턴 요약 텍스트
-     */
-    suspend fun getPatternSummary(): String {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.getPatternSummary(pattern)
-    }
-
-    /**
-     * 특정 시간대의 완료 확률
-     */
-    suspend fun getCompletionProbabilityByHour(hour: Int): Double {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.getCompletionProbability(pattern, hour)
-    }
-
-    /**
-     * 특정 요일의 완료 확률
-     */
-    suspend fun getCompletionProbabilityByDay(day: java.time.DayOfWeek): Double {
-        val pattern = analyzeCompletionPattern()
-        return completionPatternAnalyzer.getCompletionProbability(pattern, day)
-    }
-
-    // v1.68.1: 고급 필터 시스템 기능은 FilterViewModel로 분리됨
-
-    // ==================== Eisenhower Matrix (v1.49.0) ====================
-
-    /**
-     * 리마인더를 다른 쿼드런트로 이동
-     *
-     * @param reminder 이동할 리마인더
-     * @param targetQuadrant 목표 쿼드런트
-     */
-    fun moveReminderToQuadrant(reminder: ReminderEntity, targetQuadrant: com.reminder.domain.Quadrant) {
-        viewModelScope.launch {
-            val movedReminder = reminder.moveToQuadrant(targetQuadrant)
-            repository.updateReminder(movedReminder)
-
-            // 알람 재스케줄링 (필요시)
-            alarmScheduler.cancel(movedReminder.id)
-            if (movedReminder.dueDateTime != null && !movedReminder.isCompleted) {
-                alarmScheduler.schedule(movedReminder)
-            }
-
-            // Analytics 이벤트 로깅
-            analyticsHelper.logReminderMovedToQuadrant(targetQuadrant.name)
-        }
     }
 }
