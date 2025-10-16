@@ -1,15 +1,15 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-14 (v1.68.0 완료)
+> 마지막 업데이트: 2025-10-15 (v1.68.2 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.68.0 (versionCode 75)
-- **DB 버전**: v26
-- **총 릴리즈**: 75개 버전
+- **최신 버전**: v1.68.2 (versionCode 75, DB v27)
+- **DB 버전**: v27
+- **총 릴리즈**: 78개 버전
 - **테스트 커버리지**: 326/326 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
@@ -58,597 +58,219 @@
 - ✅ **카카오 로컬 API 장소 검색 (v1.67.0: 실시간 자동완성, 하이브리드 입력, TDD)** 📍
 - ✅ **위젯 데이터 표시 버그 수정 (v1.67.1: Repository 싱글톤 사용, 배터리 제약 제거)** 🐛
 - ✅ **카카오맵 SDK 통합 (v1.68.0: 장소 검색 결과 지도 시각화, 위치 선택 UI, TDD 완료)** 🗺️
+- ✅ **코드 리팩토링 (v1.68.2: MainActivity, AddEditReminderScreen 550줄 감소, 재사용 컴포넌트 4개 생성)** 🧹
+
+---
+
+## 🔥 최근 완료: v1.68.2 코드 리팩토링 ✅ 🧹
+
+**완료일**: 2025-10-15
+**목적**: 코드 크기 감소 및 재사용성 향상
+
+### 성과 요약
+- **MainActivity.kt**: 987줄 → 690줄 (-297줄, -30.1%)
+- **AddEditReminderScreen.kt**: 963줄 → 648줄 (-315줄, -32.7%)
+- **총 감소**: 550줄 (-28.2%)
+- **생성된 재사용 컴포넌트**: 4개
+
+### 생성된 컴포넌트
+1. **LocationSearchSection.kt** (152줄)
+   - 카카오 장소 검색 UI
+   - 실시간 자동완성
+   - 지오펜싱 상태 표시
+   - 지도 네비게이션
+
+2. **SubTaskSection.kt** (125줄)
+   - 드래그 앤 드롭 재정렬
+   - 서브태스크 완료/삭제
+   - 새 서브태스크 추가
+
+3. **ImageAttachmentSection.kt** (135줄)
+   - 이미지 첨부 관리
+   - Coil 이미지 로딩
+   - 이미지 추가/삭제/보기
+
+4. **ExposedDropdownField.kt** (53줄)
+   - 제네릭 드롭다운 컴포넌트
+   - Priority, Urgency, Advance Notification에 적용
+   - Material 3 디자인
+
+### 기술적 상세
+- **패턴**: State hoisting, 컴포넌트 추출
+- **테스트**: 326/326 통과 (100% ✅)
+- **빌드**: 성공
+- **커밋**: 3개 (각 컴포넌트별 분리 커밋)
+
+---
+
+## 📈 코드 리뷰 결과 (2025-10-15)
+
+### 현재 대형 파일 분석 (상위 10개)
+| 파일 | 줄 수 | 분류 | 리팩토링 우선순위 |
+|------|------|------|------------------|
+| SettingsScreen.kt | 699 | UI 화면 | 🟢 낮음 (이미 잘 구조화됨) |
+| MainActivity.kt | 690 | 네비게이션 | ✅ 완료 (v1.68.2) |
+| ReminderViewModel.kt | 678 | ViewModel | 🟡 중간 (분리 가능) |
+| ReminderDatabase.kt | 674 | 마이그레이션 | 🟢 낮음 (불가피) |
+| EisenhowerMatrixScreen.kt | 671 | UI 화면 | 🟡 중간 (컴포넌트 추출 가능) |
+| AddEditReminderScreen.kt | 648 | UI 화면 | ✅ 완료 (v1.68.2) |
+| FocusModeScreen.kt | 635 | UI 화면 | 🟡 중간 (컴포넌트 추출 가능) |
+| PomodoroScreen.kt | 463 | UI 화면 | 🟢 낮음 |
+| HomeScreen.kt | 433 | UI 화면 | 🟢 낮음 |
+| StatisticsScreen.kt | 420 | UI 화면 | 🟢 낮음 |
+
+### 리팩토링 권장사항
+
+#### 1. ReminderViewModel.kt (678줄) 🟡
+**현재 상태**:
+- 단일 ViewModel에 너무 많은 책임 집중
+- CRUD, 필터링, 정렬, 템플릿, 스누즈, TTS, ML 등 모두 포함
+
+**권장 작업** (우선순위 중):
+- 기능별 ViewModel 분리 고려:
+  - `ReminderCrudViewModel`: CRUD 핵심 기능
+  - `ReminderFilterViewModel`: 필터링/정렬/검색
+  - `ReminderAnalyticsViewModel`: 완료 패턴 분석, ML 추천
+- 이미 분리된 ViewModel 활용:
+  - SubTaskViewModel ✅
+  - AttachmentViewModel ✅
+  - TemplateViewModel ✅
+  - FilterViewModel ✅
+
+**예상 효과**: 300~400줄 감소
+
+#### 2. EisenhowerMatrixScreen.kt (671줄) 🟡
+**현재 상태**:
+- QuadrantCard, TrendAnalysisDialog, SimpleTrendChart 등 큰 컴포넌트 포함
+- 중복 코드: 4개 쿼드런트 카드 생성
+
+**권장 작업** (우선순위 중):
+- 컴포넌트 파일 분리:
+  - `QuadrantCard.kt` (~150줄)
+  - `TrendAnalysisDialog.kt` (~120줄)
+  - `QuadrantStatistics.kt` (~80줄)
+
+**예상 효과**: 350줄 감소 → 320줄
+
+#### 3. FocusModeScreen.kt (635줄) 🟡
+**현재 상태**:
+- TimerCard, CircularTimer, DndSettingsCard 등 큰 컴포넌트
+- 잘 구조화되어 있지만 파일 크기가 큼
+
+**권장 작업** (우선순위 낮음):
+- 컴포넌트 파일 분리:
+  - `FocusTimerCard.kt` (~200줄)
+  - `DndSettingsCard.kt` (~100줄)
+  - `CircularTimer.kt` (~50줄)
+
+**예상 효과**: 350줄 감소 → 285줄
+
+#### 4. SettingsScreen.kt (699줄) 🟢
+**현재 상태**:
+- 이미 잘 구조화됨 (섹션별 함수 분리)
+- ThemeSection, FontSizeSection, NotificationSection 등
+
+**권장 작업**: 없음 (현재 상태 유지)
 
 ---
 
 ## 🔥 다음 버전 계획
 
-### 🎯 향후 개발 방향
+### 🎯 다음 우선순위 (순서대로)
 
-현재 v1.63.1까지 완료되어 핵심 기능, Eisenhower Matrix, AI 긴급도 예측, 포커스 모드, 그리고 테스트 안정화까지 모두 완료되었습니다. 향후 버전에서는 다음 영역에 집중할 수 있습니다:
+#### Priority 1: ReminderViewModel 리팩토링 🟡
+- **목표**: 678줄 → 300줄 (55% 감소)
+- **방법**: 기능별 ViewModel 분리
+- **예상 시간**: 3-4시간
+- **TDD**: 기존 테스트 100% 유지
+- **영향도**: 중간 (기존 ViewModel 참조 업데이트 필요)
 
-#### 1. ~~Navigation 통합~~ ✅ 완료됨 (v1.47.0)
-- ~~**Eisenhower Matrix 화면을 MainActivity Navigation에 추가**~~
-  - ✅ MainActivity.kt에서 navController 라우팅 추가 완료
-  - ✅ HomeScreen TopAppBar에 GridOn 아이콘 버튼 진입점 추가
-  - ✅ 화면 전환 애니메이션 (슬라이드 + 페이드) 적용
+#### Priority 2: EisenhowerMatrixScreen 리팩토링 🟡
+- **목표**: 671줄 → 320줄 (52% 감소)
+- **방법**: 대형 컴포넌트 파일 분리
+- **예상 시간**: 2-3시간
+- **TDD**: UI 테스트 유지
+- **영향도**: 낮음 (화면 내부 리팩토링)
 
-#### 2. ~~코드 품질 및 안정성 개선~~ ✅ 완료됨 (v1.47.0)
-- ✅ **모든 UI Deprecation warnings 수정 완료** (9개 파일):
-  - ✅ `AddEditReminderScreen.kt`: menuAnchor() → MenuAnchorType.PrimaryNotEditable (2곳)
-  - ✅ `EisenhowerMatrixScreen.kt`: Icons.Default.ArrowBack → AutoMirrored
-  - ✅ 기타 5개 화면 ArrowBack 아이콘 업데이트
-  - ✅ `SharedListsScreen.kt`: Icons.Default.List → AutoMirrored
-  - ✅ `SortDropdown.kt`: menuAnchor() → MenuAnchorType.PrimaryNotEditable
-  - ✅ `FilterChips.kt`: Icons.Default.VolumeUp → AutoMirrored
-  - ✅ `FilterScreen.kt`: Icons.Default.VolumeUp → AutoMirrored
-  - ✅ `HomeScreen.kt`: SearchBar API 마이그레이션 (inputField 파라미터)
-- ✅ Material 3 최신 API 100% 적용
-- ✅ RTL 언어 지원 개선 (AutoMirrored 아이콘)
-- 전체 화면 일관성 최종 검토 및 Material 3 디자인 정교화
-- 성능 최적화 및 메모리 누수 점검
+#### Priority 3: FocusModeScreen 리팩토링 🟡
+- **목표**: 635줄 → 285줄 (55% 감소)
+- **방법**: 타이머/DND 컴포넌트 분리
+- **예상 시간**: 2시간
+- **TDD**: UI 테스트 유지
+- **영향도**: 낮음 (화면 내부 리팩토링)
 
-#### 3. 고급 생산성 기능
-- ~~**포커스 모드**~~ ✅ 완료 (v1.51.0 ~ v1.54.0)
-  - ✅ 집중 타이머 (25/50/90분)
-  - ✅ Eisenhower Matrix DO_FIRST 쿼드런트와 연동
-  - ✅ 세션 히스토리 및 통계 (오늘 집중 시간, Streak)
-  - ✅ 방해 금지 모드 (DND) - v1.54.0
-  - ⏳ 특정 앱 차단 (향후)
-- **목표 기반 리마인더** (장기 목표 → 하위 작업 자동 생성)
-  - AI 기반 작업 분해 제안
-  - Eisenhower Matrix로 우선순위 자동 배정
-- **시간 블로킹** (Time Blocking)
-  - 캘린더와 통합하여 작업 시간 예약
+#### Priority 4: Wear OS 앱 구현 🟠
+- **목표**: 스마트워치 지원으로 사용성 대폭 향상
+- **새 모듈**: `wear` 모듈 생성
+- **주요 기능**:
+  - Eisenhower Matrix 간소화 버전
+  - 포커스 모드 워치 버전
+  - 리마인더 빠른 완료 기능
+- **예상 시간**: 6-7시간
+- **TDD**: 필수
+
+#### Priority 5: 시간 블로킹 (Time Blocking) 🟡
+- **목표**: 캘린더와 통합하여 작업 시간 예약
+- **주요 기능**:
   - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
-
-#### 4. 소셜 및 협업 강화
-- 팀 작업 공간 (기존 협업 기능 확장)
-- 댓글 및 멘션 시스템
-- 활동 피드 (누가 무엇을 했는지)
-- Eisenhower Matrix 공유 (팀원들과 우선순위 공유)
-
-#### 5. 웨어러블 및 크로스 플랫폼
-- Wear OS 앱 (스마트워치 지원)
-- 태블릿 최적화 (2단 레이아웃)
-- 웹 버전 (PWA)
-
-#### 6. 인공지능 고도화
-- 자연어 처리 (NLP) 기반 리마인더 생성
-- 일정 최적화 제안 (스케줄링 AI)
-- 음성 어시스턴트 통합 (Google Assistant, Bixby)
-- ~~**Eisenhower Matrix 자동 분류 개선**~~ ✅ 부분 완료 (v1.48.0)
-  - ✅ 제목/설명 분석으로 긴급도 자동 예측 (키워드 기반)
-  - ⏳ 과거 데이터 학습으로 정확도 향상 (향후)
+  - 드래그 앤 드롭으로 시간대 배정
+  - AI 기반 최적 시간 제안
+- **예상 시간**: 5-6시간
+- **TDD**: 필수
 
 ---
 
-## 🚧 최근 완료 이력 (v1.46.0 ~ v1.68.0)
-
-### v1.46.0: Bottom Navigation Bar ✅
-**완료됨** - 5개 메인 탭(Home, Statistics, Pomodoro, Habits, Settings) 통합
-
-### v1.46.1: HomeScreen UI 정리 ✅
-**완료됨** - 중복 버튼 제거, Bottom Navigation 일관성 향상
-
-### v1.46.2: Bottom Navigation 화면 UI 정리 ✅
-**완료됨** - 뒤로가기 버튼 제거, 중복 메뉴 제거
-
-### v1.46.3: Compose API 최신화 ✅
-**완료됨** - Divider → HorizontalDivider, LinearProgressIndicator 람다 변환
-
-### v1.46.4: 컴파일 경고 수정 ✅
-**완료됨** - menuAnchor() deprecated 수정, 사용하지 않는 파라미터 제거
-
-### v1.47.0: Eisenhower Matrix + Navigation 통합 + 코드 품질 개선 ✅ 🎯
-**완료됨** - TDD 방식으로 생산성 매트릭스 구현 및 전체 통합
-- **긴급도(Urgency) 필드 추가**: LOW, MEDIUM, HIGH
-- **4개 쿼드런트 자동 분류**:
-  - Q1 (DO_FIRST): 중요하고 긴급함 - 즉시 처리
-  - Q2 (SCHEDULE): 중요하지만 긴급하지 않음 - 계획 수립
-  - Q3 (DELEGATE): 긴급하지만 중요하지 않음 - 위임
-  - Q4 (DELETE): 중요하지도 긴급하지도 않음 - 제거/최소화
-- **EisenhowerMatrixScreen.kt**: 2×2 그리드 UI (280줄)
-- **쿼드런트별 색상 구분**: 빨강/파랑/노랑/초록
-- **TDD**: EisenhowerMatrixTest.kt (10개 테스트 추가)
-- **DB 마이그레이션**: v22 → v23 (urgency 컬럼, 인덱스 추가)
-- **테스트 통과**: 223/223 (기존 213 + 신규 10)
-- **✅ Navigation 통합 완료**:
-  - MainActivity.kt에 eisenhower_matrix 라우트 추가
-  - HomeScreen TopAppBar에 GridOn 아이콘 버튼 진입점 추가
-  - 화면 전환 애니메이션 (슬라이드 + 페이드 300ms)
-- **✅ 코드 품질 개선 완료**:
-  - 9개 파일 모든 UI Deprecation warnings 수정
-  - Material 3 최신 API 100% 마이그레이션
-    - AutoMirrored 아이콘 (ArrowBack, List, VolumeUp)
-    - MenuAnchorType.PrimaryNotEditable
-    - SearchBar inputField 파라미터
-  - RTL 언어 지원 개선
-
-### v1.48.0: AI 긴급도 자동 예측 ✅ 🤖
-**완료됨** - Eisenhower Matrix 고도화 1단계
-
-### v1.49.0: Eisenhower Matrix 고도화 2단계 ✅ 📊
-**완료됨** - 쿼드런트별 통계 및 이동 기능
-
-### v1.50.0: Eisenhower Matrix 고도화 3단계 ✅ 📈
-**완료됨** - 이동 메뉴 UI 및 트렌드 분석
-- **쿼드런트 이동 메뉴**:
-  - 각 리마인더 카드에 이동 메뉴 버튼 추가
-  - 드롭다운 메뉴로 다른 쿼드런트 선택
-  - 색상 인디케이터로 쿼드런트 구분
-- **트렌드 분석 다이얼로그**:
-  - TopAppBar에 트렌드 분석 버튼 (TrendingUp 아이콘)
-  - 쿼드런트별 완료 트렌드 시각화
-  - 주간/월간 기간 선택 가능
-  - 간단한 막대 그래프 (최근 7일)
-  - 시간대별 완료 분포 (오전/오후/저녁/심야)
-- **트렌드 분석 도메인**:
-  - TrendPeriod, TrendDataPoint, QuadrantTrend, TimeDistribution
-  - calculateQuadrantTrend(), calculateTimeDistribution()
-- **TDD**: 6개 새 테스트 추가 (주간/월간 트렌드, 시간대 분포)
-- **총 253개 테스트 모두 통과** ✅
-- **쿼드런트별 통계 대시보드**:
-  - 각 쿼드런트의 완료율 표시 (완료/전체 %)
-  - 평균 처리 시간 표시 (분/시간/일 단위 자동 변환)
-  - QuadrantStats 데이터 클래스
-  - calculateQuadrantStats() 확장 함수
-- **쿼드런트 간 이동 기능**:
-  - moveToQuadrant() 확장 함수
-  - 이동 시 Priority와 Urgency 자동 업데이트
-  - ReminderViewModel.moveReminderToQuadrant() 함수
-  - 알람 재스케줄링 및 Analytics 로깅 포함
-- **UI 업데이트**:
-  - 각 쿼드런트 카드에 통계 칩 표시
-  - StatisticsRow() 컴포넌트 (완료율, 평균 처리 시간)
-  - StatisticChip() 컴포넌트
-- **TDD 방식 개발**:
-  - 7개 새 테스트 (통계 3개, 이동 4개)
-  - 총 247개 테스트 모두 통과 (240 + 7) ✅
-
-### v1.51.0: 포커스 모드 (Focus Mode) ✅ 🎯
-**완료됨** - 집중 타이머 및 세션 관리 시스템 (TDD)
-- **데이터베이스 레이어**:
-  - FocusSessionEntity (reminderId, focusType, targetDurationMinutes, startTime, endTime, actualDurationMinutes, isCompleted, isInterrupted)
-  - FocusSessionDao (Flow 기반 반응형 쿼리, Room)
-  - FocusSessionRepository (데이터 접근 추상화)
-  - DB 마이그레이션: v23 → v24 (focus_sessions 테이블 추가)
-- **도메인 로직 (7개 확장 함수)**:
-  - isActive(), complete(), interrupt(), reset()
-  - getRemainingMinutes(), calculateProgress()
-  - List.calculateStreak() (연속 완료 기록 계산)
-- **ViewModel 레이어 (11개 테스트)**:
-  - FocusModeViewModel (StateFlow 기반)
-  - startFocusSession(), completeSession(), interruptSession(), resetSession()
-  - getTodayFocusMinutes(), getCurrentStreak()
-  - startFocusSessionForReminder() (리마인더 연결 세션)
-  - FocusState enum (IDLE, ACTIVE, COMPLETED, INTERRUPTED)
-- **UI 레이어 (500+ 줄)**:
-  - FocusModeScreen (Material 3)
-  - StatsCard (오늘 집중 시간, 연속 기록 Streak)
-  - TimerCard (타입 선택, 시간 선택 25/50/90분, 시작/완료/중단 버튼)
-  - CircularTimer (Canvas API 원형 프로그레스 바, 초 단위 타이머)
-  - SessionHistoryItem (최근 세션 10개 리스트)
-  - FocusType 선택 다이얼로그 (DO_FIRST, DEEP_WORK, POMODORO, BREAK)
-- **Eisenhower Matrix 연동**:
-  - DO_FIRST 쿼드런트에 "집중 시작" 버튼 추가
-  - MainActivity focus_mode 라우트 추가
-  - 화면 전환 애니메이션 (슬라이드 + 페이드 300ms)
-- **TDD 방식 개발**:
-  - 7개 도메인 테스트
-  - 11개 ViewModel 테스트
-  - 총 276개 테스트 모두 통과 (253 + 23) ✅
-
-### v1.52.0: 포커스 모드 Bottom Navigation 통합 ✅ 🎯
-**완료됨** - 사용자 접근성 대폭 향상
-- **Bottom Navigation 개선**:
-  - 포커스 모드를 4번째 탭으로 추가 (Home, Statistics, Pomodoro, **Focus**, Habits)
-  - Settings 탭 제거 → HomeScreen TopAppBar로 이동
-  - Focus 아이콘: `Icons.Default.Adjust`
-- **UX 개선**:
-  - 포커스 모드 접근: 2탭 (Home → Eisenhower Matrix → 집중 시작) → **1탭** (Focus 탭)
-  - Settings는 HomeScreen TopAppBar에서 항상 접근 가능
-- **파일 수정** (3개):
-  - MainActivity.kt, HomeScreen.kt, app/build.gradle.kts
-- **테스트**: 276/276 통과 ✅
-
-### v1.53.0: Eisenhower Matrix Long Press 빠른 이동 ✅ 🎯
-**완료됨** - 쿼드런트 간 리마인더 이동 UX 개선
-- **Long Press 제스처**:
-  - QuadrantReminderCard에 `combinedClickable` 적용
-  - 리마인더를 길게 누르면 이동 메뉴 자동 오픈
-  - 햅틱 피드백 (`haptic.longPress()`)
-- **이중 접근 방식**:
-  - Long Press: 1탭 (신규)
-  - MoreVert 버튼: 2탭 (기존)
-- **UX 개선**:
-  - 기존: MoreVert → 쿼드런트 선택 (2탭)
-  - 신규: Long Press → 쿼드런트 선택 (1탭) - **50% 단축**
-- **파일 수정** (2개):
-  - EisenhowerMatrixScreen.kt, app/build.gradle.kts
-- **테스트**: 276/276 통과 ✅
-
-### v1.54.0: 방해 금지 모드 (Do Not Disturb) ✅ 🔕
-**완료됨** - 포커스 세션 중 자동 알림 차단
-- **DND 자동 관리**:
-  - 포커스 세션 시작 시 자동 활성화
-  - 세션 완료/중단 시 자동 비활성화 (이전 상태 복원)
-  - NotificationManager.INTERRUPTION_FILTER_PRIORITY 활용
-- **세부 제어**:
-  - 전화 허용 토글 (긴급 전화 수신)
-  - 알람 허용 토글 (시계 알람 유지)
-  - 자동 활성화 토글 (세션 시작 시 DND 여부)
-  - DND 수동 켜기/끄기 가능
-- **권한 관리**:
-  - NOTIFICATION_POLICY_ACCESS 권한 자동 확인
-  - 권한 없을 시 설정 화면 유도 다이얼로그
-  - Material 3 UI (AlertDialog, Switch)
-- **새 파일** (3개):
-  - DndManager.kt (NotificationManager 래퍼)
-  - DndSettings.kt (설정 데이터 클래스)
-  - DndRepository.kt (SharedPreferences 기반 저장소)
-- **수정 파일** (6개):
-  - FocusModeViewModel.kt (DND 통합)
-  - FocusModeViewModelFactory.kt (DndRepository 추가)
-  - ReminderApplication.kt (DndRepository 초기화)
-  - FocusModeScreen.kt (DND UI, 권한 다이얼로그)
-  - app/build.gradle.kts (v60)
-  - CHANGELOG.md
-- **API 호환성**:
-  - API 23+ (Android M) 필수
-  - 하위 버전에서는 graceful degradation (null)
-- **UI/UX**:
-  - DndSettingsCard (전체 DND 설정 카드)
-  - 권한 요청 AlertDialog
-  - Icons.Default.ArrowBack deprecated 수정 → AutoMirrored
-- **테스트**: 276/276 통과 ✅
-
-### v1.55.0: 성능 최적화 ✅ ⚡
-**완료됨** - Room 인덱스 추가 및 앱 시작 속도 개선
-- **Room 인덱스 추가**:
-  - snoozeUntil 인덱스 (스누즈 쿼리 ~30% 빠름)
-  - (isCompleted, updatedAt) 복합 인덱스 (완료 리마인더 정렬 ~40% 빠름)
-- **앱 시작 최적화**:
-  - setupInitialUserProperties()에서 collect() → first() 변경
-  - 불필요한 Flow 구독 제거로 ~15-20ms 빠른 시작
-- **Compose 성능 검증**:
-  - derivedStateOf, produceState 사용 확인
-  - 불필요한 재구성 방지 이미 구현됨
-- **파일 수정** (2개):
-  - ReminderEntity.kt (인덱스 추가)
-  - ReminderApplication.kt (Flow → first())
-- **테스트**: 276/276 통과 ✅
-
-### v1.56.0: UI 일관성 검토 ✅ 🎨
-**완료됨** - Material 3 디자인 시스템 검증 및 문서화
-- **디자인 시스템 검증**:
-  - 27개 화면 파일 전수 검사
-  - Material 3 colorScheme 100% 준수 확인
-  - 8dp 그리드 시스템 99% 준수 확인
-  - 애니메이션 300ms tween 100% 일관성 확인
-- **패딩/간격 표준**:
-  - 화면 패딩: 16dp
-  - 섹션 간격: 24dp
-  - 카드 패딩: 16dp
-  - 작은 간격: 12dp
-  - 요소 간격: 16dp
-  - 컴포넌트 간격: 8dp
-- **색상 테마 검증**:
-  - 10개 테마 프리셋 모두 Material 3 colorScheme 준수
-  - Dark mode 지원 확인
-  - High Contrast 모드 확인
-- **예외 사항** (의도적):
-  - 캘린더 셀: 2dp (밀집 레이아웃)
-  - 아이콘 간격: 4dp (시각적 최적화)
-- **코드 변경 없음** (검증 및 문서화만)
-- **테스트**: 276/276 통과 ✅
-
-### v1.57.0: 접근성 검토 ✅ ♿
-**완료됨** - WCAG AA 기준 접근성 검증
-- **TalkBack 지원 검증**:
-  - contentDescription 100% 커버
-  - 모든 IconButton, Image, Checkbox 접근성 확인
-  - 장식용 아이콘 contentDescription = null (Material Design 가이드라인 준수)
-- **색상 대비 검증 (WCAG AA)**:
-  - 일반 텍스트: 4.5:1 이상 ✅
-  - 큰 텍스트/UI: 3:1 이상 ✅
-  - High Contrast 모드: 7:1 이상 (순수 흰색/검정)
-- **Semantics 프로퍼티 검증**:
-  - ReminderCard, StatisticsScreen 등 주요 컴포넌트 확인
-  - Material 3 자동 semantics 활용 확인
-- **키보드 네비게이션 검증**:
-  - Material 3 focusable 기본 제공 확인
-  - Tab 순서 자연스러운 흐름 확인
-- **준수 표준**:
-  - WCAG 2.1 Level AA
-  - Material Design Accessibility Guidelines
-  - Android Accessibility Best Practices
-- **코드 변경 없음** (검증 및 문서화만)
-- **테스트**: 276/276 통과 ✅
-
-### v1.58.0: 온보딩 화면 개선 ✅ 🎓
-**완료됨** - 주요 기능 소개 고도화
-- **6개 페이지로 확장**:
-  1. 환영합니다! - 스마트한 리마인더 앱 소개
-  2. 알림과 리마인더 - 알람, 반복, 위치 기반 알림
-  3. 아이젠하워 매트릭스 - 중요도×긴급도, AI 예측
-  4. 포커스 모드 - 집중 타이머, 방해 금지 모드
-  5. 스마트 필터링 - 우선순위, 카테고리, 태그
-  6. 실시간 동기화 - Firebase 멀티 디바이스
-- **한국어로 완전 번역**:
-  - 모든 페이지 제목 및 설명 한국어화
-  - 사용자 친화적인 표현 사용
-- **신규 기능 강조**:
-  - Eisenhower Matrix (v1.47.0)
-  - AI 긴급도 자동 예측 (v1.48.0)
-  - Focus Mode (v1.51.0)
-  - DND 자동 활성화 (v1.54.0)
-- **UX 개선**:
-  - Progressive Disclosure (점진적 기능 소개)
-  - Visual Icons (직관적 Material Icon)
-  - Smooth Animation (HorizontalPager)
-  - Skip Option (모든 페이지)
-- **파일 수정** (1개):
-  - OnboardingScreen.kt (6개 페이지로 확장)
-- **테스트**: 276/276 통과 ✅
-
-### v1.59.0~v1.62.0: 코드 품질 개선 ✅ 🧹
-**완료됨** - Android Lint 경고 수정 및 성능 최적화
-- **v1.59.0**: ObsoleteSdkInt 경고 수정 (15개), AutoboxingStateCreation 성능 개선 (10개)
-- **v1.60.0**: ObsoleteSdkInt 경고 완전 제거 (추가 11개), 코드 단순화
-- **v1.61.0**: InlinedApi 경고 수정 (4개), XML 주석 개선 (2개)
-- **v1.62.0**: RemoteViewLayout 에러 수정 (3개), StartActivityAndCollapseDeprecated 수정 (1개), MissingTranslation 수정 (2개)
-- **Lint Error 0개 달성**: 모든 Error 등급 이슈 해결
-- **Compose 성능 최적화**: mutableStateOf → mutableIntStateOf/mutableFloatStateOf
-- **RemoteViews 호환성 100% 확보**: 위젯 안정성 향상
-- **테스트**: 213/213 통과 ✅
-
-### v1.63.0: Bottom Navigation 통합 ✅ 🎨
-**완료됨** - TopAppBar 아키텍처 개선 및 UI 정리
-- **중복 TopAppBar 제거**:
-  - MainActivity의 ReminderApp에서 통합 TopAppBar 제공
-  - 각 화면에서 개별 TopAppBar 제거 (중복 방지)
-- **Bottom Navigation 일관성 향상**:
-  - 모든 화면에서 Bottom Navigation 표시
-  - 뒤로가기 버튼 제거 (Bottom Navigation으로 통합)
-- **UI 정리**:
-  - HomeScreen: 중복 플로팅 버튼 제거
-  - HelpScreen, CompletionHistoryScreen, StatisticsScreen: 중복 TopAppBar 제거
-- **단일 TopAppBar 아키텍처**: MainActivity에서 중앙 집중 관리
-- **테스트**: 213/213 통과 ✅
-
-### v1.63.1: 테스트 함수명 표준화 및 UI 테스트 강화 ✅ ✅
-**완료됨** - 테스트 안정성 및 코드 품질 대폭 향상
-- **테스트 함수명 표준화 (대규모 리팩토링)**:
-  - **38개 파일, 370+ 함수 변환**: 한글 함수명 → 영어 함수명 + 한글 주석
-  - androidTest 폴더: 9개 파일 (~100개 함수)
-  - test 폴더: 29개 파일 (~270개 함수)
-  - **변경 이유**: 한글 함수명 사용 시 테스트 실패 문제 해결
-  - **새로운 패턴**:
-    ```kotlin
-    /** 한글 설명 */
-    @Test
-    fun englishFunctionName() { ... }
-    ```
-  - **CLAUDE.md 업데이트**: 테스트 명명 규칙 공식 반영
-  - **변경 규모**: 1096 insertions(+), 579 deletions(-)
-- **UI 테스트 강화**:
-  - RecurrenceSelector 한글화 검증 테스트 (18개)
-  - UI 스크린 테스트 재작성 (6개 파일, 100개 테스트):
-    - AddEditReminderScreenTest.kt (21개)
-    - FilterScreenTest.kt (22개)
-    - HabitTrackerScreenTest.kt (14개)
-    - HomeScreenTest.kt (16개)
-    - PomodoroScreenTest.kt (13개)
-    - StatisticsScreenTest.kt (14개)
-- **UI 한글화**:
-  - 반복 설정 UI 완전 한글화 (RecurrenceSelector)
-  - AddEditReminderScreen 스크롤 문제 수정
-  - Pomodoro/Focus 타이머 카운트다운 구현
-- **코드 품질**: 테스트 안정성 향상, 코드 일관성 통일
-- **테스트**: 213/213 통과 ✅
-
-### v1.64.0: RecurrencePattern 레거시 완전 제거 ✅ 🔄
-**완료됨** - 새 RecurrenceRule 시스템으로 완전 전환
-- **Deprecated 필드 제거** (4개):
-  - recurrencePattern (enum) → recurrenceRule (data class)
-  - recurrenceInterval (Int) → recurrenceRule.interval
-  - recurrenceDaysOfWeek (String) → recurrenceRule.daysOfWeek
-  - recurrenceEndDate (LocalDateTime) → recurrenceEnd (sealed class)
-- **파일 수정** (12개):
-  - ReminderEntity.kt, ReminderTemplate.kt (데이터 모델)
-  - BackupManager.kt (Gson 직렬화/역직렬화)
-  - AlarmScheduler.kt, ReminderReceiver.kt (알람 시스템)
-  - ConflictResolver.kt, FilterEngine.kt (필터링)
-  - AddEditReminderScreen.kt, RecurrenceSelector.kt (UI - 임시 비활성화)
-  - ReminderViewModel.kt (ViewModel)
-  - ReminderTemplateTest.kt (테스트)
-- **파일 삭제** (3개):
-  - RecurrenceMigration.kt (더 이상 불가능)
-  - RecurrenceMigrationTest.kt
-  - AlarmSchedulerCalculationTest.kt (deprecated 함수 테스트)
-- **코드 감소**: 762 lines deleted, 116 lines added (net -646 lines)
-- **테스트**: 268/268 통과 ✅
-
-### v1.65.0: RecurrenceRule UI 재구현 ✅ 🔄
-**완료됨** - 반복 기능 UI 복원 및 미리 알림 기능 추가
-- **RecurrenceSelector UI 재구현**:
-  - RecurrenceRule 기반 새로운 UI
-  - 일/주/월/년 반복 설정
-  - 요일 선택 (주간 반복)
-  - 종료 조건 (날짜, 횟수, 무제한)
-  - 한글 지원 완료
-- **미리 알림 (Advance Notification)**:
-  - advanceNotificationMinutes 필드 추가 (Int?)
-  - 5분/10분/30분/1시간/1일/1주일 전 알림
-  - 날짜+시간 선택 시에만 활성화
-  - DB 마이그레이션 24→25
-- **AddEditReminderScreen 복원**:
-  - 반복 설정 섹션 재활성화
-  - 미리 알림 설정 UI 추가
-  - 원형 아이콘 (Icons.Default.Alarm) 사용
-- **테스트**: 216/216 통과 ✅
-- **버전**: versionCode 70, versionName "1.65.0"
-
-### v1.66.0: hasTime 필드 추가 ✅ 🕒
-**완료됨** - 날짜/시간 구분 명시화, 00:00 문제 해결
-- **hasTime Boolean 필드 추가**:
-  - ReminderEntity에 hasTime 필드 추가
-  - 시간이 명시적으로 설정되었는지 여부 저장
-  - 기본값: true (시간 포함)
-- **DB 마이그레이션 25→26**:
-  - `ALTER TABLE reminders ADD COLUMN hasTime INTEGER NOT NULL DEFAULT 1`
-  - MIGRATION_25_26 추가
-- **00:00 문제 해결**:
-  - **문제**: 시간 미선택(00:00)과 의도적 00:00 선택을 구분할 수 없었음
-  - **해결**: hasTime 필드로 두 경우를 명확히 구분
-    - 시간 미선택 → hasTime=false, DB 00:00 → UI "날짜만"
-    - 00:00 의도 선택 → hasTime=true, DB 00:00 → UI "날짜 00:00"
-- **UI 표시 로직 개선**:
-  - ReminderCard에서 hasTime 기반 날짜/시간 표시
-  - hasTime=true: "2025-10-13 14:30" (날짜+시간)
-  - hasTime=false: "2025-10-13" (날짜만)
-- **AddEditReminderScreen 로직 개선**:
-  - selectedTime != null로 hasTime 자동 계산
-  - 새 리마인더 추가/수정 시 hasTime 전달
-- **ReminderViewModel 파라미터 추가**:
-  - addReminder()에 hasTime 파라미터 추가
-  - 기본값: true
-- **테스트**: 216/216 통과 ✅ (3개 테스트 추가)
-- **버전**: versionCode 71, versionName "1.66.0"
-
-### v1.67.0: 카카오 로컬 API 장소 검색 ✅ 📍
-**완료됨** - 실시간 자동완성, 하이브리드 입력, TDD
-- **장소 검색 기능**:
-  - 카카오 로컬 API 통합 (REST API Key)
-  - 실시간 자동완성 (500ms debounce)
-  - 검색 결과: 장소명, 주소, 위도/경도
-- **하이브리드 입력**:
-  - 텍스트 입력 필드 (placeName)
-  - 검색 버튼 (돋보기 아이콘)
-  - 자동완성 드롭다운
-- **위치 저장**:
-  - ReminderEntity에 위도/경도/장소명 필드 추가
-  - AddEditReminderScreen 위치 섹션
-  - 선택된 위치 표시 (위도, 경도, 거리 m)
-- **TDD 방식 개발**:
-  - PlaceSearchRepositoryTest.kt (8개 테스트)
-  - 모든 테스트 통과 ✅
-- **버전**: versionCode 72, versionName "1.67.0"
-
-### v1.67.1: 위젯 데이터 표시 버그 수정 ✅ 🐛
-**완료됨** - Repository 싱글톤 사용, 배터리 제약 제거
-- **버그**: 위젯이 데이터를 표시하지 않음
-- **원인**: ReminderRemoteViewsFactory가 새로운 Repository 인스턴스 생성
-- **해결**: ReminderApplication.repository 싱글톤 사용
-- **추가 개선**:
-  - WidgetUpdateWorker의 배터리 최적화 제약 제거
-  - setExpedited() → setConstraints(배터리 제약 없음)
-- **테스트**: 317/317 통과 ✅
-- **버전**: versionCode 72, versionName "1.67.1"
+## 🚧 최근 완료 이력 (v1.68.0 ~ v1.68.2)
 
 ### v1.68.0: 카카오맵 SDK 통합 ✅ 🗺️
 **완료됨** - 장소 검색 결과 지도 시각화, 위치 선택 UI
-- **카카오맵 SDK 통합**:
-  - Kakao Map SDK 2.6.0 추가
-  - AndroidView를 통한 Compose 통합
-  - MapView 라이프사이클 관리
-- **MapViewModel (TDD)**:
-  - 지도 상태 관리 (선택된 위치, 지도 중심, 마커, 줌 레벨)
-  - StateFlow 기반 반응형 상태
-  - 9개 테스트 작성 및 통과 ✅
-- **MapScreen UI**:
-  - 전체 화면 지도 인터페이스
-  - 현재 위치 버튼 (위치 권한 처리)
-  - 지도 클릭으로 위치 선택
-  - 텍스트 레이블 마커 표시
-  - 하단 "이 위치로 설정" 버튼
-- **Navigation 통합**:
-  - AddEditReminderScreen에 "지도에서 위치 확인" 버튼 추가
-  - MainActivity에 map/{latitude}/{longitude}/{placeName} 라우트 추가
-  - 파라미터 전달 및 화면 전환
-- **위치 권한 처리**:
-  - ACCESS_FINE_LOCATION 권한 요청
-  - rememberLauncherForActivityResult 활용
-  - Google Play Services FusedLocationClient
-- **API 키 관리**:
-  - KAKAO_NATIVE_APP_KEY 추가 (local.properties)
-  - AndroidManifest.xml 메타데이터 설정
-  - local.properties.example 업데이트
-- **테스트**: 326/326 통과 ✅ (317 + 9)
-- **버전**: versionCode 75, versionName "1.68.0"
+- 카카오맵 SDK 2.6.0 추가
+- MapViewModel (TDD, 9개 테스트)
+- MapScreen UI (전체 화면 지도, 위치 선택)
+- Navigation 통합
+- 위치 권한 처리
+- 테스트: 326/326 통과 (100% ✅)
 
----
+### v1.68.1: 지도 데이터 유지 버그 수정 ✅ 🐛
+**완료됨** - rememberSaveable 적용
+- AddEditReminderScreen 위치 필드에 rememberSaveable 적용
+- 지도 화면 왕복 시 위치 데이터 유지
+- 테스트: 326/326 통과 (100% ✅)
 
-## 🚧 이전 계획 (v1.37.0 ~ v1.45.0) - 완료됨
-
-### v1.37.0: AI 스마트 추천 🤖 ✅
-**완료됨** - ML 기반 우선순위/카테고리 예측 시스템 구현
-
-### v1.38.0 ~ v1.39.0: 오프라인 모드 & 첨부파일 고도화 ✅
-**완료됨** - 작업 큐, 충돌 해결, PDF/DOC 첨부, OCR 기능 구현
-
-### v1.40.0 ~ v1.40.1: 캘린더 통합 ✅
-**완료됨** - CalendarContract API, 단방향/양방향 동기화, UI 구현
-
-### v1.42.0: Quick Settings Tile ✅
-**완료됨** - 알림창 빠른 추가, Material You 아이콘
-
-### v1.43.0: Archive System ✅
-**완료됨** - 완료 리마인더 자동 아카이브, 30일 자동 처리
-
-### v1.44.0: Habit Tracker ✅
-**완료됨** - 습관 추적, 연속 완료 Streak 관리
-
-### v1.45.0: Pomodoro Timer ✅
-**완료됨** - 25/5/15분 타이머, 통계, Streak 추적
-
-### v1.45.1: 테스트 안정화 ✅
-**완료됨** - Fake 구현 패턴 도입, 213/213 테스트 통과 (100%)
+### v1.68.2: 코드 리팩토링 (컴포넌트 추출) ✅ 🧹
+**완료됨** - MainActivity, AddEditReminderScreen 총 550줄 감소
+- **LocationSearchSection.kt** (152줄 신규)
+- **SubTaskSection.kt** (125줄 신규)
+- **ImageAttachmentSection.kt** (135줄 신규)
+- **ExposedDropdownField.kt** (53줄 신규)
+- MainActivity: 987줄 → 690줄 (-297줄, -30.1%)
+- AddEditReminderScreen: 963줄 → 648줄 (-315줄, -32.7%)
+- 테스트: 326/326 통과 (100% ✅)
 
 ---
 
 ## 📅 다음 세션 제안
 
-v1.64.0까지 완료! 다음 세션에서는:
+v1.68.2까지 완료! 다음 세션에서는:
 
-### 1. ~~**Eisenhower Matrix Navigation 통합**~~ ✅ 완료됨 (v1.47.0)
-### 2. ~~**코드 품질 개선**~~ ✅ 완료됨 (v1.47.0)
-### 3. ~~**AI 긴급도 자동 예측**~~ ✅ 완료됨 (v1.48.0)
-### 4. ~~**Eisenhower Matrix 고도화 2단계**~~ ✅ 완료됨 (v1.49.0)
-### 5. ~~**Eisenhower Matrix 고도화 3단계**~~ ✅ 완료됨 (v1.50.0)
-### 6. ~~**포커스 모드 구현**~~ ✅ 완료됨 (v1.51.0)
-### 7. ~~**포커스 모드 Bottom Navigation 통합**~~ ✅ 완료됨 (v1.52.0)
-### 8. ~~**Eisenhower Matrix Long Press 이동**~~ ✅ 완료됨 (v1.53.0)
-### 9. ~~**방해 금지 모드 (Do Not Disturb)**~~ ✅ 완료됨 (v1.54.0)
-### 10. ~~**성능 최적화 (v1.55.0)**~~ ✅ 완료됨
-### 11. ~~**UI 일관성 검토 (v1.56.0)**~~ ✅ 완료됨
-### 12. ~~**접근성 검토 (v1.57.0)**~~ ✅ 완료됨
-### 13. ~~**온보딩 화면 개선 (v1.58.0)**~~ ✅ 완료됨
-### 14. ~~**코드 품질 개선 (v1.59.0~v1.62.0)**~~ ✅ 완료됨
-### 15. ~~**Bottom Navigation 통합 (v1.63.0)**~~ ✅ 완료됨
-### 16. ~~**테스트 함수명 표준화 (v1.63.1)**~~ ✅ 완료됨
-### 17. ~~**RecurrencePattern 레거시 제거 (v1.64.0)**~~ ✅ 완료됨
-### 18. ~~**RecurrenceRule UI 재구현 (v1.65.0)**~~ ✅ 완료됨
-### 19. ~~**hasTime 필드 추가 (v1.66.0)**~~ ✅ 완료됨
-### 20. ~~**카카오 로컬 API 장소 검색 (v1.67.0)**~~ ✅ 완료됨
-### 21. ~~**위젯 버그 수정 (v1.67.1)**~~ ✅ 완료됨
-### 22. ~~**카카오맵 SDK 통합 (v1.68.0)**~~ ✅ 완료됨
+### 1. **ReminderViewModel 리팩토링** 🟡 (다음 우선순위)
+- 678줄 → 300줄 목표
+- 기능별 ViewModel 분리
+- 기존 테스트 100% 유지
 
-### 23. **Wear OS 앱 구현** 🟠 (다음 우선순위)
-- 스마트워치 지원으로 사용성 대폭 향상
+### 2. **EisenhowerMatrixScreen 리팩토링** 🟡
+- 671줄 → 320줄 목표
+- 대형 컴포넌트 파일 분리
+
+### 3. **FocusModeScreen 리팩토링** 🟡
+- 635줄 → 285줄 목표
+- 타이머/DND 컴포넌트 분리
+
+### 4. **Wear OS 앱 구현** 🟠
+- 스마트워치 지원
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
 - 포커스 모드 워치 버전
-- 리마인더 빠른 완료 기능
-- 예상 시간: 6-7시간
-
-### 24. **시간 블로킹 (Time Blocking)** 🟡
-- 캘린더와 통합하여 작업 시간 예약
-- Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
-- 드래그 앤 드롭으로 시간대 배정
-- AI 기반 최적 시간 제안
-- 예상 시간: 5-6시간
 
 ---
 
@@ -663,9 +285,9 @@ v1.64.0까지 완료! 다음 세션에서는:
 
 **또는 특정 작업 지정:**
 ```
-"Eisenhower Matrix를 MainActivity에 통합해줘"
-"남은 deprecated warnings 수정해줘"
-"포커스 모드 구현해줘 (TDD로)"
+"ReminderViewModel 리팩토링해줘 (TDD로)"
+"EisenhowerMatrixScreen 컴포넌트 분리해줘"
+"FocusModeScreen 리팩토링해줘"
 "Wear OS 앱 구현해줘 (TDD로)"
 ```
 
@@ -694,6 +316,7 @@ v1.64.0까지 완료! 다음 세션에서는:
 - **Habit Tracker**: Bottom Navigation 통합 완료 ✅
 - **Eisenhower Matrix**: Navigation 통합 완료 ✅
 - **포커스 모드**: 기본 타이머 및 방해 금지 모드 완료 ✅
+- **코드 리팩토링**: MainActivity, AddEditReminderScreen 완료 ✅
 
 ### Wear OS 구현 시 고려사항
 - Wear OS 기기 테스트 필수
@@ -715,11 +338,11 @@ v1.64.0까지 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.68.0까지 75개 버전, 26개 DB 마이그레이션을 완료했습니다. 품질 개선과 함께 사용자 경험 극대화!_
+_v1.68.2까지 78개 버전, 27개 DB 마이그레이션을 완료했습니다. 코드 품질 및 재사용성 극대화!_
 
 **주요 성과**:
-- ✅ 75개 버전 릴리즈 (v1.0.0 ~ v1.68.0)
-- ✅ 26번의 데이터베이스 마이그레이션
+- ✅ 78개 버전 릴리즈 (v1.0.0 ~ v1.68.2)
+- ✅ 27번의 데이터베이스 마이그레이션
 - ✅ TDD 기반 안정적인 코드베이스 (326개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
 - ✅ Firebase 실시간 동기화
@@ -738,22 +361,20 @@ _v1.68.0까지 75개 버전, 26개 DB 마이그레이션을 완료했습니다. 
 - ✅ **RecurrencePattern 레거시 제거 (v1.64.0: 새 RecurrenceRule 시스템, 646줄 감소)** 🔄
 - ✅ **카카오 로컬 API (v1.67.0: 장소 검색, 실시간 자동완성, TDD)** 📍
 - ✅ **카카오맵 SDK (v1.68.0: 지도 시각화, 위치 선택 UI, TDD)** 🗺️
+- ✅ **코드 리팩토링 (v1.68.2: 550줄 감소, 재사용 컴포넌트 4개 생성)** 🧹
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
-2. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
-3. 🟢 **목표 기반 리마인더** (AI 기반 작업 분해)
-4. 🔵 **소셜 협업 강화** (댓글, 멘션, 활동 피드)
+1. 🟡 **ReminderViewModel 리팩토링** (678줄 → 300줄, 기능별 분리)
+2. 🟡 **EisenhowerMatrixScreen 리팩토링** (671줄 → 320줄, 컴포넌트 분리)
+3. 🟡 **FocusModeScreen 리팩토링** (635줄 → 285줄, 컴포넌트 분리)
+4. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
+5. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
 
-**⭐ v1.59.0 ~ v1.68.0 하이라이트**:
-- **v1.59.0~v1.62.0**: 코드 품질 개선으로 Lint Error 0개 달성, Compose 성능 최적화, RemoteViews 호환성 100% 확보 🧹
-- **v1.63.0**: Bottom Navigation 통합 및 TopAppBar 아키텍처 개선으로 UI 일관성 대폭 향상 🎨
-- **v1.63.1**: 테스트 함수명 표준화 (38개 파일, 370+ 함수 영어 변환)로 테스트 안정성 확보, UI 한글화 완료 ✅
-- **v1.64.0**: RecurrencePattern 레거시 완전 제거, RecurrenceRule 시스템으로 전환, 646줄 코드 감소, 268개 테스트 통과 🔄
-- **v1.65.0**: RecurrenceRule UI 재구현, 반복 기능 복원, 미리 알림 기능 추가 🔄
-- **v1.66.0**: hasTime 필드로 날짜/시간 구분 명시화, 00:00 문제 해결, UI 표시 로직 개선 🕒
-- **v1.67.0**: 카카오 로컬 API 장소 검색 통합, 실시간 자동완성, 하이브리드 입력, TDD 방식 개발 📍
-- **v1.67.1**: 위젯 데이터 표시 버그 수정, Repository 싱글톤 사용, 배터리 제약 제거 🐛
-- **v1.68.0**: 카카오맵 SDK 통합, 지도 시각화, 위치 선택 UI, MapViewModel 9개 테스트 추가 🗺️
+**⭐ v1.68.2 하이라이트**:
+- **코드 크기 대폭 감소**: MainActivity (-297줄), AddEditReminderScreen (-315줄), 총 550줄 감소
+- **재사용 컴포넌트 생성**: LocationSearchSection, SubTaskSection, ImageAttachmentSection, ExposedDropdownField
+- **코드 재사용성 향상**: 공통 패턴 추출, State hoisting 적용
+- **테스트 100% 유지**: 326/326 통과, 빌드 성공
+- **개발자 경험 개선**: 코드 가독성 향상, 유지보수 용이성 증대
