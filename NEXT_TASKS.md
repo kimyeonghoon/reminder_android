@@ -1,15 +1,15 @@
 # 다음 작업 계획
 
-> 마지막 업데이트: 2025-10-15 (v1.68.2 완료)
+> 마지막 업데이트: 2025-10-16 (v1.68.3 완료)
 > **📌 다음 세션 시작 시 CLAUDE.md를 먼저 읽으세요!**
 
 ---
 
 ## 📊 현재 프로젝트 현황
 
-- **최신 버전**: v1.68.2 (versionCode 75, DB v27)
+- **최신 버전**: v1.68.3 (versionCode 75, DB v27)
 - **DB 버전**: v27
-- **총 릴리즈**: 78개 버전
+- **총 릴리즈**: 79개 버전
 - **테스트 커버리지**: 326/326 통과 (100% ✅)
 
 ### ✅ 완료된 주요 기능
@@ -59,118 +59,87 @@
 - ✅ **위젯 데이터 표시 버그 수정 (v1.67.1: Repository 싱글톤 사용, 배터리 제약 제거)** 🐛
 - ✅ **카카오맵 SDK 통합 (v1.68.0: 장소 검색 결과 지도 시각화, 위치 선택 UI, TDD 완료)** 🗺️
 - ✅ **코드 리팩토링 (v1.68.2: MainActivity, AddEditReminderScreen 550줄 감소, 재사용 컴포넌트 4개 생성)** 🧹
+- ✅ **대규모 리팩토링 (v1.68.3: ReminderViewModel, EisenhowerMatrixScreen, FocusModeScreen 총 1,396줄 감소)** 🧹✨
 
 ---
 
-## 🔥 최근 완료: v1.68.2 코드 리팩토링 ✅ 🧹
+## 🔥 최근 완료: v1.68.3 대규모 리팩토링 ✅ 🧹✨
 
-**완료일**: 2025-10-15
-**목적**: 코드 크기 감소 및 재사용성 향상
+**완료일**: 2025-10-16
+**목적**: God Class 해체 및 컴포넌트 분리로 유지보수성 극대화
 
 ### 성과 요약
-- **MainActivity.kt**: 987줄 → 690줄 (-297줄, -30.1%)
-- **AddEditReminderScreen.kt**: 963줄 → 648줄 (-315줄, -32.7%)
-- **총 감소**: 550줄 (-28.2%)
-- **생성된 재사용 컴포넌트**: 4개
+- **ReminderViewModel.kt**: 678줄 → 257줄 (-421줄, -62.1%) - Facade Pattern 적용
+- **EisenhowerMatrixScreen.kt**: 671줄 → 184줄 (-487줄, -72.6%)
+- **FocusModeScreen.kt**: 635줄 → 147줄 (-488줄, -76.9%)
+- **총 감소**: 1,984줄 → 588줄 (-1,396줄, -70.4%)
+- **생성된 컴포넌트/ViewModel**: 9개
 
-### 생성된 컴포넌트
-1. **LocationSearchSection.kt** (152줄)
-   - 카카오 장소 검색 UI
-   - 실시간 자동완성
-   - 지오펜싱 상태 표시
-   - 지도 네비게이션
+### 1. ReminderViewModel 리팩토링 (Facade Pattern)
+**생성된 ViewModel**:
+- **ReminderCrudViewModel.kt** (292줄): CRUD 핵심 기능
+- **ReminderSearchViewModel.kt** (115줄): 검색/필터/정렬
+- **ReminderAnalyticsViewModel.kt** (160줄): ML 카테고리 제안, 완료 패턴 분석
 
-2. **SubTaskSection.kt** (125줄)
-   - 드래그 앤 드롭 재정렬
-   - 서브태스크 완료/삭제
-   - 새 서브태스크 추가
+**기술적 특징**:
+- Facade Pattern으로 하위 호환성 유지
+- 기능별 책임 분리 (SRP 준수)
+- 기존 테스트 100% 유지
 
-3. **ImageAttachmentSection.kt** (135줄)
-   - 이미지 첨부 관리
-   - Coil 이미지 로딩
-   - 이미지 추가/삭제/보기
+### 2. EisenhowerMatrixScreen 리팩토링
+**생성된 컴포넌트**:
+- **QuadrantCard.kt** (318줄): 쿼드런트 카드, 리마인더 카드, 통계
+- **TrendAnalysisDialog.kt** (195줄): 트렌드 다이얼로그, 차트, 시간대별 분포
 
-4. **ExposedDropdownField.kt** (53줄)
-   - 제네릭 드롭다운 컴포넌트
-   - Priority, Urgency, Advance Notification에 적용
-   - Material 3 디자인
+### 3. FocusModeScreen 리팩토링
+**생성된 컴포넌트**:
+- **FocusTimerCard.kt** (277줄): 타이머 카드, 원형 타이머
+- **FocusDndSettingsCard.kt** (128줄): DND 설정 카드
+- **FocusStatsCard.kt** (77줄): 통계 카드
+- **FocusSessionHistoryItem.kt** (66줄): 세션 히스토리
 
 ### 기술적 상세
-- **패턴**: State hoisting, 컴포넌트 추출
+- **패턴**: Facade Pattern, State hoisting, 컴포넌트 추출
 - **테스트**: 326/326 통과 (100% ✅)
 - **빌드**: 성공
-- **커밋**: 3개 (각 컴포넌트별 분리 커밋)
+- **커밋**: 3개 (각 화면별 분리 커밋)
+- **목표 대비**: 모든 목표 초과 달성 (ReminderViewModel: 목표 300줄 → 실제 257줄, EisenhowerMatrixScreen: 목표 320줄 → 실제 184줄, FocusModeScreen: 목표 285줄 → 실제 147줄)
 
 ---
 
-## 📈 코드 리뷰 결과 (2025-10-15)
+## 📈 코드 리뷰 결과 (2025-10-16 업데이트)
 
 ### 현재 대형 파일 분석 (상위 10개)
 | 파일 | 줄 수 | 분류 | 리팩토링 우선순위 |
 |------|------|------|------------------|
 | SettingsScreen.kt | 699 | UI 화면 | 🟢 낮음 (이미 잘 구조화됨) |
 | MainActivity.kt | 690 | 네비게이션 | ✅ 완료 (v1.68.2) |
-| ReminderViewModel.kt | 678 | ViewModel | 🟡 중간 (분리 가능) |
 | ReminderDatabase.kt | 674 | 마이그레이션 | 🟢 낮음 (불가피) |
-| EisenhowerMatrixScreen.kt | 671 | UI 화면 | 🟡 중간 (컴포넌트 추출 가능) |
 | AddEditReminderScreen.kt | 648 | UI 화면 | ✅ 완료 (v1.68.2) |
-| FocusModeScreen.kt | 635 | UI 화면 | 🟡 중간 (컴포넌트 추출 가능) |
 | PomodoroScreen.kt | 463 | UI 화면 | 🟢 낮음 |
 | HomeScreen.kt | 433 | UI 화면 | 🟢 낮음 |
 | StatisticsScreen.kt | 420 | UI 화면 | 🟢 낮음 |
+| ReminderViewModel.kt | 257 | ViewModel | ✅ 완료 (v1.68.3) |
+| EisenhowerMatrixScreen.kt | 184 | UI 화면 | ✅ 완료 (v1.68.3) |
+| FocusModeScreen.kt | 147 | UI 화면 | ✅ 완료 (v1.68.3) |
 
-### 리팩토링 권장사항
+### v1.68.3 리팩토링 완료 ✅
 
-#### 1. ReminderViewModel.kt (678줄) 🟡
-**현재 상태**:
-- 단일 ViewModel에 너무 많은 책임 집중
-- CRUD, 필터링, 정렬, 템플릿, 스누즈, TTS, ML 등 모두 포함
+#### ✅ ReminderViewModel.kt (678줄 → 257줄)
+**완료 내용**:
+- Facade Pattern으로 내부 위임 구조 구축
+- ReminderCrudViewModel, ReminderSearchViewModel, ReminderAnalyticsViewModel 분리
+- 하위 호환성 유지하며 책임 분리 달성
 
-**권장 작업** (우선순위 중):
-- 기능별 ViewModel 분리 고려:
-  - `ReminderCrudViewModel`: CRUD 핵심 기능
-  - `ReminderFilterViewModel`: 필터링/정렬/검색
-  - `ReminderAnalyticsViewModel`: 완료 패턴 분석, ML 추천
-- 이미 분리된 ViewModel 활용:
-  - SubTaskViewModel ✅
-  - AttachmentViewModel ✅
-  - TemplateViewModel ✅
-  - FilterViewModel ✅
+#### ✅ EisenhowerMatrixScreen.kt (671줄 → 184줄)
+**완료 내용**:
+- QuadrantCard, TrendAnalysisDialog 컴포넌트 추출
+- 쿼드런트 카드 재사용성 극대화
 
-**예상 효과**: 300~400줄 감소
-
-#### 2. EisenhowerMatrixScreen.kt (671줄) 🟡
-**현재 상태**:
-- QuadrantCard, TrendAnalysisDialog, SimpleTrendChart 등 큰 컴포넌트 포함
-- 중복 코드: 4개 쿼드런트 카드 생성
-
-**권장 작업** (우선순위 중):
-- 컴포넌트 파일 분리:
-  - `QuadrantCard.kt` (~150줄)
-  - `TrendAnalysisDialog.kt` (~120줄)
-  - `QuadrantStatistics.kt` (~80줄)
-
-**예상 효과**: 350줄 감소 → 320줄
-
-#### 3. FocusModeScreen.kt (635줄) 🟡
-**현재 상태**:
-- TimerCard, CircularTimer, DndSettingsCard 등 큰 컴포넌트
-- 잘 구조화되어 있지만 파일 크기가 큼
-
-**권장 작업** (우선순위 낮음):
-- 컴포넌트 파일 분리:
-  - `FocusTimerCard.kt` (~200줄)
-  - `DndSettingsCard.kt` (~100줄)
-  - `CircularTimer.kt` (~50줄)
-
-**예상 효과**: 350줄 감소 → 285줄
-
-#### 4. SettingsScreen.kt (699줄) 🟢
-**현재 상태**:
-- 이미 잘 구조화됨 (섹션별 함수 분리)
-- ThemeSection, FontSizeSection, NotificationSection 등
-
-**권장 작업**: 없음 (현재 상태 유지)
+#### ✅ FocusModeScreen.kt (635줄 → 147줄)
+**완료 내용**:
+- FocusTimerCard, FocusDndSettingsCard, FocusStatsCard, FocusSessionHistoryItem 추출
+- 목표(285줄) 대비 48% 추가 감소 달성
 
 ---
 
@@ -178,28 +147,7 @@
 
 ### 🎯 다음 우선순위 (순서대로)
 
-#### Priority 1: ReminderViewModel 리팩토링 🟡
-- **목표**: 678줄 → 300줄 (55% 감소)
-- **방법**: 기능별 ViewModel 분리
-- **예상 시간**: 3-4시간
-- **TDD**: 기존 테스트 100% 유지
-- **영향도**: 중간 (기존 ViewModel 참조 업데이트 필요)
-
-#### Priority 2: EisenhowerMatrixScreen 리팩토링 🟡
-- **목표**: 671줄 → 320줄 (52% 감소)
-- **방법**: 대형 컴포넌트 파일 분리
-- **예상 시간**: 2-3시간
-- **TDD**: UI 테스트 유지
-- **영향도**: 낮음 (화면 내부 리팩토링)
-
-#### Priority 3: FocusModeScreen 리팩토링 🟡
-- **목표**: 635줄 → 285줄 (55% 감소)
-- **방법**: 타이머/DND 컴포넌트 분리
-- **예상 시간**: 2시간
-- **TDD**: UI 테스트 유지
-- **영향도**: 낮음 (화면 내부 리팩토링)
-
-#### Priority 4: Wear OS 앱 구현 🟠
+#### Priority 1: Wear OS 앱 구현 🟠 (다음 우선순위)
 - **목표**: 스마트워치 지원으로 사용성 대폭 향상
 - **새 모듈**: `wear` 모듈 생성
 - **주요 기능**:
@@ -209,7 +157,7 @@
 - **예상 시간**: 6-7시간
 - **TDD**: 필수
 
-#### Priority 5: 시간 블로킹 (Time Blocking) 🟡
+#### Priority 2: 시간 블로킹 (Time Blocking) 🟡
 - **목표**: 캘린더와 통합하여 작업 시간 예약
 - **주요 기능**:
   - Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
@@ -220,7 +168,7 @@
 
 ---
 
-## 🚧 최근 완료 이력 (v1.68.0 ~ v1.68.2)
+## 🚧 최근 완료 이력 (v1.68.0 ~ v1.68.3)
 
 ### v1.68.0: 카카오맵 SDK 통합 ✅ 🗺️
 **완료됨** - 장소 검색 결과 지도 시각화, 위치 선택 UI
@@ -247,30 +195,40 @@
 - AddEditReminderScreen: 963줄 → 648줄 (-315줄, -32.7%)
 - 테스트: 326/326 통과 (100% ✅)
 
+### v1.68.3: 대규모 리팩토링 (God Class 해체) ✅ 🧹✨
+**완료됨** - ReminderViewModel, EisenhowerMatrixScreen, FocusModeScreen 총 1,396줄 감소
+- **ReminderViewModel**: 678줄 → 257줄 (-421줄, -62.1%)
+  - ReminderCrudViewModel.kt (292줄 신규)
+  - ReminderSearchViewModel.kt (115줄 신규)
+  - ReminderAnalyticsViewModel.kt (160줄 신규)
+- **EisenhowerMatrixScreen**: 671줄 → 184줄 (-487줄, -72.6%)
+  - QuadrantCard.kt (318줄 신규)
+  - TrendAnalysisDialog.kt (195줄 신규)
+- **FocusModeScreen**: 635줄 → 147줄 (-488줄, -76.9%)
+  - FocusTimerCard.kt (277줄 신규)
+  - FocusDndSettingsCard.kt (128줄 신규)
+  - FocusStatsCard.kt (77줄 신규)
+  - FocusSessionHistoryItem.kt (66줄 신규)
+- 테스트: 326/326 통과 (100% ✅)
+
 ---
 
 ## 📅 다음 세션 제안
 
-v1.68.2까지 완료! 다음 세션에서는:
+v1.68.3까지 완료! 다음 세션에서는:
 
-### 1. **ReminderViewModel 리팩토링** 🟡 (다음 우선순위)
-- 678줄 → 300줄 목표
-- 기능별 ViewModel 분리
-- 기존 테스트 100% 유지
-
-### 2. **EisenhowerMatrixScreen 리팩토링** 🟡
-- 671줄 → 320줄 목표
-- 대형 컴포넌트 파일 분리
-
-### 3. **FocusModeScreen 리팩토링** 🟡
-- 635줄 → 285줄 목표
-- 타이머/DND 컴포넌트 분리
-
-### 4. **Wear OS 앱 구현** 🟠
-- 스마트워치 지원
+### 1. **Wear OS 앱 구현** 🟠 (다음 우선순위)
+- 스마트워치 지원으로 사용성 대폭 향상
 - 새 wear 모듈 생성
 - Eisenhower Matrix 간소화 버전
 - 포커스 모드 워치 버전
+- 리마인더 빠른 완료 기능
+
+### 2. **시간 블로킹 (Time Blocking)** 🟡
+- 캘린더와 통합하여 작업 시간 예약
+- Eisenhower Matrix의 SCHEDULE 쿼드런트 활용
+- 드래그 앤 드롭으로 시간대 배정
+- AI 기반 최적 시간 제안
 
 ---
 
@@ -285,10 +243,8 @@ v1.68.2까지 완료! 다음 세션에서는:
 
 **또는 특정 작업 지정:**
 ```
-"ReminderViewModel 리팩토링해줘 (TDD로)"
-"EisenhowerMatrixScreen 컴포넌트 분리해줘"
-"FocusModeScreen 리팩토링해줘"
 "Wear OS 앱 구현해줘 (TDD로)"
+"시간 블로킹 구현해줘 (TDD로)"
 ```
 
 **⚠️ 주의**: "다음 작업 진행해줘"는 자동으로 테스트를 먼저 실행합니다!
@@ -338,10 +294,10 @@ v1.68.2까지 완료! 다음 세션에서는:
 
 **Happy Coding! 🚀**
 
-_v1.68.2까지 78개 버전, 27개 DB 마이그레이션을 완료했습니다. 코드 품질 및 재사용성 극대화!_
+_v1.68.3까지 79개 버전, 27개 DB 마이그레이션을 완료했습니다. 코드 품질 및 재사용성 극대화!_
 
 **주요 성과**:
-- ✅ 78개 버전 릴리즈 (v1.0.0 ~ v1.68.2)
+- ✅ 79개 버전 릴리즈 (v1.0.0 ~ v1.68.3)
 - ✅ 27번의 데이터베이스 마이그레이션
 - ✅ TDD 기반 안정적인 코드베이스 (326개 테스트 100% 통과)
 - ✅ Fake 구현 패턴으로 테스트 안정성 확보
@@ -361,20 +317,18 @@ _v1.68.2까지 78개 버전, 27개 DB 마이그레이션을 완료했습니다. 
 - ✅ **RecurrencePattern 레거시 제거 (v1.64.0: 새 RecurrenceRule 시스템, 646줄 감소)** 🔄
 - ✅ **카카오 로컬 API (v1.67.0: 장소 검색, 실시간 자동완성, TDD)** 📍
 - ✅ **카카오맵 SDK (v1.68.0: 지도 시각화, 위치 선택 UI, TDD)** 🗺️
-- ✅ **코드 리팩토링 (v1.68.2: 550줄 감소, 재사용 컴포넌트 4개 생성)** 🧹
+- ✅ **코드 리팩토링 (v1.68.2~v1.68.3: 총 1,946줄 감소, 컴포넌트/ViewModel 13개 생성)** 🧹✨
 - ✅ 다국어 지원 (한/영/중)
 - ✅ Material 3 디자인
 
 **다음 우선순위**:
-1. 🟡 **ReminderViewModel 리팩토링** (678줄 → 300줄, 기능별 분리)
-2. 🟡 **EisenhowerMatrixScreen 리팩토링** (671줄 → 320줄, 컴포넌트 분리)
-3. 🟡 **FocusModeScreen 리팩토링** (635줄 → 285줄, 컴포넌트 분리)
-4. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
-5. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
+1. 🟠 **Wear OS 앱 구현** (스마트워치 지원, 생산성 극대화)
+2. 🟡 **시간 블로킹** (캘린더 통합 작업 예약)
 
-**⭐ v1.68.2 하이라이트**:
-- **코드 크기 대폭 감소**: MainActivity (-297줄), AddEditReminderScreen (-315줄), 총 550줄 감소
-- **재사용 컴포넌트 생성**: LocationSearchSection, SubTaskSection, ImageAttachmentSection, ExposedDropdownField
-- **코드 재사용성 향상**: 공통 패턴 추출, State hoisting 적용
+**⭐ v1.68.3 하이라이트**:
+- **대규모 코드 리팩토링 완료**: 3개 대형 파일 총 1,396줄 감소 (-70.4%)
+- **God Class 해체**: ReminderViewModel Facade Pattern 적용, 책임 분리
+- **9개 컴포넌트/ViewModel 생성**: 재사용성 및 유지보수성 극대화
+- **모든 목표 초과 달성**: ReminderViewModel (257줄 vs 목표 300줄), EisenhowerMatrixScreen (184줄 vs 목표 320줄), FocusModeScreen (147줄 vs 목표 285줄)
 - **테스트 100% 유지**: 326/326 통과, 빌드 성공
-- **개발자 경험 개선**: 코드 가독성 향상, 유지보수 용이성 증대
+- **개발자 경험 극대화**: 코드 가독성 향상, 단일 책임 원칙 준수, 하위 호환성 유지
